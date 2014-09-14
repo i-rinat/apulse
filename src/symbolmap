@@ -1,0 +1,6 @@
+PULSE_0 {
+    global:
+        pa_*;
+    local:
+        *;
+};
