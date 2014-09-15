@@ -140,7 +140,7 @@ ringbuffer_write(ringbuffer_t *rb, const void *data, size_t len)
         rb->wpos += len;
     } else {
         memcpy(rb->wpos, data, remsz);
-        memcpy(rb->start, data + remsz, len - remsz);
+        memcpy(rb->start, (char *)data + remsz, len - remsz);
         rb->wpos = rb->start + len - remsz;
     }
 
@@ -167,7 +167,7 @@ ringbuffer_read(ringbuffer_t *rb, void *data, size_t len)
         rb->rpos += len;
     } else {
         memcpy(data, rb->rpos, remsz);
-        memcpy(data + remsz, rb->start, len - remsz);
+        memcpy((char *)data + remsz, rb->start, len - remsz);
         rb->rpos = rb->start + len - remsz;
     }
 
@@ -193,7 +193,7 @@ ringbuffer_peek(ringbuffer_t *rb, void *data, size_t len)
         memcpy(data, rb->rpos, len);
     } else {
         memcpy(data, rb->rpos, remsz);
-        memcpy(data + remsz, rb->start, len - remsz);
+        memcpy((char *)data + remsz, rb->start, len - remsz);
     }
 
     _rb_unlock(rb);
