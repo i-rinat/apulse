@@ -128,6 +128,8 @@ pa_context_ref(pa_context *c)
 {
     trace_info("F %s c=%p\n", __func__, c);
 
+    if (!c)
+        return NULL;
     c->ref_cnt ++;
     return c;
 }
@@ -170,6 +172,8 @@ pa_context_unref(pa_context *c)
 {
     trace_info("F %s c=%p\n", __func__, c);
 
+    if (!c)
+        return;
     c->ref_cnt --;
     if (c->ref_cnt == 0) {
         g_hash_table_unref(c->streams_ht);
