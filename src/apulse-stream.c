@@ -95,6 +95,8 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
                 return;
             }
         }
+    } else {
+        return;
     }
 
     if (events & PA_IO_EVENT_OUTPUT) {
