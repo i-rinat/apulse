@@ -136,6 +136,9 @@ pa_operation *
 pa_operation_ref(pa_operation *o)
 {
     trace_info("F %s o=%p\n", __func__, o);
+
+    if (!o)
+        return NULL;
     o->ref_cnt ++;
     return o;
 }
@@ -145,6 +148,9 @@ void
 pa_operation_unref(pa_operation *o)
 {
     trace_info("F %s o=%p\n", __func__, o);
+
+    if (!o)
+        return;
     o->ref_cnt --;
     if (o->ref_cnt == 0)
         g_slice_free(pa_operation, o);
