@@ -5,7 +5,7 @@ add_definitions(-Werror=implicit-function-declaration)
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(PULSE libpulse REQUIRED)
+pkg_check_modules(PULSE libpulse>=5.0 REQUIRED)
 pkg_check_modules(REQ glib-2.0 alsa REQUIRED)
 
 include_directories(${PULSE_INCLUDE_DIRS})
