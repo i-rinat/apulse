@@ -29,4 +29,10 @@ $ apulse <programmname> [parameters]
 License
 =======
 
-The MIT License. See LICENSE.MIT for full text.
+Source code is distributed under the terms of the MIT License. See LICENSE.MIT for full text.
+
+Third party code
+================
+
+`/3rdparty/pulseaudio-headers` contains part of PulseAudio project and is distributed
+under LGPLv2.1+ terms. See content of the files for details.

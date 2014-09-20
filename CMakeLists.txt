@@ -5,11 +5,10 @@ add_definitions(-Werror=implicit-function-declaration)
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(PULSE libpulse>=5.0 REQUIRED)
 pkg_check_modules(REQ glib-2.0 alsa REQUIRED)
 
-include_directories(${PULSE_INCLUDE_DIRS})
 include_directories(${REQ_INCLUDE_DIRS})
+include_directories(3rdparty/pulseaudio-headers)
 
 link_directories(${REQ_LIBRARY_DIRS})
 
