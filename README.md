@@ -15,9 +15,12 @@ $ make
 
 If you want 32-bit binaries on 64-bit machine, use:
 ```
+$ mkdir build && cd build
 $ CFLAGS=-m32 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..
+$ make
+# make install
 ```
-as configure step.
+
 
 Usage
 =====
