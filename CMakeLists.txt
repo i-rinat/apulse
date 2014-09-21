@@ -34,7 +34,7 @@ add_library(pulsecommon-5.0 SHARED src/apulse-common.c)
 set_target_properties(pulse PROPERTIES VERSION 0)
 set_target_properties(pulse-simple PROPERTIES VERSION 0)
 
-set(SYMBOLMAP "-Wl,-version-script=${CMAKE_SOURCE_DIR}/src/symbolmap")
+set(SYMBOLMAP "-Wl,-version-script=\"${CMAKE_SOURCE_DIR}/src/symbolmap\"")
 
 target_link_libraries(pulse ${SYMBOLMAP} ${REQ_LIBRARIES})
 target_link_libraries(pulse-simple ${SYMBOLMAP} ${REQ_LIBRARIES})
