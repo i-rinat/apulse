@@ -63,7 +63,7 @@ deh_perform_operation(pa_mainloop_api *api, pa_defer_event *de, void *userdata)
         sii.sample_spec = (pa_sample_spec){.format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2};
         sii.channel_map.channels = 2;
         sii.channel_map.map[0] = PA_CHANNEL_POSITION_LEFT;
-        sii.channel_map.map[0] = PA_CHANNEL_POSITION_RIGHT;
+        sii.channel_map.map[1] = PA_CHANNEL_POSITION_RIGHT;
         sii.volume.channels = 2;
         sii.volume.values[0] = PA_VOLUME_NORM;
         sii.volume.values[1] = PA_VOLUME_NORM;
