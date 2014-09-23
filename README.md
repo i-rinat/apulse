@@ -26,7 +26,7 @@ Usage
 =====
 
 ```
-$ apulse <programmname> [parameters]
+$ apulse <program-name> [parameters]
 ```
 
 License
