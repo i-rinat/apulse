@@ -42,7 +42,7 @@ target_link_libraries(pulsecommon-5.0 ${SYMBOLMAP} ${REQ_LIBRARIES})
 
 add_subdirectory(tests)
 
-set(APULSEPATH "${CMAKE_INSTALL_PREFIX}/lib/apulse")
+set(APULSEPATH "${CMAKE_INSTALL_PREFIX}/lib/apulse" CACHE PATH "library installation directory")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/apulse.template"
                "${CMAKE_CURRENT_BINARY_DIR}/apulse" @ONLY)
 
