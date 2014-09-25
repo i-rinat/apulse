@@ -1,0 +1,11 @@
+apulse (0.1.0-2) unstable; urgency=low
+
+  * Disable debug mode.
+
+ -- Andrey Tataranovich <tataranovich@gmail.com>  Thu, 25 Sep 2014 11:33:40 +0000
+
+apulse (0.1.0-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Andrey Tataranovich <tataranovich@gmail.com>  Thu, 25 Sep 2014 10:50:24 +0000

@@ -1,0 +1,13 @@
+Source: apulse
+Section: sound
+Priority: extra
+Maintainer: Andrey Tataranovich <tataranovich@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), cmake (>= 2.8.8), pkg-config, libglib2.0-dev, libasound2-dev
+Standards-Version: 3.9.3
+Homepage: https://github.com/i-rinat/apulse
+
+Package: apulse
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: PulseAudio emulation for ALSA
+ PulseAudio emulation for ALSA.
