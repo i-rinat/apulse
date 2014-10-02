@@ -137,8 +137,20 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     snd_pcm_hw_params_t *hw_params;
     snd_pcm_sw_params_t *sw_params;
     int dir;
+    const char *dev_name;
 
-    CHECK_A(snd_pcm_open, (&s->ph, "default", stream_direction, 0));
+    switch (stream_direction) {
+    default:
+    case SND_PCM_STREAM_PLAYBACK:
+        dev_name = getenv("APULSE_PLAYBACK_DEVICE");
+        CHECK_A(snd_pcm_open, (&s->ph, dev_name ? dev_name : "default", stream_direction, 0));
+        break;
+    case SND_PCM_STREAM_CAPTURE:
+        dev_name = getenv("APULSE_CAPTURE_DEVICE");
+        CHECK_A(snd_pcm_open, (&s->ph, dev_name ? dev_name : "default", stream_direction, 0));
+        break;
+    }
+
     CHECK_A(snd_pcm_hw_params_malloc, (&hw_params));
     CHECK_A(snd_pcm_hw_params_any, (s->ph, hw_params));
     CHECK_A(snd_pcm_hw_params_set_access, (s->ph, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED));
