@@ -8,7 +8,14 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(REQ glib-2.0 alsa REQUIRED)
 
 include_directories(${REQ_INCLUDE_DIRS})
-include_directories(3rdparty/pulseaudio-headers)
+
+set(USE_BUNDLED_PULSEAUDIO_HEADERS 1 CACHE BOOLEAN "Use bundled PulseAudio headers instead of system ones")
+if (${USE_BUNDLED_PULSEAUDIO_HEADERS})
+    include_directories(3rdparty/pulseaudio-headers)
+else()
+    pkg_check_modules(PA libpulse>=5.0 REQUIRED)
+    include_directories(${PA_INCLUDE_DIRECTORIES})
+endif()
 
 link_directories(${REQ_LIBRARY_DIRS})
 
