@@ -159,7 +159,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     CHECK_A(snd_pcm_sw_params_malloc, (&sw_params));
     CHECK_A(snd_pcm_sw_params_current, (s->ph, sw_params));
     CHECK_A(snd_pcm_sw_params_set_avail_min, (s->ph, sw_params, 2000)); // TODO: size
-    CHECK_A(snd_pcm_sw_params_set_period_event, (s->ph, sw_params, 1));
+    // no period event requested
     CHECK_A(snd_pcm_sw_params, (s->ph, sw_params));
     snd_pcm_sw_params_free(sw_params);
 
