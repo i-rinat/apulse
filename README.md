@@ -21,6 +21,18 @@ $ make
 # make install
 ```
 
+There is a way to configure where apulse libraries will be installed, via
+`APULSEPATH` cmake variable. For example, if you want to install libraries
+into default path, `/usr/lib`, use
+```
+cmake -DAPULSEPATH=/usr/lib -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..
+```
+
+If libraries are installed to a regular library path, you don't need run applications
+through `apulse` wrapper.
+
+Note you need to select build type to be `Release`, otherwise it will output enourmous
+amount of debug text to the stdout.
 
 Usage
 =====
@@ -28,6 +40,10 @@ Usage
 ```
 $ apulse <program-name> [parameters]
 ```
+
+Environment variables `APULSE_CAPTURE_DEVICE` and `APULSE_PLAYBACK_DEVICE` can be used
+to configure capture and playback devices. Try `hw:0,0`, `plughw:0,0` and the like.
+Refer to the ALSA user guide for a full list of device names.
 
 License
 =======
