@@ -3,6 +3,10 @@ About
 
 PulseAudio emulation for ALSA.
 
+Project is in stale state since its proclamation. The main objective,
+working Skype test call, is reached. I don't have any plans for further
+development.
+
 Install
 =======
 
