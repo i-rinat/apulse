@@ -7,6 +7,9 @@ find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(REQ glib-2.0 alsa REQUIRED)
 
+# enable tracing for Debug builds
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DWITH_TRACE")
+
 include_directories(${REQ_INCLUDE_DIRS})
 
 set(USE_BUNDLED_PULSEAUDIO_HEADERS 1 CACHE BOOLEAN "Use bundled PulseAudio headers instead of system ones")
