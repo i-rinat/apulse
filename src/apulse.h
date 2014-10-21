@@ -25,6 +25,7 @@
 #ifndef APULSE__APULSE_H
 #define APULSE__APULSE_H
 
+#define _GNU_SOURCE
 #include <pthread.h>
 #include <glib.h>
 #include <asoundlib.h>

@@ -133,7 +133,7 @@ ml_api_io_new(pa_mainloop_api *a, int fd, pa_io_event_flags_t events, pa_io_even
     ioe->pollfd =       NULL;
     ioe->pcm =          NULL;
 
-    g_hash_table_add(ml->events_ht, ioe);
+    g_hash_table_replace(ml->events_ht, ioe, ioe);
     ml->recreate_fds = 1;
 
     pa_mainloop_wakeup(ml);
