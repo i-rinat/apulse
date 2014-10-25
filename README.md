@@ -17,7 +17,7 @@ $ make
 # make install
 ```
 
-If you want 32-bit binaries on 64-bit machine, use:
+If you want 32-bit binaries on 64-bit machine (for example, for Skype), use:
 ```
 $ mkdir build && cd build
 $ CFLAGS=-m32 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..
