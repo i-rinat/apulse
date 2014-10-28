@@ -137,6 +137,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     snd_pcm_hw_params_t *hw_params;
     snd_pcm_sw_params_t *sw_params;
     int dir;
+    unsigned int rate;
     const char *dev_name;
 
     switch (stream_direction) {
@@ -155,7 +156,10 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     CHECK_A(snd_pcm_hw_params_any, (s->ph, hw_params));
     CHECK_A(snd_pcm_hw_params_set_access, (s->ph, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED));
     CHECK_A(snd_pcm_hw_params_set_format, (s->ph, hw_params, pa_format_to_alsa(s->ss.format)));
-    CHECK_A(snd_pcm_hw_params_set_rate, (s->ph, hw_params, s->ss.rate, 0));
+    CHECK_A(snd_pcm_hw_params_set_rate_resample, (s->ph, hw_params, 1));
+    rate = s->ss.rate;
+    dir = 0;
+    CHECK_A(snd_pcm_hw_params_set_rate_near, (s->ph, hw_params, &rate, &dir));
     CHECK_A(snd_pcm_hw_params_set_channels, (s->ph, hw_params, s->ss.channels));
 
     unsigned int period_time = 20 * 1000;
