@@ -22,6 +22,10 @@ endif()
 
 link_directories(${REQ_LIBRARY_DIRS})
 
+add_library(trace-helper STATIC
+    src/trace.c
+)
+
 add_library(pulse SHARED
     src/apulse-channel-map.c
     src/apulse-context.c
@@ -32,7 +36,6 @@ add_library(pulse SHARED
     src/apulse-signal.c
     src/apulse-stream.c
     src/apulse-threaded-mainloop.c
-    src/trace.c
     src/util.c
     src/ringbuffer.c
     src/notimplemented.c
@@ -40,18 +43,19 @@ add_library(pulse SHARED
 
 add_library(pulse-simple SHARED
     src/apulse-simple.c
-    src/trace.c
 )
-add_library(pulsecommon-5.0 SHARED src/apulse-common.c)
+add_library(pulsecommon-5.0 SHARED
+    src/apulse-common.c
+)
 
 set_target_properties(pulse PROPERTIES VERSION 0)
 set_target_properties(pulse-simple PROPERTIES VERSION 0)
 
 set(SYMBOLMAP "-Wl,-version-script=\"${CMAKE_SOURCE_DIR}/src/symbolmap\"")
 
-target_link_libraries(pulse ${SYMBOLMAP} ${REQ_LIBRARIES})
-target_link_libraries(pulse-simple ${SYMBOLMAP} ${REQ_LIBRARIES})
-target_link_libraries(pulsecommon-5.0 ${SYMBOLMAP} ${REQ_LIBRARIES})
+target_link_libraries(pulse ${SYMBOLMAP} ${REQ_LIBRARIES} trace-helper)
+target_link_libraries(pulse-simple ${SYMBOLMAP} ${REQ_LIBRARIES} trace-helper)
+target_link_libraries(pulsecommon-5.0 ${SYMBOLMAP} ${REQ_LIBRARIES} trace-helper)
 
 add_subdirectory(tests)
 

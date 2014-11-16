@@ -92,3 +92,15 @@ trace_pa_buffer_attr_as_string(const pa_buffer_attr *attr)
 
     return res;
 }
+
+void
+trace_lock(void)
+{
+    pthread_mutex_lock(&lock);
+}
+
+void
+trace_unlock(void)
+{
+    pthread_mutex_unlock(&lock);
+}

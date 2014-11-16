@@ -36,4 +36,10 @@ void    trace_error(const char *fmt, ...) __attribute__((format (printf, 1, 2)))
 gchar *
 trace_pa_buffer_attr_as_string(const pa_buffer_attr *attr);
 
+void
+trace_lock(void);
+
+void
+trace_unlock(void);
+
 #endif // APULSE__TRACE_H

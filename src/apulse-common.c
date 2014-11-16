@@ -23,3 +23,30 @@
  */
 
 #include "apulse.h"
+#include "trace.h"
+
+typedef enum pa_log_level {
+    PA_LOG_ERROR  = 0,
+    PA_LOG_WARN   = 1,
+    PA_LOG_NOTICE = 2,
+    PA_LOG_INFO   = 3,
+    PA_LOG_DEBUG  = 4,
+    PA_LOG_LEVEL_MAX
+} pa_log_level_t;
+
+APULSE_EXPORT
+void
+pa_log_level_meta(pa_log_level_t level, const char *file, int line, const char *func,
+                  const char *format, ...)
+{
+#ifdef WITH_TRACE
+    trace_lock();
+    va_list args;
+    fprintf(stdout, "pa_log: <%d> %s:%d %s ", level, file, line, func);
+    va_start(args, format);
+    vfprintf(stdout, format, args);
+    va_end(args);
+    fprintf(stdout, "\n");
+    trace_unlock();
+#endif
+}
