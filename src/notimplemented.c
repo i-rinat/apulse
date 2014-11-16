@@ -111,13 +111,6 @@ int pa_proplist_set(pa_proplist *p, const char *key, const void *data, size_t nb
 }
 
 APULSE_EXPORT
-const char *pa_proplist_gets(pa_proplist *p, const char *key)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 int pa_proplist_get(pa_proplist *p, const char *key, const void **data, size_t *nbytes)
 {
     trace_info("Z %s\n", __func__);

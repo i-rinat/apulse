@@ -83,7 +83,15 @@ APULSE_EXPORT
 int
 pa_proplist_contains(pa_proplist *p, const char *key)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info("F %s p=%p, key=%s\n", __func__, p, key);
 
-    return 0;
+    return g_hash_table_lookup(p->ht, key) != NULL;
+}
+
+APULSE_EXPORT
+const char *
+pa_proplist_gets(pa_proplist *p, const char *key)
+{
+    trace_info("F %s p=%p, key=%s\n", __func__, p, key);
+    return g_hash_table_lookup(p->ht, key);
 }
