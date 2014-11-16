@@ -50,3 +50,29 @@ pa_log_level_meta(pa_log_level_t level, const char *file, int line, const char *
     trace_unlock();
 #endif
 }
+
+APULSE_EXPORT
+void
+pa_disable_sigpipe(void)
+{
+    trace_info("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+int
+pa_open_cloexec(const char *fn, int flags, mode_t mode)
+{
+    int fd = open(fn, flags, mode);
+    if (fd < 0)
+        return fd;
+    fcntl(fd, F_SETFD, fcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
+    return fd;
+}
+
+APULSE_EXPORT
+int
+pa_close(int fd)
+{
+    close(fd);
+    return 0;
+}
