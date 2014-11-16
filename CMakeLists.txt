@@ -38,7 +38,10 @@ add_library(pulse SHARED
     src/notimplemented.c
 )
 
-add_library(pulse-simple SHARED src/apulse-simple.c)
+add_library(pulse-simple SHARED
+    src/apulse-simple.c
+    src/trace.c
+)
 add_library(pulsecommon-5.0 SHARED src/apulse-common.c)
 
 set_target_properties(pulse PROPERTIES VERSION 0)
