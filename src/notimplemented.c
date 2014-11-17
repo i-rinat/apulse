@@ -1456,13 +1456,6 @@ pa_operation* pa_context_play_sample_with_proplist(pa_context *c, const char *na
 }
 
 APULSE_EXPORT
-void *pa_xmalloc0(size_t l)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 void *pa_xrealloc(void *ptr, size_t size)
 {
     trace_info("Z %s\n", __func__);

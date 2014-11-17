@@ -220,6 +220,13 @@ pa_xmalloc(size_t size)
 }
 
 APULSE_EXPORT
+void *
+pa_xmalloc0(size_t l)
+{
+    return calloc(l, 1);
+}
+
+APULSE_EXPORT
 char *
 pa_locale_to_utf8(const char *str)
 {
