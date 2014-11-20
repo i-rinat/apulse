@@ -10,6 +10,9 @@ pkg_check_modules(REQ glib-2.0 alsa REQUIRED)
 # enable tracing for Debug builds
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DWITH_TRACE")
 
+# link with pthread
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+
 include_directories(${REQ_INCLUDE_DIRS})
 
 set(USE_BUNDLED_PULSEAUDIO_HEADERS 1 CACHE BOOLEAN "Use bundled PulseAudio headers instead of system ones")
@@ -53,9 +56,9 @@ set_target_properties(pulse-simple PROPERTIES VERSION 0)
 
 set(SYMBOLMAP "-Wl,-version-script=\"${CMAKE_SOURCE_DIR}/src/symbolmap\"")
 
-target_link_libraries(pulse ${SYMBOLMAP} ${REQ_LIBRARIES} trace-helper)
-target_link_libraries(pulse-simple ${SYMBOLMAP} ${REQ_LIBRARIES} trace-helper)
-target_link_libraries(pulsecommon-5.0 ${SYMBOLMAP} ${REQ_LIBRARIES} trace-helper)
+target_link_libraries(pulse ${SYMBOLMAP} trace-helper ${REQ_LIBRARIES})
+target_link_libraries(pulse-simple ${SYMBOLMAP} trace-helper ${REQ_LIBRARIES})
+target_link_libraries(pulsecommon-5.0 ${SYMBOLMAP} trace-helper ${REQ_LIBRARIES})
 
 add_subdirectory(tests)
 
