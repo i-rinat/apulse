@@ -576,7 +576,7 @@ APULSE_EXPORT
 uint32_t
 pa_stream_get_device_index(pa_stream *s)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info("Z %s s=%p\n", __func__, s);
 
     return 0;
 }
