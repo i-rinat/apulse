@@ -120,6 +120,12 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     if (events & PA_IO_EVENT_INPUT) {
         size_t wsz = ringbuffer_writable_size(s->rb);
 
+        if (wsz == 0) {
+            // ringbuffer is full, app doesn't read data fast enough. Make some room
+            ringbuffer_drop(s->rb, frame_count * frame_size);
+            wsz = ringbuffer_writable_size(s->rb);
+        }
+
         if (wsz > frame_count * frame_size)
             wsz = frame_count * frame_size;
 
