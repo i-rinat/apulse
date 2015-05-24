@@ -107,6 +107,12 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
 
         void *data = malloc(frame_count * frame_size);
         size_t bytecnt = ringbuffer_read(s->rb, data, frame_count * frame_size);
+
+        if (bytecnt == 0) {
+            // application is not ready yet, play silence
+            bytecnt = frame_count * frame_size;
+            memset(data, 0, bytecnt);
+        }
         snd_pcm_writei(s->ph, data, bytecnt / frame_size);
         free(data);
     }
