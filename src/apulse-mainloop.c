@@ -297,10 +297,7 @@ pa_mainloop_iterate(pa_mainloop *m, int block, int *retval)
     trace_info("F %s m=%p, block=%d\n", __func__, m, block);
 
     int err;
-    int timeout = 1000;
-
-    if (g_queue_peek_head(m->queue))
-        timeout = 10;
+    int timeout = block ? -1 : 0;
 
     err = pa_mainloop_prepare(m, timeout);
     if (err < 0)
