@@ -100,15 +100,15 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     }
 
     if (events & PA_IO_EVENT_OUTPUT) {
-        void *data = malloc(frame_count * frame_size);
-        size_t bytecnt = ringbuffer_read(s->rb, data, frame_count * frame_size);
-        snd_pcm_writei(s->ph, data, bytecnt / frame_size);
-        free(data);
-
         size_t writable_size = pa_stream_writable_size(s);
 
         if (s->write_cb && writable_size > 0)
             s->write_cb(s, writable_size, s->write_cb_userdata);
+
+        void *data = malloc(frame_count * frame_size);
+        size_t bytecnt = ringbuffer_read(s->rb, data, frame_count * frame_size);
+        snd_pcm_writei(s->ph, data, bytecnt / frame_size);
+        free(data);
     }
 
     if (events & PA_IO_EVENT_INPUT) {
