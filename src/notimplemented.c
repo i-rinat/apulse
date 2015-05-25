@@ -195,13 +195,6 @@ pa_channel_map* pa_channel_map_init(pa_channel_map *m)
 }
 
 APULSE_EXPORT
-const char* pa_channel_position_to_string(pa_channel_position_t pos)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 pa_channel_position_t pa_channel_position_from_string(const char *s)
 {
     trace_info("Z %s\n", __func__);
@@ -216,13 +209,6 @@ const char* pa_channel_position_to_pretty_string(pa_channel_position_t pos)
 }
 
 APULSE_EXPORT
-char* pa_channel_map_snprint(char *s, size_t l, const pa_channel_map *map)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 pa_channel_map *pa_channel_map_parse(pa_channel_map *map, const char *s)
 {
     trace_info("Z %s\n", __func__);
@@ -231,13 +217,6 @@ pa_channel_map *pa_channel_map_parse(pa_channel_map *map, const char *s)
 
 APULSE_EXPORT
 int pa_channel_map_equal(const pa_channel_map *a, const pa_channel_map *b)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
-int pa_channel_map_valid(const pa_channel_map *map)
 {
     trace_info("Z %s\n", __func__);
     return 0;
@@ -307,30 +286,10 @@ pa_encoding_t pa_encoding_from_string(const char *encoding)
 }
 
 APULSE_EXPORT
-pa_format_info* pa_format_info_new(void)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 pa_format_info* pa_format_info_copy(const pa_format_info *src)
 {
     trace_info("Z %s\n", __func__);
     return NULL;
-}
-
-APULSE_EXPORT
-void pa_format_info_free(pa_format_info *f)
-{
-    trace_info("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
-int pa_format_info_valid(const pa_format_info *f)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
 }
 
 APULSE_EXPORT
@@ -449,30 +408,6 @@ void pa_format_info_set_prop_string(pa_format_info *f, const char *key, const ch
 
 APULSE_EXPORT
 void pa_format_info_set_prop_string_array(pa_format_info *f, const char *key, const char **values, int n_values)
-{
-    trace_info("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
-void pa_format_info_set_sample_format(pa_format_info *f, pa_sample_format_t sf)
-{
-    trace_info("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
-void pa_format_info_set_rate(pa_format_info *f, int rate)
-{
-    trace_info("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
-void pa_format_info_set_channels(pa_format_info *f, int channels)
-{
-    trace_info("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
-void pa_format_info_set_channel_map(pa_format_info *f, const pa_channel_map *map)
 {
     trace_info("Z %s\n", __func__);
 }

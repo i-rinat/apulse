@@ -32,6 +32,7 @@ add_library(trace-helper STATIC
 add_library(pulse SHARED
     src/apulse-channel-map.c
     src/apulse-context.c
+    src/apulse-format-info.c
     src/apulse-mainloop.c
     src/apulse-misc.c
     src/apulse-operation.c
