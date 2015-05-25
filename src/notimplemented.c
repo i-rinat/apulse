@@ -816,20 +816,6 @@ const char *pa_stream_get_device_name(pa_stream *s)
 }
 
 APULSE_EXPORT
-int pa_stream_is_suspended(pa_stream *s)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
-int pa_stream_is_corked(pa_stream *s)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
 int pa_stream_begin_write(pa_stream *p, void **data, size_t *nbytes)
 {
     trace_info("Z %s\n", __func__);

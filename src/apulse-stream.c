@@ -375,6 +375,23 @@ pa_stream_get_timing_info(pa_stream *s)
 }
 
 APULSE_EXPORT
+int
+pa_stream_is_corked(pa_stream *s)
+{
+    trace_info("F %s s=%p\n", __func__, s);
+    return g_atomic_int_get(&s->paused);
+}
+
+APULSE_EXPORT
+int
+pa_stream_is_suspended(pa_stream *s)
+{
+    trace_info("F %s s=%p\n", __func__, s);
+    // ALSA sink is never suspended
+    return 0;
+}
+
+APULSE_EXPORT
 pa_stream *
 pa_stream_new(pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map)
 {
