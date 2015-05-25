@@ -71,9 +71,9 @@ void
 data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_event_flags_t events,
                           void *userdata)
 {
-    pa_stream *s = userdata;
-    snd_pcm_sframes_t frame_count;
-    size_t frame_size = pa_frame_size(&s->ss);
+    pa_stream          *s = userdata;
+    snd_pcm_sframes_t   frame_count;
+    size_t              frame_size = pa_frame_size(&s->ss);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {
         frame_count = snd_pcm_avail(s->ph);
@@ -126,8 +126,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
             wsz = ringbuffer_writable_size(s->rb);
         }
 
-        if (wsz > frame_count * frame_size)
-            wsz = frame_count * frame_size;
+        wsz = MIN(wsz, frame_count * frame_size);
 
         if (wsz > 0) {
             void *data = malloc(wsz);
