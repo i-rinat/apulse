@@ -539,20 +539,6 @@ const char* pa_context_get_server(pa_context *c)
 }
 
 APULSE_EXPORT
-uint32_t pa_context_get_protocol_version(pa_context *c)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
-uint32_t pa_context_get_server_protocol_version(pa_context *c)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
 pa_operation *pa_context_proplist_update(pa_context *c, pa_update_mode_t mode, pa_proplist *p, pa_context_success_cb_t cb, void *userdata)
 {
     trace_info("Z %s\n", __func__);

@@ -71,6 +71,22 @@ pa_context_errno(pa_context *c)
 }
 
 APULSE_EXPORT
+uint32_t
+pa_context_get_protocol_version(pa_context *c)
+{
+    trace_info("F %s c=%p\n", __func__, c);
+    return PA_PROTOCOL_VERSION;
+}
+
+APULSE_EXPORT
+uint32_t
+pa_context_get_server_protocol_version(pa_context *c)
+{
+    trace_info("F %s c=%p\n", __func__, c);
+    return 8;   // PA headers say "8" is the protocol version used in PulseAudio 0.9
+}
+
+APULSE_EXPORT
 pa_operation *
 pa_context_get_sink_input_info(pa_context *c, uint32_t idx, pa_sink_input_info_cb_t cb,
                                void *userdata)
