@@ -388,6 +388,45 @@ pa_stream_new(pa_context *c, const char *name, const pa_sample_spec *ss, const p
 
 APULSE_EXPORT
 pa_stream *
+pa_stream_new_extended(pa_context *c, const char *name, pa_format_info *const *formats,
+                       unsigned int n_formats, pa_proplist *p)
+{
+    trace_info("P %s c=%p, name=%s, formats=%p, n_formats=%u, p=%p\n", __func__, c, name,
+               formats, n_formats, p);
+
+    // TODO: multiple formats?
+
+    // take first format
+    if (n_formats < 1) {
+        trace_error("%s, no formats\n", __func__);
+        return NULL;
+    }
+
+    pa_sample_spec ss = {
+        .format =   PA_SAMPLE_S16LE,
+        .rate =     48000,
+        .channels = 2,
+    };
+
+    const char *val;
+
+    val = pa_proplist_gets(formats[0]->plist, PA_PROP_FORMAT_SAMPLE_FORMAT);
+    if (val)
+        ss.format = pa_sample_format_from_string(val);
+
+    val = pa_proplist_gets(formats[0]->plist, PA_PROP_FORMAT_RATE);
+    if (val)
+        ss.rate = atoi(val);
+
+    val = pa_proplist_gets(formats[0]->plist, PA_PROP_FORMAT_CHANNELS);
+    if (val)
+        ss.channels = atoi(val);
+
+    return pa_stream_new_with_proplist(c, name, &ss, NULL, p);
+}
+
+APULSE_EXPORT
+pa_stream *
 pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spec *ss,
                             const pa_channel_map *map, pa_proplist *p)
 {

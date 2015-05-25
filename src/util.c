@@ -44,3 +44,40 @@ pa_format_to_alsa(pa_sample_format_t format)
     default:                  return SND_PCM_FORMAT_UNKNOWN;
     }
 }
+
+pa_sample_format_t
+pa_sample_format_from_string(const char *str)
+{
+    if (!str)
+        return 0;
+
+    if (strcmp(str, "u8") == 0) {
+        return PA_SAMPLE_U8;
+    } else if (strcmp(str, "aLaw") == 0) {
+        return PA_SAMPLE_ALAW;
+    } else if (strcmp(str, "uLaw") == 0) {
+        return PA_SAMPLE_ULAW;
+    } else if (strcmp(str, "s16le") == 0) {
+        return PA_SAMPLE_S16LE;
+    } else if (strcmp(str, "s16be") == 0) {
+        return PA_SAMPLE_S16BE;
+    } else if (strcmp(str, "float32le") == 0) {
+        return PA_SAMPLE_FLOAT32LE;
+    } else if (strcmp(str, "float32be") == 0) {
+        return PA_SAMPLE_FLOAT32BE;
+    } else if (strcmp(str, "s32le") == 0) {
+        return PA_SAMPLE_S32LE;
+    } else if (strcmp(str, "s32be") == 0) {
+        return PA_SAMPLE_S32BE;
+    } else if (strcmp(str, "s24le") == 0) {
+        return PA_SAMPLE_S24LE;
+    } else if (strcmp(str, "s24be") == 0) {
+        return PA_SAMPLE_S24BE;
+    } else if (strcmp(str, "s24-32le") == 0) {
+        return PA_SAMPLE_S24_32LE;
+    } else if (strcmp(str, "s24-32be") == 0) {
+        return PA_SAMPLE_S24_32BE;
+    } else {
+        return 0;
+    }
+}

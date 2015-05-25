@@ -32,4 +32,7 @@
 int
 pa_format_to_alsa(pa_sample_format_t format);
 
+pa_sample_format_t
+pa_sample_format_from_string(const char *str);
+
 #endif // APULSE__UTIL_H

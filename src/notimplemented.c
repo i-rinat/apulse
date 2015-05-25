@@ -802,13 +802,6 @@ pa_cvolume* pa_cvolume_dec(pa_cvolume *v, pa_volume_t dec)
 }
 
 APULSE_EXPORT
-pa_stream *pa_stream_new_extended(pa_context *c, const char *name, pa_format_info * const * formats, unsigned int n_formats, pa_proplist *p)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 pa_context* pa_stream_get_context(pa_stream *p)
 {
     trace_info("Z %s\n", __func__);
