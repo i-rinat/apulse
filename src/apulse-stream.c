@@ -74,6 +74,8 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     pa_stream          *s = userdata;
     snd_pcm_sframes_t   frame_count;
     size_t              frame_size = pa_frame_size(&s->ss);
+    char                buf[16 * 1024];
+    int                 paused = g_atomic_int_get(&s->paused);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {
         frame_count = snd_pcm_avail(s->ph);
@@ -100,44 +102,56 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     }
 
     if (events & PA_IO_EVENT_OUTPUT) {
-        size_t writable_size = pa_stream_writable_size(s);
+        if (paused) {
+            // client stream is corked. Pass silence to ALSA
+            size_t bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+            memset(buf, 0, bytecnt);
+            snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
+        } else {
+            size_t writable_size = pa_stream_writable_size(s);
 
-        if (s->write_cb && writable_size > 0)
-            s->write_cb(s, writable_size, s->write_cb_userdata);
+            if (s->write_cb && writable_size > 0)
+                s->write_cb(s, writable_size, s->write_cb_userdata);
 
-        void *data = malloc(frame_count * frame_size);
-        size_t bytecnt = ringbuffer_read(s->rb, data, frame_count * frame_size);
+            size_t bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+            bytecnt = ringbuffer_read(s->rb, buf, bytecnt);
 
-        if (bytecnt == 0) {
-            // application is not ready yet, play silence
-            bytecnt = frame_count * frame_size;
-            memset(data, 0, bytecnt);
+            if (bytecnt == 0) {
+                // application is not ready yet, play silence
+                bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+                memset(buf, 0, bytecnt);
+            }
+            snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
         }
-        snd_pcm_writei(s->ph, data, bytecnt / frame_size);
-        free(data);
     }
 
     if (events & PA_IO_EVENT_INPUT) {
-        size_t wsz = ringbuffer_writable_size(s->rb);
+        if (paused) {
+            // client stream is corked. Read data from ALSA and discard them
+            size_t bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+            snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
+        } else {
+            size_t bytecnt = ringbuffer_writable_size(s->rb);
 
-        if (wsz == 0) {
-            // ringbuffer is full, app doesn't read data fast enough. Make some room
-            ringbuffer_drop(s->rb, frame_count * frame_size);
-            wsz = ringbuffer_writable_size(s->rb);
+            if (bytecnt == 0) {
+                // ringbuffer is full because app doesn't read data fast enough.
+                // Make some room
+                ringbuffer_drop(s->rb, frame_count * frame_size);
+                bytecnt = ringbuffer_writable_size(s->rb);
+            }
+
+            bytecnt = MIN(bytecnt, frame_count * frame_size);
+            bytecnt = MIN(bytecnt, sizeof(buf));
+
+            if (bytecnt > 0) {
+                snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
+                ringbuffer_write(s->rb, buf, bytecnt);
+            }
+
+            size_t readable_size = pa_stream_readable_size(s);
+            if (s->read_cb && readable_size > 0)
+                s->read_cb(s, readable_size, s->read_cb_userdata);
         }
-
-        wsz = MIN(wsz, frame_count * frame_size);
-
-        if (wsz > 0) {
-            void *data = malloc(wsz);
-            snd_pcm_readi(s->ph, data, wsz / frame_size);
-            ringbuffer_write(s->rb, data, wsz);
-            free(data);
-        }
-
-        size_t readable_size = pa_stream_readable_size(s);
-        if (s->read_cb && readable_size > 0)
-            s->read_cb(s, readable_size, s->read_cb_userdata);
     }
 }
 
@@ -244,8 +258,7 @@ pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *
     if (do_connect_pcm(s, SND_PCM_STREAM_PLAYBACK) != 0)
         goto err;
 
-    if (flags & PA_STREAM_START_CORKED)
-        snd_pcm_pause(s->ph, 1);
+    g_atomic_int_set(&s->paused, !!(flags & PA_STREAM_START_CORKED));
 
     return 0;
 err:
@@ -258,7 +271,7 @@ pa_stream_cork(pa_stream *s, int b, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info("F %s s=%p, b=%d, cb=%p, userdata=%p\n", __func__, s, b, cb, userdata);
 
-    snd_pcm_pause(s->ph, b);
+    g_atomic_int_set(&s->paused, !!(b));
     return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_CORK, s, GINT_TO_POINTER(b),
                             cb, userdata);
 }

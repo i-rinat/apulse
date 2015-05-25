@@ -120,6 +120,7 @@ struct pa_stream {
     ringbuffer_t           *rb;
     void                   *peek_buffer;
     size_t                  peek_buffer_data_len;
+    volatile int            paused;
 };
 
 struct pa_operation {
