@@ -160,9 +160,14 @@ int
 do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 {
     snd_pcm_hw_params_t *hw_params;
+    snd_pcm_sw_params_t *sw_params;
     int dir;
     unsigned int rate;
     const char *dev_name;
+
+    unsigned int period_time = 20000;
+    unsigned int buffer_time = 80000;
+    snd_pcm_uframes_t period_size = 0;
 
     switch (stream_direction) {
     default:
@@ -187,10 +192,30 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     CHECK_A(snd_pcm_hw_params_set_rate_resample, (s->ph, hw_params, 1));
     CHECK_A(snd_pcm_hw_params_set_rate_near, (s->ph, hw_params, &rate, &dir));
     CHECK_A(snd_pcm_hw_params_set_channels, (s->ph, hw_params, s->ss.channels));
+    CHECK_A(snd_pcm_hw_params_set_buffer_time_near, (s->ph, hw_params, &buffer_time, &dir));
+    CHECK_A(snd_pcm_hw_params_set_period_time_near, (s->ph, hw_params, &period_time, &dir));
+
+    // Try to get a valid value for period_size by any means possible
+    if (snd_pcm_hw_params_get_period_size    (hw_params, &period_size, &dir) < 0
+     && snd_pcm_hw_params_get_period_size_min(hw_params, &period_size, &dir) < 0
+     && snd_pcm_hw_params_get_period_size_max(hw_params, &period_size, &dir) < 0) {
+        trace_error("%s, Cannot find a valid period size!\n", __func__);
+        goto err;
+    }
 
     // Install this hw parameter space
     CHECK_A(snd_pcm_hw_params, (s->ph, hw_params));
     snd_pcm_hw_params_free(hw_params);
+
+    // Prepare sw parameter space
+    CHECK_A(snd_pcm_sw_params_malloc, (&sw_params));
+    CHECK_A(snd_pcm_sw_params_current, (s->ph, sw_params));
+
+    CHECK_A(snd_pcm_sw_params_set_avail_min, (s->ph, sw_params, period_size));
+
+    // Install this sw parameter space
+    CHECK_A(snd_pcm_sw_params, (s->ph, sw_params));
+    snd_pcm_sw_params_free(sw_params);
 
     CHECK_A(snd_pcm_prepare, (s->ph));
 
