@@ -165,6 +165,10 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     unsigned int rate;
     const char *dev_name;
 
+    unsigned int period_time = 20000;
+    unsigned int buffer_time = 80000;
+    snd_pcm_uframes_t period_size = 0;
+
     switch (stream_direction) {
     default:
     case SND_PCM_STREAM_PLAYBACK:
@@ -177,33 +181,39 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
         break;
     }
 
+    // Prepare hw parameter space
     CHECK_A(snd_pcm_hw_params_malloc, (&hw_params));
     CHECK_A(snd_pcm_hw_params_any, (s->ph, hw_params));
+
+    // Set the bare-minimum parameters needed for ALSA to play PA's stream correctly
+    rate = s->ss.rate;
     CHECK_A(snd_pcm_hw_params_set_access, (s->ph, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED));
     CHECK_A(snd_pcm_hw_params_set_format, (s->ph, hw_params, pa_format_to_alsa(s->ss.format)));
     CHECK_A(snd_pcm_hw_params_set_rate_resample, (s->ph, hw_params, 1));
-    rate = s->ss.rate;
-    dir = 0;
     CHECK_A(snd_pcm_hw_params_set_rate_near, (s->ph, hw_params, &rate, &dir));
     CHECK_A(snd_pcm_hw_params_set_channels, (s->ph, hw_params, s->ss.channels));
-
-    unsigned int period_time = 20 * 1000;
-    dir = 1;
-    CHECK_A(snd_pcm_hw_params_set_period_time_near, (s->ph, hw_params, &period_time, &dir));
-    dir = -1;
-    snd_pcm_uframes_t period_size;
-    CHECK_A(snd_pcm_hw_params_get_period_size, (hw_params, &period_size, &dir));
-
-    unsigned int buffer_time = 4 * period_time;
-    dir = 1;
     CHECK_A(snd_pcm_hw_params_set_buffer_time_near, (s->ph, hw_params, &buffer_time, &dir));
+    CHECK_A(snd_pcm_hw_params_set_period_time_near, (s->ph, hw_params, &period_time, &dir));
+
+    // Try to get a valid value for period_size by any means possible
+    if (snd_pcm_hw_params_get_period_size    (hw_params, &period_size, &dir) < 0
+     && snd_pcm_hw_params_get_period_size_min(hw_params, &period_size, &dir) < 0
+     && snd_pcm_hw_params_get_period_size_max(hw_params, &period_size, &dir) < 0) {
+        trace_error("%s, Cannot find a valid period size!\n", __func__);
+        goto err;
+    }
+
+    // Install this hw parameter space
     CHECK_A(snd_pcm_hw_params, (s->ph, hw_params));
     snd_pcm_hw_params_free(hw_params);
 
+    // Prepare sw parameter space
     CHECK_A(snd_pcm_sw_params_malloc, (&sw_params));
     CHECK_A(snd_pcm_sw_params_current, (s->ph, sw_params));
+
     CHECK_A(snd_pcm_sw_params_set_avail_min, (s->ph, sw_params, period_size));
-    // no period event requested
+
+    // Install this sw parameter space
     CHECK_A(snd_pcm_sw_params, (s->ph, sw_params));
     snd_pcm_sw_params_free(sw_params);
 
