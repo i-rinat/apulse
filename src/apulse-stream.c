@@ -190,9 +190,6 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     unsigned int period_time = 20 * 1000;
     dir = 1;
     CHECK_A(snd_pcm_hw_params_set_period_time_near, (s->ph, hw_params, &period_time, &dir));
-    dir = -1;
-    snd_pcm_uframes_t period_size;
-    CHECK_A(snd_pcm_hw_params_get_period_size, (hw_params, &period_size, &dir));
 
     unsigned int buffer_time = 4 * period_time;
     dir = 1;
@@ -202,6 +199,8 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     CHECK_A(snd_pcm_sw_params_malloc, (&sw_params));
     CHECK_A(snd_pcm_sw_params_current, (s->ph, sw_params));
+
+    const snd_pcm_uframes_t period_size = (uint64_t)period_time * rate / (1000 * 1000);
     CHECK_A(snd_pcm_sw_params_set_avail_min, (s->ph, sw_params, period_size));
     // no period event requested
     CHECK_A(snd_pcm_sw_params, (s->ph, sw_params));
