@@ -473,7 +473,7 @@ pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spe
     s->timing_info.configured_source_usec = 0;
     s->timing_info.since_underrun = 0;
 
-    s->rb = ringbuffer_new(50 * 1024);    // TODO: figure out size
+    s->rb = ringbuffer_new(72 * 1024);    // TODO: figure out size
     s->peek_buffer = malloc(s->rb->end - s->rb->start);
 
     return s;
@@ -569,7 +569,19 @@ pa_stream_writable_size(pa_stream *s)
 {
     trace_info("F %s s=%p\n", __func__, s);
 
-    return ringbuffer_writable_size(s->rb);
+    size_t writable_size = ringbuffer_writable_size(s->rb);
+
+    // Some applications try to push more data than reported to be available
+    // by pa_stream_writable_size(), which is fine for original PulseAudio
+    // but is a severe error in this implementation, since buffer size is
+    // limited.
+    //
+    // Workaround issue by reserving certain amount for that case.
+
+    const size_t limit = 16 * 1024; // TODO: adaptive values?
+
+    return writable_size >= limit ? writable_size
+                                  : 0;
 }
 
 APULSE_EXPORT
