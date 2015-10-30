@@ -140,9 +140,13 @@ APULSE_EXPORT
 pa_cvolume *
 pa_cvolume_set(pa_cvolume *a, unsigned channels, pa_volume_t v)
 {
-    trace_info("Z %s a=%p, channels=%u, v=%u\n", __func__, a, channels, v);
+    trace_info("F %s a=%p, channels=%u, v=%u\n", __func__, a, channels, v);
 
-    return NULL;
+    a->channels = MIN(channels, PA_CHANNELS_MAX);
+    for (unsigned int k = 0; k < a->channels; k ++)
+        a->values[k] = CLAMP(v, PA_VOLUME_MUTED, PA_VOLUME_MAX);
+
+    return a;
 }
 
 APULSE_EXPORT
