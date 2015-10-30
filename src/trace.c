@@ -93,6 +93,25 @@ trace_pa_buffer_attr_as_string(const pa_buffer_attr *attr)
     return res;
 }
 
+gchar *
+trace_pa_volume_as_string(const pa_cvolume *v)
+{
+    const unsigned int channel_count = MIN(v->channels, PA_CHANNELS_MAX);
+    GString *s = g_string_new(NULL);
+
+    g_string_append_printf(s, "%d:{", v->channels);
+    for (unsigned int k = 0; k < channel_count ; k ++) {
+        if (k != 0)
+            g_string_append(s, ", ");
+
+        g_string_append_printf(s, "%u", v->values[k]);
+    }
+
+    g_string_append(s, "}");
+
+    return g_string_free(s, FALSE);
+}
+
 void
 trace_lock(void)
 {

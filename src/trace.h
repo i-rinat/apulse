@@ -36,6 +36,9 @@ void    trace_error(const char *fmt, ...) __attribute__((format (printf, 1, 2)))
 gchar *
 trace_pa_buffer_attr_as_string(const pa_buffer_attr *attr);
 
+gchar *
+trace_pa_volume_as_string(const pa_cvolume *v);
+
 void
 trace_lock(void);
 
