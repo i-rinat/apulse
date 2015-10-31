@@ -91,6 +91,11 @@ deh_perform_operation(pa_mainloop_api *api, pa_defer_event *de, void *userdata)
         if (o->cb)
             ((pa_stream_success_cb_t)o->cb)(s, 1, o->cb_userdata);
         break;
+    case PAOP_CONTEXT_SET_SOURCE_VOLUME_BY_INDEX:
+        c = o->obj;
+        if (o->cb)
+            ((pa_context_success_cb_t)o->cb)(c, 1, o->cb_userdata);
+        break;
     default:
         break;
     }

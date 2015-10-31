@@ -44,6 +44,7 @@ enum operation_type_e {
     PAOP_STREAM_TRIGGER,
     PAOP_STREAM_UPD_TIMING_INFO,
     PAOP_CONTEXT_GET_SINK_INFO,
+    PAOP_CONTEXT_SET_SOURCE_VOLUME_BY_INDEX,
 };
 
 struct pa_context {

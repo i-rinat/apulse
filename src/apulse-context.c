@@ -237,7 +237,9 @@ pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx, const pa_cvol
                cb, userdata);
     g_free(s_volume);
 
-    return NULL;
+    // TODO: actually change volume
+    return pa_operation_new(c->mainloop_api, PAOP_CONTEXT_SET_SOURCE_VOLUME_BY_INDEX, c,
+                            NULL, cb, userdata);
 }
 
 APULSE_EXPORT
