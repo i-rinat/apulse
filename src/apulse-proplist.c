@@ -72,6 +72,23 @@ pa_proplist_new(void)
 
 APULSE_EXPORT
 int
+pa_proplist_set(pa_proplist *p, const char *key, const void *data, size_t nbytes)
+{
+    trace_info("F %s p=%p, key=%s, data=%p, nbytes=%d\n", __func__, p, key, data, (int)nbytes);
+
+    struct prop *v = g_slice_alloc(sizeof(*v));
+    if (!v)
+        return -1;
+
+    v->data = g_memdup(data, nbytes);
+    v->len = nbytes;
+
+    g_hash_table_insert(p->ht, strdup(key), v);
+    return 0;
+}
+
+APULSE_EXPORT
+int
 pa_proplist_sets(pa_proplist *p, const char *key, const char *value)
 {
     trace_info("F %s p=%p, key=%s, value=%s\n", __func__, p, key, value);
