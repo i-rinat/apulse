@@ -188,13 +188,6 @@ pa_channel_map* pa_channel_map_init(pa_channel_map *m)
 }
 
 APULSE_EXPORT
-pa_channel_position_t pa_channel_position_from_string(const char *s)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
 const char* pa_channel_position_to_pretty_string(pa_channel_position_t pos)
 {
     trace_info("Z %s\n", __func__);

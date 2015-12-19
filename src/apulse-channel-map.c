@@ -175,6 +175,25 @@ pa_channel_map_valid(const pa_channel_map *map)
 }
 
 APULSE_EXPORT
+pa_channel_position_t
+pa_channel_position_from_string(const char *s)
+{
+    trace_info("F %s s=%s\n", __func__, s);
+
+    if (!s)
+        return PA_CHANNEL_POSITION_INVALID;
+
+    for (unsigned int k = 0; k < PA_CHANNEL_POSITION_MAX; k ++) {
+        if (!channel_name[k])
+            continue;
+        if (strcmp(channel_name[k], s) == 0)
+            return k;
+    }
+
+    return PA_CHANNEL_POSITION_INVALID;
+}
+
+APULSE_EXPORT
 const char *
 pa_channel_position_to_string(pa_channel_position_t pos)
 {
