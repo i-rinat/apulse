@@ -195,13 +195,6 @@ const char* pa_channel_position_to_pretty_string(pa_channel_position_t pos)
 }
 
 APULSE_EXPORT
-pa_channel_map *pa_channel_map_parse(pa_channel_map *map, const char *s)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 int pa_channel_map_equal(const pa_channel_map *a, const pa_channel_map *b)
 {
     trace_info("Z %s\n", __func__);

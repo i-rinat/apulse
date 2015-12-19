@@ -134,6 +134,83 @@ pa_channel_map_compatible(const pa_channel_map *map, const pa_sample_spec *ss)
 }
 
 APULSE_EXPORT
+pa_channel_map *
+pa_channel_map_parse(pa_channel_map *map, const char *s)
+{
+    trace_info("F %s map=%p, s=%s\n", __func__, map, s);
+
+    pa_channel_map m = {};
+
+    if (strcmp(s, "stereo") == 0) {
+        m.channels = 2;
+        m.map[0] = PA_CHANNEL_POSITION_LEFT;
+        m.map[1] = PA_CHANNEL_POSITION_RIGHT;
+    } else if (strcmp(s, "surround-21") == 0) {
+        m.channels = 3;
+        m.map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m.map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m.map[2] = PA_CHANNEL_POSITION_LFE;
+    } else if (strcmp(s, "surround-40") == 0) {
+        m.channels = 4;
+        m.map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m.map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m.map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+        m.map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+    } else if (strcmp(s, "surround-41") == 0) {
+        m.channels = 5;
+        m.map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m.map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m.map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+        m.map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+        m.map[4] = PA_CHANNEL_POSITION_LFE;
+    } else if (strcmp(s, "surround-50") == 0) {
+        m.channels = 5;
+        m.map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m.map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m.map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+        m.map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+        m.map[4] = PA_CHANNEL_POSITION_FRONT_CENTER;
+    } else if (strcmp(s, "surround-51") == 0) {
+        m.channels = 6;
+        m.map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m.map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m.map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+        m.map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+        m.map[4] = PA_CHANNEL_POSITION_FRONT_CENTER;
+        m.map[5] = PA_CHANNEL_POSITION_LFE;
+    } else if (strcmp(s, "surround-51") == 0) {
+        m.channels = 8;
+        m.map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m.map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m.map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+        m.map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+        m.map[4] = PA_CHANNEL_POSITION_FRONT_CENTER;
+        m.map[5] = PA_CHANNEL_POSITION_LFE;
+        m.map[6] = PA_CHANNEL_POSITION_SIDE_LEFT;
+        m.map[7] = PA_CHANNEL_POSITION_SIDE_RIGHT;
+    }
+
+    if (m.channels > 0) {
+        // it was one of the predefined setups above
+        *map = m;
+        return map;
+    }
+
+    char **p = g_strsplit(s, ",", PA_CHANNELS_MAX);
+
+    int k = 0;
+    while (k < PA_CHANNELS_MAX && p[k]) {
+        m.channels = k + 1;
+        m.map[k] = pa_channel_position_from_string(p[k]);
+        k ++;
+    }
+
+    g_strfreev(p);
+    *map = m;
+    return map;
+}
+
+APULSE_EXPORT
 char *
 pa_channel_map_snprint(char *s, size_t l, const pa_channel_map *map)
 {
