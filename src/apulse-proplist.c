@@ -26,6 +26,11 @@
 #include "trace.h"
 
 
+struct prop {
+    size_t  len;
+    char   *data;
+};
+
 APULSE_EXPORT
 void
 pa_proplist_free(pa_proplist* p)
@@ -43,6 +48,16 @@ string_destroy_func(gpointer data)
     free(data);
 }
 
+static
+void
+prop_destroy_func(gpointer data)
+{
+    struct prop *p = data;
+
+    free(p->data);
+    g_slice_free1(sizeof(*p), p);
+}
+
 APULSE_EXPORT
 pa_proplist *
 pa_proplist_new(void)
@@ -51,7 +66,7 @@ pa_proplist_new(void)
 
     pa_proplist *p = calloc(1, sizeof(pa_proplist));
     p->ht = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                  string_destroy_func, string_destroy_func);
+                                  string_destroy_func, prop_destroy_func);
     return p;
 }
 
@@ -61,7 +76,13 @@ pa_proplist_sets(pa_proplist *p, const char *key, const char *value)
 {
     trace_info("F %s p=%p, key=%s, value=%s\n", __func__, p, key, value);
 
-    g_hash_table_insert(p->ht, strdup(key), strdup(value));
+    struct prop *v = g_slice_alloc(sizeof(*v));
+    if (!v)
+        return -1;
+    v->data = strdup(value);
+    v->len = strlen(value) + 1;
+
+    g_hash_table_insert(p->ht, strdup(key), v);
     return 0;
 }
 
@@ -93,5 +114,17 @@ const char *
 pa_proplist_gets(pa_proplist *p, const char *key)
 {
     trace_info("F %s p=%p, key=%s\n", __func__, p, key);
-    return g_hash_table_lookup(p->ht, key);
+
+    struct prop *v = g_hash_table_lookup(p->ht, key);
+
+    if (!v)
+        return NULL;
+
+    if (v->len == 0)
+        return NULL;
+
+    if (v->data[v->len - 1] != '\0')
+        return NULL; // not a string
+
+    return v->data;
 }
