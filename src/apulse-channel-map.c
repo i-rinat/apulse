@@ -25,6 +25,59 @@
 #include "apulse.h"
 #include "trace.h"
 
+static const char *channel_name[PA_CHANNEL_POSITION_MAX] = {
+    [PA_CHANNEL_POSITION_MONO] = "mono",
+    [PA_CHANNEL_POSITION_FRONT_CENTER] = "front-center",
+    [PA_CHANNEL_POSITION_FRONT_LEFT] = "front-left",
+    [PA_CHANNEL_POSITION_FRONT_RIGHT] = "front-right",
+    [PA_CHANNEL_POSITION_REAR_CENTER] = "rear-center",
+    [PA_CHANNEL_POSITION_REAR_LEFT] = "rear-left",
+    [PA_CHANNEL_POSITION_REAR_RIGHT] = "rear-right",
+    [PA_CHANNEL_POSITION_LFE] = "lfe",
+    [PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER] = "front-left-of-center",
+    [PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER] = "front-right-of-center",
+    [PA_CHANNEL_POSITION_SIDE_LEFT] = "side-left",
+    [PA_CHANNEL_POSITION_SIDE_RIGHT] = "side-right",
+    [PA_CHANNEL_POSITION_AUX0] = "aux0",
+    [PA_CHANNEL_POSITION_AUX1] = "aux1",
+    [PA_CHANNEL_POSITION_AUX2] = "aux2",
+    [PA_CHANNEL_POSITION_AUX3] = "aux3",
+    [PA_CHANNEL_POSITION_AUX4] = "aux4",
+    [PA_CHANNEL_POSITION_AUX5] = "aux5",
+    [PA_CHANNEL_POSITION_AUX6] = "aux6",
+    [PA_CHANNEL_POSITION_AUX7] = "aux7",
+    [PA_CHANNEL_POSITION_AUX8] = "aux8",
+    [PA_CHANNEL_POSITION_AUX9] = "aux9",
+    [PA_CHANNEL_POSITION_AUX10] = "aux10",
+    [PA_CHANNEL_POSITION_AUX11] = "aux11",
+    [PA_CHANNEL_POSITION_AUX12] = "aux12",
+    [PA_CHANNEL_POSITION_AUX13] = "aux13",
+    [PA_CHANNEL_POSITION_AUX14] = "aux14",
+    [PA_CHANNEL_POSITION_AUX15] = "aux15",
+    [PA_CHANNEL_POSITION_AUX16] = "aux16",
+    [PA_CHANNEL_POSITION_AUX17] = "aux17",
+    [PA_CHANNEL_POSITION_AUX18] = "aux18",
+    [PA_CHANNEL_POSITION_AUX19] = "aux19",
+    [PA_CHANNEL_POSITION_AUX20] = "aux20",
+    [PA_CHANNEL_POSITION_AUX21] = "aux21",
+    [PA_CHANNEL_POSITION_AUX22] = "aux22",
+    [PA_CHANNEL_POSITION_AUX23] = "aux23",
+    [PA_CHANNEL_POSITION_AUX24] = "aux24",
+    [PA_CHANNEL_POSITION_AUX25] = "aux25",
+    [PA_CHANNEL_POSITION_AUX26] = "aux26",
+    [PA_CHANNEL_POSITION_AUX27] = "aux27",
+    [PA_CHANNEL_POSITION_AUX28] = "aux28",
+    [PA_CHANNEL_POSITION_AUX29] = "aux29",
+    [PA_CHANNEL_POSITION_AUX30] = "aux30",
+    [PA_CHANNEL_POSITION_AUX31] = "aux31",
+    [PA_CHANNEL_POSITION_TOP_CENTER] = "top-center",
+    [PA_CHANNEL_POSITION_TOP_FRONT_CENTER] = "top-front-center",
+    [PA_CHANNEL_POSITION_TOP_FRONT_LEFT] = "top-front-left",
+    [PA_CHANNEL_POSITION_TOP_FRONT_RIGHT] = "top-front-right",
+    [PA_CHANNEL_POSITION_TOP_REAR_CENTER] = "top-rear-center",
+    [PA_CHANNEL_POSITION_TOP_REAR_LEFT] = "top-rear-left",
+    [PA_CHANNEL_POSITION_TOP_REAR_RIGHT] = "top-rear-right",
+};
 
 APULSE_EXPORT
 pa_channel_map *
@@ -127,58 +180,12 @@ pa_channel_position_to_string(pa_channel_position_t pos)
 {
     trace_info("F %s pos=%u\n", __func__, pos);
 
-    switch (pos) {
-    case PA_CHANNEL_POSITION_MONO:                  return "mono";
-    case PA_CHANNEL_POSITION_FRONT_CENTER:          return "front-center";
-    case PA_CHANNEL_POSITION_FRONT_LEFT:            return "front-left";
-    case PA_CHANNEL_POSITION_FRONT_RIGHT:           return "front-right";
-    case PA_CHANNEL_POSITION_REAR_CENTER:           return "rear-center";
-    case PA_CHANNEL_POSITION_REAR_LEFT:             return "rear-left";
-    case PA_CHANNEL_POSITION_REAR_RIGHT:            return "rear-right";
-    case PA_CHANNEL_POSITION_LFE:                   return "lfe";
-    case PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER:  return "front-left-of-center";
-    case PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER: return "front-right-of-center";
-    case PA_CHANNEL_POSITION_SIDE_LEFT:             return "side-left";
-    case PA_CHANNEL_POSITION_SIDE_RIGHT:            return "side-right";
-    case PA_CHANNEL_POSITION_AUX0:                  return "aux0";
-    case PA_CHANNEL_POSITION_AUX1:                  return "aux1";
-    case PA_CHANNEL_POSITION_AUX2:                  return "aux2";
-    case PA_CHANNEL_POSITION_AUX3:                  return "aux3";
-    case PA_CHANNEL_POSITION_AUX4:                  return "aux4";
-    case PA_CHANNEL_POSITION_AUX5:                  return "aux5";
-    case PA_CHANNEL_POSITION_AUX6:                  return "aux6";
-    case PA_CHANNEL_POSITION_AUX7:                  return "aux7";
-    case PA_CHANNEL_POSITION_AUX8:                  return "aux8";
-    case PA_CHANNEL_POSITION_AUX9:                  return "aux9";
-    case PA_CHANNEL_POSITION_AUX10:                 return "aux10";
-    case PA_CHANNEL_POSITION_AUX11:                 return "aux11";
-    case PA_CHANNEL_POSITION_AUX12:                 return "aux12";
-    case PA_CHANNEL_POSITION_AUX13:                 return "aux13";
-    case PA_CHANNEL_POSITION_AUX14:                 return "aux14";
-    case PA_CHANNEL_POSITION_AUX15:                 return "aux15";
-    case PA_CHANNEL_POSITION_AUX16:                 return "aux16";
-    case PA_CHANNEL_POSITION_AUX17:                 return "aux17";
-    case PA_CHANNEL_POSITION_AUX18:                 return "aux18";
-    case PA_CHANNEL_POSITION_AUX19:                 return "aux19";
-    case PA_CHANNEL_POSITION_AUX20:                 return "aux20";
-    case PA_CHANNEL_POSITION_AUX21:                 return "aux21";
-    case PA_CHANNEL_POSITION_AUX22:                 return "aux22";
-    case PA_CHANNEL_POSITION_AUX23:                 return "aux23";
-    case PA_CHANNEL_POSITION_AUX24:                 return "aux24";
-    case PA_CHANNEL_POSITION_AUX25:                 return "aux25";
-    case PA_CHANNEL_POSITION_AUX26:                 return "aux26";
-    case PA_CHANNEL_POSITION_AUX27:                 return "aux27";
-    case PA_CHANNEL_POSITION_AUX28:                 return "aux28";
-    case PA_CHANNEL_POSITION_AUX29:                 return "aux29";
-    case PA_CHANNEL_POSITION_AUX30:                 return "aux30";
-    case PA_CHANNEL_POSITION_AUX31:                 return "aux31";
-    case PA_CHANNEL_POSITION_TOP_CENTER:            return "top-center";
-    case PA_CHANNEL_POSITION_TOP_FRONT_CENTER:      return "top-front-center";
-    case PA_CHANNEL_POSITION_TOP_FRONT_LEFT:        return "top-front-left";
-    case PA_CHANNEL_POSITION_TOP_FRONT_RIGHT:       return "top-front-right";
-    case PA_CHANNEL_POSITION_TOP_REAR_CENTER:       return "top-rear-center";
-    case PA_CHANNEL_POSITION_TOP_REAR_LEFT:         return "top-rear-left";
-    case PA_CHANNEL_POSITION_TOP_REAR_RIGHT:        return "top-rear-right";
-    default:                                        return "unknown";
-    }
+    if (pos < 0 || pos >= PA_CHANNEL_POSITION_MAX)
+        return "unknown";
+
+    const char *s = channel_name[pos];
+    if (!s)
+        return "unknown";
+
+    return s;
 }
