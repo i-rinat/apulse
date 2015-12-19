@@ -788,20 +788,6 @@ pa_context* pa_stream_get_context(pa_stream *p)
 }
 
 APULSE_EXPORT
-int pa_stream_begin_write(pa_stream *p, void **data, size_t *nbytes)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
-int pa_stream_cancel_write(pa_stream *p)
-{
-    trace_info("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
 void pa_stream_set_overflow_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
 {
     trace_info("Z %s\n", __func__);

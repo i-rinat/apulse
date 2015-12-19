@@ -234,6 +234,39 @@ err:
 
 APULSE_EXPORT
 int
+pa_stream_begin_write(pa_stream *p, void **data, size_t *nbytes)
+{
+    trace_info("F %s p=%p\n", __func__, p);
+
+    free(p->write_buffer);
+
+    if (*nbytes == (size_t)-1)
+        *nbytes = 8192;
+
+    p->write_buffer = malloc(*nbytes);
+
+    if (!p->write_buffer)
+        return -1;
+
+    *data = p->write_buffer;
+
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_stream_cancel_write(pa_stream *p)
+{
+    trace_info("F %s p=%p\n", __func__, p);
+
+    free(p->write_buffer);
+    p->write_buffer = NULL;
+
+    return 0;
+}
+
+APULSE_EXPORT
+int
 pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *attr,
                            pa_stream_flags_t flags, const pa_cvolume *volume,
                            pa_stream *sync_stream)
@@ -549,6 +582,7 @@ pa_stream_unref(pa_stream *s)
         g_hash_table_remove(s->c->streams_ht, GINT_TO_POINTER(s->idx));
         ringbuffer_free(s->rb);
         free(s->peek_buffer);
+        free(s->write_buffer);
         free(s->name);
         free(s);
     }
@@ -608,8 +642,14 @@ pa_stream_write(pa_stream *s, const void *data, size_t nbytes, pa_free_cb_t free
     size_t written = ringbuffer_write(s->rb, data, nbytes);
     s->timing_info.since_underrun += written;
     s->timing_info.write_index += written;
-    if (free_cb)
-        free_cb((void *)data);
+
+    if (data == s->write_buffer) {
+        free(s->write_buffer);
+        s->write_buffer = NULL;
+    } else {
+        if (free_cb)
+            free_cb((void *)data);
+    }
 
     return 0;
 }
