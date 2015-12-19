@@ -674,6 +674,14 @@ pa_stream_get_device_index(pa_stream *s)
 }
 
 APULSE_EXPORT
+const char *
+pa_stream_get_device_name(pa_stream *s)
+{
+    trace_info("F %s s=%p\n", __func__, s);
+    return "apulse";
+}
+
+APULSE_EXPORT
 int
 pa_stream_peek(pa_stream *s, const void **data, size_t *nbytes)
 {

@@ -809,13 +809,6 @@ pa_context* pa_stream_get_context(pa_stream *p)
 }
 
 APULSE_EXPORT
-const char *pa_stream_get_device_name(pa_stream *s)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 int pa_stream_begin_write(pa_stream *p, void **data, size_t *nbytes)
 {
     trace_info("Z %s\n", __func__);
