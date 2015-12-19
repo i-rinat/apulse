@@ -1466,13 +1466,6 @@ char *pa_get_home_dir(char *s, size_t l)
 }
 
 APULSE_EXPORT
-char *pa_get_binary_name(char *s, size_t l)
-{
-    trace_info("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 int pa_msleep(unsigned long t)
 {
     trace_info("Z %s\n", __func__);

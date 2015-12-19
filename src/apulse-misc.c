@@ -238,3 +238,33 @@ pa_locale_to_utf8(const char *str)
 
     return strdup(str);
 }
+
+APULSE_EXPORT
+char *
+pa_get_binary_name(char *s, size_t len)
+{
+    trace_info("F %s s=%p, len=%d\n", __func__, s, (int)len);
+
+    if (len == 0)
+        return NULL;
+
+    char fullpath[PATH_MAX];
+    ssize_t flen = readlink("/proc/self/exe", fullpath, sizeof(fullpath) - 1);
+
+    if (flen < 0)
+        return NULL;
+
+    // ensure fullpath ends with '\0'
+    flen = MIN(flen, sizeof(fullpath) - 1);
+    fullpath[flen] = 0;
+
+    char *name = basename(fullpath);
+    size_t name_len = strlen(name);
+
+    // copy no more than len bytes to s
+    name_len = MIN(name_len, len - 1);
+    memcpy(s, name, name_len);
+    s[name_len] = 0;
+
+    return s;
+}
