@@ -26,6 +26,9 @@
 #include "trace.h"
 #include "util.h"
 
+#define MAKE_SND_LIB_VERSION(a,b,c)  (((a)<<16)|((b)<<8)|(c))
+
+#define HAVE_SND_PCM_AVAIL  SND_LIB_VERSION >= MAKE_SND_LIB_VERSION(1, 0, 18)
 
 #define CHECK_A(funcname, params)                                           \
     do {                                                                    \
@@ -78,7 +81,14 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     int                 paused = g_atomic_int_get(&s->paused);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {
+
+#if HAVE_SND_PCM_AVAIL
         frame_count = snd_pcm_avail(s->ph);
+#else
+        snd_pcm_hwsync(s->ph);
+        frame_count = snd_pcm_avail_update(s->ph);
+#endif
+
         if (frame_count < 0) {
             if (frame_count == -EBADFD) {
                 // stream was closed
@@ -90,7 +100,14 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
                 cnt ++;
                 ret = snd_pcm_recover(s->ph, frame_count, 1);
             } while (ret == -1 && errno == EINTR && cnt < 5);
+
+#if HAVE_SND_PCM_AVAIL
             frame_count = snd_pcm_avail(s->ph);
+#else
+            snd_pcm_hwsync(s->ph);
+            frame_count = snd_pcm_avail_update(s->ph);
+#endif
+
             if (frame_count < 0) {
                 trace_error("%s, can't recover after failed snd_pcm_avail (%d)\n", __func__,
                             (int)frame_count);
