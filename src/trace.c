@@ -36,7 +36,6 @@ static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 void
 trace_info(const char *fmt, ...)
 {
-#ifdef WITH_TRACE
     pthread_mutex_lock(&lock);
     va_list args;
     struct timeval tv;
@@ -46,7 +45,6 @@ trace_info(const char *fmt, ...)
     vfprintf(stdout, fmt, args);
     va_end(args);
     pthread_mutex_unlock(&lock);
-#endif
 }
 
 void

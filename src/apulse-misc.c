@@ -31,7 +31,7 @@ APULSE_EXPORT
 const char *
 pa_get_library_version(void)
 {
-    trace_info("F %s (void)\n", __func__);
+    trace_info_f("F %s (void)\n", __func__);
 
     return pa_get_headers_version();
 }
@@ -70,7 +70,7 @@ APULSE_EXPORT
 const char *
 pa_strerror(int error)
 {
-    trace_info("P %s error=%d\n", __func__, error);
+    trace_info_f("P %s error=%d\n", __func__, error);
 
     return "Oops.";
 }
@@ -140,7 +140,7 @@ APULSE_EXPORT
 pa_cvolume *
 pa_cvolume_set(pa_cvolume *a, unsigned channels, pa_volume_t v)
 {
-    trace_info("F %s a=%p, channels=%u, v=%u\n", __func__, a, channels, v);
+    trace_info_f("F %s a=%p, channels=%u, v=%u\n", __func__, a, channels, v);
 
     a->channels = MIN(channels, PA_CHANNELS_MAX);
     for (unsigned int k = 0; k < a->channels; k ++)
@@ -153,7 +153,7 @@ APULSE_EXPORT
 pa_volume_t
 pa_cvolume_avg(const pa_cvolume *a)
 {
-    trace_info("Z %s a=%p\n", __func__, a);
+    trace_info_z("Z %s a=%p\n", __func__, a);
 
     return 0;
 }
@@ -184,7 +184,7 @@ APULSE_EXPORT
 char *
 pa_sample_spec_snprint(char *s, size_t l, const pa_sample_spec *spec)
 {
-    trace_info("F %s s=%p, l=%u, spec=%p\n", __func__, s, (unsigned)l, spec);
+    trace_info_f("F %s s=%p, l=%u, spec=%p\n", __func__, s, (unsigned)l, spec);
 
     if (spec && pa_sample_spec_valid(spec)) {
         snprintf(s, l, "%s %uch %uHz", pa_sample_format_to_string(spec->format), spec->channels,
@@ -234,7 +234,7 @@ APULSE_EXPORT
 char *
 pa_locale_to_utf8(const char *str)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 
     return strdup(str);
 }
@@ -243,7 +243,7 @@ APULSE_EXPORT
 char *
 pa_get_binary_name(char *s, size_t len)
 {
-    trace_info("F %s s=%p, len=%d\n", __func__, s, (int)len);
+    trace_info_f("F %s s=%p, len=%d\n", __func__, s, (int)len);
 
     if (len == 0)
         return NULL;

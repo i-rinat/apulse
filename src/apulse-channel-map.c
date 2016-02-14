@@ -83,7 +83,7 @@ APULSE_EXPORT
 pa_channel_map *
 pa_channel_map_init_auto(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def)
 {
-    trace_info("Z %s m=%p, channels=%u, def=%u\n", __func__, m, channels, def);
+    trace_info_z("Z %s m=%p, channels=%u, def=%u\n", __func__, m, channels, def);
 
     return NULL;
 }
@@ -92,7 +92,7 @@ APULSE_EXPORT
 pa_channel_map *
 pa_channel_map_init_mono(pa_channel_map *m)
 {
-    trace_info("F %s\n", __func__);
+    trace_info_f("F %s\n", __func__);
 
     pa_channel_map *cm = calloc(1, sizeof(pa_channel_map));
     cm->channels = 1;
@@ -105,7 +105,7 @@ APULSE_EXPORT
 pa_channel_map *
 pa_channel_map_init_stereo(pa_channel_map *m)
 {
-    trace_info("F %s\n", __func__);
+    trace_info_f("F %s\n", __func__);
 
     pa_channel_map *cm = calloc(1, sizeof(pa_channel_map));
     cm->channels = 2;
@@ -119,7 +119,7 @@ APULSE_EXPORT
 pa_channel_map *
 pa_channel_map_init_extend(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 
     return NULL;
 }
@@ -128,7 +128,7 @@ APULSE_EXPORT
 int
 pa_channel_map_compatible(const pa_channel_map *map, const pa_sample_spec *ss)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 
     return 1;
 }
@@ -137,7 +137,7 @@ APULSE_EXPORT
 pa_channel_map *
 pa_channel_map_parse(pa_channel_map *map, const char *s)
 {
-    trace_info("F %s map=%p, s=%s\n", __func__, map, s);
+    trace_info_f("F %s map=%p, s=%s\n", __func__, map, s);
 
     pa_channel_map m = {};
 
@@ -214,7 +214,7 @@ APULSE_EXPORT
 char *
 pa_channel_map_snprint(char *s, size_t l, const pa_channel_map *map)
 {
-    trace_info("F %s s=%p, l=%d, map=%p\n", __func__, s, (int)l, map);
+    trace_info_f("F %s s=%p, l=%d, map=%p\n", __func__, s, (int)l, map);
     char *ptr = s;
 
     if (!pa_channel_map_valid(map)) {
@@ -236,7 +236,7 @@ APULSE_EXPORT
 int
 pa_channel_map_valid(const pa_channel_map *map)
 {
-    trace_info("F %s map=%p\n", __func__, map);
+    trace_info_f("F %s map=%p\n", __func__, map);
 
     const int channel_count_valid = (0 < map->channels && map->channels <= PA_CHANNELS_MAX);
     if (!channel_count_valid)
@@ -255,7 +255,7 @@ APULSE_EXPORT
 pa_channel_position_t
 pa_channel_position_from_string(const char *s)
 {
-    trace_info("F %s s=%s\n", __func__, s);
+    trace_info_f("F %s s=%s\n", __func__, s);
 
     if (!s)
         return PA_CHANNEL_POSITION_INVALID;
@@ -274,7 +274,7 @@ APULSE_EXPORT
 const char *
 pa_channel_position_to_string(pa_channel_position_t pos)
 {
-    trace_info("F %s pos=%u\n", __func__, pos);
+    trace_info_f("F %s pos=%u\n", __func__, pos);
 
     if (pos < 0 || pos >= PA_CHANNEL_POSITION_MAX)
         return "unknown";

@@ -53,7 +53,7 @@ static
 void
 ml_api_defer_enable(pa_defer_event *e, int b)
 {
-    trace_info("F %s\n", __func__);
+    trace_info_f("F %s\n", __func__);
 
     e->enabled = b;
 }
@@ -62,7 +62,7 @@ static
 void
 ml_api_defer_free(pa_defer_event *e)
 {
-    trace_info("F %s\n", __func__);
+    trace_info_f("F %s\n", __func__);
 
     pa_mainloop *ml = e->mainloop;
     g_queue_remove(ml->queue, e);
@@ -74,7 +74,7 @@ static
 pa_defer_event *
 ml_api_defer_new(pa_mainloop_api *a, pa_defer_event_cb_t cb, void *userdata)
 {
-    trace_info("F %s\n", __func__);
+    trace_info_f("F %s\n", __func__);
 
     pa_mainloop *ml = a->userdata;
     pa_defer_event *de = g_slice_new0(pa_defer_event);
@@ -92,21 +92,21 @@ static
 void
 ml_api_defer_set_destroy(pa_defer_event *e, pa_defer_event_destroy_cb_t cb)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 static
 void
 ml_api_io_enable(pa_io_event *e, pa_io_event_flags_t events)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 static
 void
 ml_api_io_free(pa_io_event *e)
 {
-    trace_info("F %s e=%p\n", __func__, e);
+    trace_info_f("F %s e=%p\n", __func__, e);
 
     pa_mainloop *ml = e->mainloop;
     g_hash_table_remove(ml->events_ht, e);
@@ -120,7 +120,7 @@ pa_io_event *
 ml_api_io_new(pa_mainloop_api *a, int fd, pa_io_event_flags_t events, pa_io_event_cb_t cb,
               void *userdata)
 {
-    trace_info("F %s a=%p, fd=%d, events=0x%x, cb=%p, userdata=%p\n", __func__, a, fd, events,
+    trace_info_f("F %s a=%p, fd=%d, events=0x%x, cb=%p, userdata=%p\n", __func__, a, fd, events,
                cb, userdata);
 
     pa_mainloop *ml = a->userdata;
@@ -144,28 +144,28 @@ static
 void
 ml_api_io_set_destroy(pa_io_event *e, pa_io_event_destroy_cb_t cb)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 static
 void
 ml_api_quit(pa_mainloop_api *a, int retval)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 static
 void
 ml_api_time_free(pa_time_event* e)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 static
 pa_time_event *
 ml_api_time_new(pa_mainloop_api *a, const struct timeval *tv, pa_time_event_cb_t cb, void *userdata)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 
     return NULL;
 }
@@ -174,14 +174,14 @@ static
 void
 ml_api_time_restart(pa_time_event* e, const struct timeval *tv)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 static
 void
 ml_api_time_set_destroy(pa_time_event *e, pa_time_event_destroy_cb_t cb)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 static
@@ -206,7 +206,7 @@ APULSE_EXPORT
 int
 pa_mainloop_dispatch(pa_mainloop *m)
 {
-    trace_info("F %s m=%p\n", __func__, m);
+    trace_info_f("F %s m=%p\n", __func__, m);
 
     int cnt = 0;
     GList *keys = g_hash_table_get_keys(m->events_ht);
@@ -263,7 +263,7 @@ APULSE_EXPORT
 void
 pa_mainloop_free(pa_mainloop *m)
 {
-    trace_info("F %s m=%p\n", __func__, m);
+    trace_info_f("F %s m=%p\n", __func__, m);
 
     g_queue_free(m->queue);
     g_hash_table_unref(m->events_ht);
@@ -276,7 +276,7 @@ APULSE_EXPORT
 pa_mainloop_api *
 pa_mainloop_get_api(pa_mainloop *m)
 {
-    trace_info("F %s m=%p\n", __func__, m);
+    trace_info_f("F %s m=%p\n", __func__, m);
 
     return &m->api;
 }
@@ -285,7 +285,7 @@ APULSE_EXPORT
 int
 pa_mainloop_get_retval(pa_mainloop *m)
 {
-    trace_info("F %s m=%p\n", __func__, m);
+    trace_info_f("F %s m=%p\n", __func__, m);
 
     return m->retval;
 }
@@ -294,7 +294,7 @@ APULSE_EXPORT
 int
 pa_mainloop_iterate(pa_mainloop *m, int block, int *retval)
 {
-    trace_info("F %s m=%p, block=%d\n", __func__, m, block);
+    trace_info_f("F %s m=%p, block=%d\n", __func__, m, block);
 
     int err;
     int timeout = block ? -1 : 0;
@@ -324,7 +324,7 @@ APULSE_EXPORT
 pa_mainloop *
 pa_mainloop_new(void)
 {
-    trace_info("F %s (void)\n", __func__);
+    trace_info_f("F %s (void)\n", __func__);
 
     pa_mainloop *m = calloc(1, sizeof(pa_mainloop));
 
@@ -358,7 +358,7 @@ APULSE_EXPORT
 int
 pa_mainloop_poll(pa_mainloop *m)
 {
-    trace_info("F %s m=%p\n", __func__, m);
+    trace_info_f("F %s m=%p\n", __func__, m);
 
     int ret;
     if (m->poll_func) {
@@ -374,7 +374,7 @@ APULSE_EXPORT
 int
 pa_mainloop_prepare(pa_mainloop *m, int timeout)
 {
-    trace_info("P %s m=%p, timeout=%d\n", __func__, m, timeout);
+    trace_info_f("P %s m=%p, timeout=%d\n", __func__, m, timeout);
 
     m->timeout = timeout;
     if (m->recreate_fds) {
@@ -436,7 +436,7 @@ APULSE_EXPORT
 void
 pa_mainloop_quit(pa_mainloop *m, int r)
 {
-    trace_info("F %s m=%p, r=%d\n", __func__, m, r);
+    trace_info_f("F %s m=%p, r=%d\n", __func__, m, r);
 
     m->retval = r;
     m->terminate = 1;
@@ -447,7 +447,7 @@ APULSE_EXPORT
 int
 pa_mainloop_run(pa_mainloop *m, int *retval)
 {
-    trace_info("F %s\n", __func__);
+    trace_info_f("F %s\n", __func__);
 
     int ret;
     do {
@@ -466,7 +466,7 @@ APULSE_EXPORT
 void
 pa_mainloop_set_poll_func(pa_mainloop *m, pa_poll_func poll_func, void *userdata)
 {
-    trace_info("F %s m=%p, poll_func=%p, userdata=%p\n", __func__, m, poll_func, userdata);
+    trace_info_f("F %s m=%p, poll_func=%p, userdata=%p\n", __func__, m, poll_func, userdata);
 
     m->poll_func = poll_func;
     m->poll_func_userdata = userdata;
@@ -476,7 +476,7 @@ APULSE_EXPORT
 void
 pa_mainloop_wakeup(pa_mainloop *m)
 {
-    trace_info("F %s m=%p\n", __func__, m);
+    trace_info_f("F %s m=%p\n", __func__, m);
 
     char c = '!';
     write(m->wakeup_pipe[1], &c, 1);

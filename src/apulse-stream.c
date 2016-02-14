@@ -253,7 +253,7 @@ APULSE_EXPORT
 int
 pa_stream_begin_write(pa_stream *p, void **data, size_t *nbytes)
 {
-    trace_info("F %s p=%p\n", __func__, p);
+    trace_info_f("F %s p=%p\n", __func__, p);
 
     free(p->write_buffer);
 
@@ -274,7 +274,7 @@ APULSE_EXPORT
 int
 pa_stream_cancel_write(pa_stream *p)
 {
-    trace_info("F %s p=%p\n", __func__, p);
+    trace_info_f("F %s p=%p\n", __func__, p);
 
     free(p->write_buffer);
     p->write_buffer = NULL;
@@ -289,7 +289,7 @@ pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *
                            pa_stream *sync_stream)
 {
     gchar *s_attr = trace_pa_buffer_attr_as_string(attr);
-    trace_info("P %s s=%p, dev=%s, attr=%s, flags=0x%x, volume=%p, sync_stream=%p\n", __func__,
+    trace_info_f("P %s s=%p, dev=%s, attr=%s, flags=0x%x, volume=%p, sync_stream=%p\n", __func__,
                s, dev, s_attr, flags, volume, sync_stream);
     g_free(s_attr);
 
@@ -318,7 +318,7 @@ APULSE_EXPORT
 pa_operation *
 pa_stream_cork(pa_stream *s, int b, pa_stream_success_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, b=%d, cb=%p, userdata=%p\n", __func__, s, b, cb, userdata);
+    trace_info_f("F %s s=%p, b=%d, cb=%p, userdata=%p\n", __func__, s, b, cb, userdata);
 
     g_atomic_int_set(&s->paused, !!(b));
     return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_CORK, s, GINT_TO_POINTER(b),
@@ -329,7 +329,7 @@ APULSE_EXPORT
 int
 pa_stream_disconnect(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     for (int k = 0; k < s->nioe; k ++) {
         pa_mainloop_api *api = s->c->mainloop_api;
@@ -347,7 +347,7 @@ APULSE_EXPORT
 pa_operation *
 pa_stream_drain(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     snd_pcm_drain(s->ph);
     return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_DRAIN, s, NULL, cb, userdata);
@@ -357,7 +357,7 @@ APULSE_EXPORT
 pa_operation *
 pa_stream_flush(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     // TODO: is it ok to do nothing?
     return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_FLUSH, s, NULL, cb, userdata);
@@ -367,7 +367,7 @@ APULSE_EXPORT
 uint32_t
 pa_stream_get_index(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     return s->idx;
 }
@@ -376,7 +376,7 @@ APULSE_EXPORT
 int
 pa_stream_get_latency(pa_stream *s, pa_usec_t *r_usec, int *negative)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     snd_pcm_sframes_t delay;
 
@@ -394,7 +394,7 @@ APULSE_EXPORT
 const pa_sample_spec *
 pa_stream_get_sample_spec(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     return &s->ss;
 }
@@ -403,7 +403,7 @@ APULSE_EXPORT
 pa_stream_state_t
 pa_stream_get_state(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     return s->state;
 }
@@ -412,7 +412,7 @@ APULSE_EXPORT
 const pa_timing_info *
 pa_stream_get_timing_info(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     snd_pcm_sframes_t delay;
 
@@ -427,7 +427,7 @@ APULSE_EXPORT
 int
 pa_stream_is_corked(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
     return g_atomic_int_get(&s->paused);
 }
 
@@ -435,7 +435,7 @@ APULSE_EXPORT
 int
 pa_stream_is_suspended(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
     // ALSA sink is never suspended
     return 0;
 }
@@ -444,7 +444,7 @@ APULSE_EXPORT
 pa_stream *
 pa_stream_new(pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map)
 {
-    trace_info("F %s c=%p, name=%s, ss=%p, map=%p\n", __func__, c, name, ss, map);
+    trace_info_f("F %s c=%p, name=%s, ss=%p, map=%p\n", __func__, c, name, ss, map);
 
     pa_proplist *p = pa_proplist_new();
     pa_stream *s = pa_stream_new_with_proplist(c, name, ss, map, p);
@@ -457,7 +457,7 @@ pa_stream *
 pa_stream_new_extended(pa_context *c, const char *name, pa_format_info *const *formats,
                        unsigned int n_formats, pa_proplist *p)
 {
-    trace_info("P %s c=%p, name=%s, formats=%p, n_formats=%u, p=%p\n", __func__, c, name,
+    trace_info_f("P %s c=%p, name=%s, formats=%p, n_formats=%u, p=%p\n", __func__, c, name,
                formats, n_formats, p);
 
     // TODO: multiple formats?
@@ -496,7 +496,7 @@ pa_stream *
 pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spec *ss,
                             const pa_channel_map *map, pa_proplist *p)
 {
-    trace_info("F %s c=%p, name=%s, ss={.format=%d, .rate=%u, .channels=%u}, map=%p, p=%p\n",
+    trace_info_f("F %s c=%p, name=%s, ss={.format=%d, .rate=%u, .channels=%u}, map=%p, p=%p\n",
                __func__, c, name, ss->format, ss->rate, ss->channels, map, p);
 
     pa_stream *s = calloc(1, sizeof(pa_stream));
@@ -533,7 +533,7 @@ APULSE_EXPORT
 pa_stream *
 pa_stream_ref(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     s->ref_cnt ++;
     return s;
@@ -543,7 +543,7 @@ APULSE_EXPORT
 void
 pa_stream_set_latency_update_callback(pa_stream *s, pa_stream_notify_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     s->latency_update_cb = cb;
     s->latency_update_cb_userdata = userdata;
@@ -553,7 +553,7 @@ APULSE_EXPORT
 pa_operation *
 pa_stream_set_name(pa_stream *s, const char *name, pa_stream_success_cb_t cb, void *userdata)
 {
-    trace_info("P %s s=%p, name=%s, cb=%p, userdata=%p\n", __func__, s, name, cb, userdata);
+    trace_info_f("P %s s=%p, name=%s, cb=%p, userdata=%p\n", __func__, s, name, cb, userdata);
 
     char *new_name = strdup(name ? name : "");
     return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_SET_NAME, s, new_name, cb, userdata);
@@ -563,7 +563,7 @@ APULSE_EXPORT
 void
 pa_stream_set_state_callback(pa_stream *s, pa_stream_notify_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     s->state_cb = cb;
     s->state_cb_userdata = userdata;
@@ -573,7 +573,7 @@ APULSE_EXPORT
 void
 pa_stream_set_write_callback(pa_stream *s, pa_stream_request_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     s->write_cb = cb;
     s->write_cb_userdata = userdata;
@@ -583,7 +583,7 @@ APULSE_EXPORT
 pa_operation *
 pa_stream_trigger(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_TRIGGER, s, NULL, cb, userdata);
 }
@@ -592,7 +592,7 @@ APULSE_EXPORT
 void
 pa_stream_unref(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     s->ref_cnt --;
     if (s->ref_cnt == 0) {
@@ -609,7 +609,7 @@ APULSE_EXPORT
 pa_operation *
 pa_stream_update_timing_info(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_UPD_TIMING_INFO, s, NULL, cb, userdata);
 }
@@ -618,7 +618,7 @@ APULSE_EXPORT
 size_t
 pa_stream_writable_size(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     size_t writable_size = ringbuffer_writable_size(s->rb);
 
@@ -638,7 +638,7 @@ pa_stream_writable_size(pa_stream *s)
 APULSE_EXPORT
 size_t pa_stream_readable_size(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     return ringbuffer_readable_size(s->rb);
 }
@@ -648,7 +648,7 @@ int
 pa_stream_write(pa_stream *s, const void *data, size_t nbytes, pa_free_cb_t free_cb, int64_t offset,
                 pa_seek_mode_t seek)
 {
-    trace_info("F %s s=%p, data=%p, nbytes=%zu, free_cb=%p, offset=%"PRId64", seek=%u\n", __func__,
+    trace_info_f("F %s s=%p, data=%p, nbytes=%zu, free_cb=%p, offset=%"PRId64", seek=%u\n", __func__,
                s, data, nbytes, free_cb, offset, seek);
 
     if (offset != 0)
@@ -677,7 +677,7 @@ pa_stream_connect_record(pa_stream *s, const char *dev, const pa_buffer_attr *at
                          pa_stream_flags_t flags)
 {
     gchar *s_attr = trace_pa_buffer_attr_as_string(attr);
-    trace_info("P %s s=%p, dev=%s, attr=%s, flags=0x%x\n", __func__, s, dev, s_attr, flags);
+    trace_info_f("P %s s=%p, dev=%s, attr=%s, flags=0x%x\n", __func__, s, dev, s_attr, flags);
     g_free(s_attr);
 
     s->direction = PA_STREAM_RECORD;
@@ -705,7 +705,7 @@ APULSE_EXPORT
 int
 pa_stream_drop(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     ringbuffer_drop(s->rb, s->peek_buffer_data_len);
     return 0;
@@ -715,7 +715,7 @@ APULSE_EXPORT
 const pa_buffer_attr *
 pa_stream_get_buffer_attr(pa_stream *s)
 {
-    trace_info("F %s\n", __func__);
+    trace_info_f("F %s\n", __func__);
 
     return &s->buffer_attr;
 }
@@ -724,7 +724,7 @@ APULSE_EXPORT
 uint32_t
 pa_stream_get_device_index(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     // apulse uses only one sink -- ALSA device, so index is always 0
     return 0;
@@ -734,7 +734,7 @@ APULSE_EXPORT
 const char *
 pa_stream_get_device_name(pa_stream *s)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
     return "apulse";
 }
 
@@ -742,7 +742,7 @@ APULSE_EXPORT
 int
 pa_stream_peek(pa_stream *s, const void **data, size_t *nbytes)
 {
-    trace_info("F %s s=%p\n", __func__, s);
+    trace_info_f("F %s s=%p\n", __func__, s);
 
     if (!s)
         return -1;
@@ -761,7 +761,7 @@ APULSE_EXPORT
 void
 pa_stream_set_read_callback(pa_stream *s, pa_stream_request_cb_t cb, void *userdata)
 {
-    trace_info("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
+    trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
     if (s) {
         s->read_cb = cb;
@@ -773,5 +773,5 @@ APULSE_EXPORT
 void
 pa_stream_set_underflow_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }

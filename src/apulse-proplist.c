@@ -35,7 +35,7 @@ APULSE_EXPORT
 void
 pa_proplist_free(pa_proplist* p)
 {
-    trace_info("F %s p=%p\n", __func__, p);
+    trace_info_f("F %s p=%p\n", __func__, p);
 
     g_hash_table_destroy(p->ht);
     free(p);
@@ -62,7 +62,7 @@ APULSE_EXPORT
 pa_proplist *
 pa_proplist_new(void)
 {
-    trace_info("F %s (void)\n", __func__);
+    trace_info_f("F %s (void)\n", __func__);
 
     pa_proplist *p = calloc(1, sizeof(pa_proplist));
     p->ht = g_hash_table_new_full(g_str_hash, g_str_equal,
@@ -74,7 +74,7 @@ APULSE_EXPORT
 int
 pa_proplist_set(pa_proplist *p, const char *key, const void *data, size_t nbytes)
 {
-    trace_info("F %s p=%p, key=%s, data=%p, nbytes=%d\n", __func__, p, key, data, (int)nbytes);
+    trace_info_f("F %s p=%p, key=%s, data=%p, nbytes=%d\n", __func__, p, key, data, (int)nbytes);
 
     struct prop *v = g_slice_alloc(sizeof(*v));
     if (!v)
@@ -91,7 +91,7 @@ APULSE_EXPORT
 int
 pa_proplist_sets(pa_proplist *p, const char *key, const char *value)
 {
-    trace_info("F %s p=%p, key=%s, value=%s\n", __func__, p, key, value);
+    trace_info_f("F %s p=%p, key=%s, value=%s\n", __func__, p, key, value);
 
     struct prop *v = g_slice_alloc(sizeof(*v));
     if (!v)
@@ -107,21 +107,21 @@ APULSE_EXPORT
 void
 pa_proplist_clear(pa_proplist *p)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 void
 pa_proplist_update(pa_proplist *p, pa_update_mode_t mode, const pa_proplist *other)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 int
 pa_proplist_contains(pa_proplist *p, const char *key)
 {
-    trace_info("F %s p=%p, key=%s\n", __func__, p, key);
+    trace_info_f("F %s p=%p, key=%s\n", __func__, p, key);
 
     return g_hash_table_lookup(p->ht, key) != NULL;
 }
@@ -130,7 +130,7 @@ APULSE_EXPORT
 const char *
 pa_proplist_gets(pa_proplist *p, const char *key)
 {
-    trace_info("F %s p=%p, key=%s\n", __func__, p, key);
+    trace_info_f("F %s p=%p, key=%s\n", __func__, p, key);
 
     struct prop *v = g_hash_table_lookup(p->ht, key);
 

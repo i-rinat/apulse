@@ -55,7 +55,7 @@ APULSE_EXPORT
 void
 pa_disable_sigpipe(void)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT

@@ -30,7 +30,7 @@ APULSE_EXPORT
 int
 pa_signal_init(pa_mainloop_api *api)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 
     return 0;
 }
@@ -39,14 +39,14 @@ APULSE_EXPORT
 void
 pa_signal_done(void)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 pa_signal_event *
 pa_signal_new(int sig, pa_signal_cb_t callback, void *userdata)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 
     return NULL;
 }
@@ -55,12 +55,12 @@ APULSE_EXPORT
 void
 pa_signal_free(pa_signal_event *e)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 void
 pa_signal_set_destroy(pa_signal_event *e, pa_signal_destroy_cb_t callback)
 {
-    trace_info("Z %s\n", __func__);
+    trace_info_z("Z %s\n", __func__);
 }

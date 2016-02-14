@@ -125,14 +125,14 @@ APULSE_EXPORT
 void
 pa_operation_cancel(pa_operation *o)
 {
-    trace_info("Z %s o=%p\n", __func__, o);
+    trace_info_z("Z %s o=%p\n", __func__, o);
 }
 
 APULSE_EXPORT
 pa_operation_state_t
 pa_operation_get_state(pa_operation *o)
 {
-    trace_info("F %s o=%p\n", __func__, o);
+    trace_info_f("F %s o=%p\n", __func__, o);
     if (!o) {
         trace_error("Z %s operation is NULL\n", __func__);
         return PA_OPERATION_DONE;
@@ -144,7 +144,7 @@ APULSE_EXPORT
 pa_operation *
 pa_operation_ref(pa_operation *o)
 {
-    trace_info("F %s o=%p\n", __func__, o);
+    trace_info_f("F %s o=%p\n", __func__, o);
 
     if (!o)
         return NULL;
@@ -156,7 +156,7 @@ APULSE_EXPORT
 void
 pa_operation_unref(pa_operation *o)
 {
-    trace_info("F %s o=%p\n", __func__, o);
+    trace_info_f("F %s o=%p\n", __func__, o);
 
     if (!o)
         return;

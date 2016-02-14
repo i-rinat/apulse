@@ -31,7 +31,7 @@ APULSE_EXPORT
 void
 pa_simple_free(pa_simple *s)
 {
-    trace_info("Z %s s=%p\n", __func__, s);
+    trace_info_z("Z %s s=%p\n", __func__, s);
 }
 
 APULSE_EXPORT
@@ -40,7 +40,7 @@ pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, c
               const char *stream_name, const pa_sample_spec *ss, const pa_channel_map *map,
               const pa_buffer_attr *attr, int *error)
 {
-    trace_info("Z %s server=%s, name=%s, dir=%d, dev=%s, stream_name=%s, ss=%p, map=%p, attr=%p\n",
+    trace_info_z("Z %s server=%s, name=%s, dir=%d, dev=%s, stream_name=%s, ss=%p, map=%p, attr=%p\n",
                __func__, server, name, dir, dev, stream_name, ss, map, attr);
     return NULL;
 }

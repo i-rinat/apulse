@@ -28,6 +28,22 @@
 #include <glib.h>
 #include <pulse/pulseaudio.h>
 
+#if WITH_TRACE >= 2
+
+#define trace_info_f(...)   trace_info(__VA_ARGS__)
+#define trace_info_z(...)   trace_info(__VA_ARGS__)
+
+#elif WITH_TRACE == 1
+
+#define trace_info_f(...)
+#define trace_info_z(...)   trace_info(__VA_ARGS__)
+
+#else // WITH_TRACE == 0
+
+#define trace_info_f(...)
+#define trace_info_z(...)
+
+#endif
 
 void    trace_info(const char *fmt, ...) __attribute__((format (printf, 1, 2)));
 void    trace_warning(const char *fmt, ...) __attribute__((format (printf, 1, 2)));
