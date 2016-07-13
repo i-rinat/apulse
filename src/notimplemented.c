@@ -838,13 +838,6 @@ pa_operation* pa_stream_prebuf(pa_stream *s, pa_stream_success_cb_t cb, void *us
 }
 
 APULSE_EXPORT
-int pa_stream_get_time(pa_stream *s, pa_usec_t *r_usec)
-{
-    trace_info_z("Z %s\n", __func__);
-    return 0;
-}
-
-APULSE_EXPORT
 const pa_channel_map* pa_stream_get_channel_map(pa_stream *s)
 {
     trace_info_z("Z %s\n", __func__);

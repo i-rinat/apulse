@@ -409,6 +409,21 @@ pa_stream_get_state(pa_stream *s)
 }
 
 APULSE_EXPORT
+int
+pa_stream_get_time(pa_stream *s, pa_usec_t *r_usec)
+{
+    trace_info_f("F %s\n", __func__);
+
+    // TODO: handle playback/capture delays?
+    int64_t data_index = s->timing_info.write_index;
+    if (data_index < 0)
+        data_index = 0;
+
+    *r_usec = pa_bytes_to_usec(data_index, &s->ss);
+    return 0;
+}
+
+APULSE_EXPORT
 const pa_timing_info *
 pa_stream_get_timing_info(pa_stream *s)
 {
