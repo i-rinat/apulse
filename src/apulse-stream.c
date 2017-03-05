@@ -314,15 +314,31 @@ err:
     return -1;
 }
 
+static void
+pa_stream_cork_impl(pa_operation *op)
+{
+    g_atomic_int_set(&op->s->paused, !!(op->int_arg_1));
+
+    if (op->stream_success_cb)
+        op->stream_success_cb(op->s, 1, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_stream_cork(pa_stream *s, int b, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, b=%d, cb=%p, userdata=%p\n", __func__, s, b, cb, userdata);
 
-    g_atomic_int_set(&s->paused, !!(b));
-    return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_CORK, s, GINT_TO_POINTER(b),
-                            cb, userdata);
+    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_cork_impl);
+    op->s = s;
+    op->int_arg_1 = b;
+    op->stream_success_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
@@ -343,14 +359,41 @@ pa_stream_disconnect(pa_stream *s)
     return -1;
 }
 
+static void
+pa_stream_drain_impl(pa_operation *op)
+{
+    snd_pcm_drain(op->s->ph);
+
+    if (op->stream_success_cb)
+        op->stream_success_cb(op->s, 1, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_stream_drain(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    snd_pcm_drain(s->ph);
-    return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_DRAIN, s, NULL, cb, userdata);
+    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_drain_impl);
+    op->s = s;
+    op->stream_success_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
+}
+
+static void
+pa_stream_flush_impl(pa_operation *op)
+{
+    // TODO: is it ok to do nothing?
+
+    if (op->stream_success_cb)
+        op->stream_success_cb(op->s, 1, op->cb_userdata);
+
+    pa_operation_done(op);
 }
 
 APULSE_EXPORT
@@ -359,8 +402,13 @@ pa_stream_flush(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    // TODO: is it ok to do nothing?
-    return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_FLUSH, s, NULL, cb, userdata);
+    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_flush_impl);
+    op->s = s;
+    op->stream_success_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
@@ -564,14 +612,32 @@ pa_stream_set_latency_update_callback(pa_stream *s, pa_stream_notify_cb_t cb, vo
     s->latency_update_cb_userdata = userdata;
 }
 
+static void
+pa_stream_set_name_impl(pa_operation *op)
+{
+    free(op->s->name);
+    op->s->name = op->char_ptr_arg_1;
+
+    if (op->stream_success_cb)
+        op->stream_success_cb(op->s, 1, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_stream_set_name(pa_stream *s, const char *name, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("P %s s=%p, name=%s, cb=%p, userdata=%p\n", __func__, s, name, cb, userdata);
 
-    char *new_name = strdup(name ? name : "");
-    return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_SET_NAME, s, new_name, cb, userdata);
+    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_set_name_impl);
+    op->s = s;
+    op->stream_success_cb = cb;
+    op->cb_userdata = userdata;
+    op->char_ptr_arg_1 = strdup(name ? name : "");
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
@@ -594,13 +660,30 @@ pa_stream_set_write_callback(pa_stream *s, pa_stream_request_cb_t cb, void *user
     s->write_cb_userdata = userdata;
 }
 
+static void
+pa_stream_trigger_impl(pa_operation *op)
+{
+    // TODO: does nothing?
+
+    if (op->stream_success_cb)
+        op->stream_success_cb(op->s, 1, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_stream_trigger(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_TRIGGER, s, NULL, cb, userdata);
+    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_trigger_impl);
+    op->s = s;
+    op->stream_success_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
@@ -620,13 +703,33 @@ pa_stream_unref(pa_stream *s)
     }
 }
 
+static void
+pa_stream_update_timing_info_impl(pa_operation *op)
+{
+    gettimeofday(&op->s->timing_info.timestamp, NULL);
+
+    if (op->s->latency_update_cb)
+        op->s->latency_update_cb(op->s, op->s->latency_update_cb_userdata);
+
+    if (op->stream_success_cb)
+        op->stream_success_cb(op->s, 1, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_stream_update_timing_info(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    return pa_operation_new(s->c->mainloop_api, PAOP_STREAM_UPD_TIMING_INFO, s, NULL, cb, userdata);
+    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_update_timing_info_impl);
+    op->s = s;
+    op->stream_success_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT

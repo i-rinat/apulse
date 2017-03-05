@@ -36,17 +36,6 @@
 
 #define APULSE_EXPORT        __attribute__((visibility("default")))
 
-enum operation_type_e {
-    PAOP_STREAM_CORK,
-    PAOP_STREAM_DRAIN,
-    PAOP_STREAM_FLUSH,
-    PAOP_STREAM_SET_NAME,
-    PAOP_STREAM_TRIGGER,
-    PAOP_STREAM_UPD_TIMING_INFO,
-    PAOP_CONTEXT_GET_SINK_INFO,
-    PAOP_CONTEXT_SET_SOURCE_VOLUME_BY_INDEX,
-};
-
 struct pa_context {
     pa_context_state_t      state;
     pa_context_notify_cb_t  state_cb;
@@ -127,12 +116,21 @@ struct pa_stream {
 
 struct pa_operation {
     pa_operation_state_t    state;
-    int                     ref_cnt;
-    enum operation_type_e   operation_type;
-    void                   *obj;
-    void                   *param;
-    void                   *cb;
+    pa_stream_success_cb_t  stream_success_cb;
+    pa_sink_input_info_cb_t sink_input_info_cb;
+    pa_context_success_cb_t context_success_cb;
     void                   *cb_userdata;
+
+    pa_mainloop_api *api;
+
+    void (*handler)(pa_operation *op);
+
+    int     ref_cnt;
+    int     int_arg_1;
+    char   *char_ptr_arg_1;
+
+    pa_stream  *s;
+    pa_context *c;
 };
 
 struct pa_defer_event {
@@ -144,7 +142,12 @@ struct pa_defer_event {
 
 
 pa_operation *
-pa_operation_new(pa_mainloop_api *api, enum operation_type_e op_type, void *subj, void *param,
-                 void *cb, void *cb_userdata);
+pa_operation_new(pa_mainloop_api *api, void (*handler)(pa_operation *op));
+
+void
+pa_operation_launch(pa_operation *op);
+
+void
+pa_operation_done(pa_operation *op);
 
 #endif // APULSE__APULSE_H

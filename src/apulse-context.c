@@ -86,6 +86,50 @@ pa_context_get_server_protocol_version(pa_context *c)
     return 8;   // PA headers say "8" is the protocol version used in PulseAudio 0.9
 }
 
+static void
+pa_context_get_sink_input_info_impl(pa_operation *op)
+{
+    uint32_t idx = op->int_arg_1;
+    pa_stream *s = g_hash_table_lookup(op->c->streams_ht, GINT_TO_POINTER(idx));
+    if (!s) {
+        trace_error("%s, no such stream: %u\n", __func__, idx);
+        pa_operation_cancel(op);
+        return;
+    }
+
+    pa_sink_input_info sii = {
+        .index = 0,
+        .name = "dummy-sink",
+        .owner_module = PA_INVALID_INDEX,
+        .client = PA_INVALID_INDEX,
+        .sink = 0,
+        .sample_spec = (pa_sample_spec){.format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2},
+        .channel_map.channels = 2,
+        .channel_map.map[0] = PA_CHANNEL_POSITION_LEFT,
+        .channel_map.map[1] = PA_CHANNEL_POSITION_RIGHT,
+        .volume.channels = 2,
+        .volume.values[0] = PA_VOLUME_NORM,
+        .volume.values[1] = PA_VOLUME_NORM,
+        .buffer_usec = 0,
+        .sink_usec = 0,
+        .resample_method = "auto",
+        .driver = "guess who",
+        .mute = 0,
+        .proplist = pa_proplist_new(),
+        .corked = 0,
+        .has_volume = 1,
+        .volume_writable = 1,
+        .format = NULL,
+    };
+
+    if (op->sink_input_info_cb)
+        op->sink_input_info_cb(op->c, &sii, 0, op->cb_userdata);
+
+    pa_proplist_free(sii.proplist);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_context_get_sink_input_info(pa_context *c, uint32_t idx, pa_sink_input_info_cb_t cb,
@@ -93,13 +137,14 @@ pa_context_get_sink_input_info(pa_context *c, uint32_t idx, pa_sink_input_info_c
 {
     trace_info_f("F %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx, cb, userdata);
 
-    pa_stream *s = g_hash_table_lookup(c->streams_ht, GINT_TO_POINTER(idx));
-    if (!s) {
-        trace_error("%s, no such stream: %d\n", __func__, idx);
-        return NULL;
-    }
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_input_info_impl);
+    op->c = c;
+    op->int_arg_1 = idx;
+    op->sink_input_info_cb = cb;
+    op->cb_userdata = userdata;
 
-    return pa_operation_new(c->mainloop_api, PAOP_CONTEXT_GET_SINK_INFO, c, s, cb, userdata);
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
@@ -227,6 +272,17 @@ pa_context_get_source_output_info(pa_context *c, uint32_t idx, pa_source_output_
     return NULL;
 }
 
+static void
+pa_context_set_source_volume_by_index_impl(pa_operation *op)
+{
+    // TODO: actually change volume
+
+    if (op->context_success_cb)
+        op->context_success_cb(op->c, 1, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx, const pa_cvolume *volume,
@@ -237,9 +293,14 @@ pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx, const pa_cvol
                cb, userdata);
     g_free(s_volume);
 
-    // TODO: actually change volume
-    return pa_operation_new(c->mainloop_api, PAOP_CONTEXT_SET_SOURCE_VOLUME_BY_INDEX, c,
-                            NULL, cb, userdata);
+    pa_operation *op =
+        pa_operation_new(c->mainloop_api, pa_context_set_source_volume_by_index_impl);
+    op->c = c;
+    op->context_success_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
