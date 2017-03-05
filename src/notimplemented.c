@@ -1021,13 +1021,6 @@ pa_operation* pa_context_set_source_port_by_name(pa_context *c, const char*name,
 }
 
 APULSE_EXPORT
-pa_operation* pa_context_get_server_info(pa_context *c, pa_server_info_cb_t cb, void *userdata)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 pa_operation* pa_context_get_module_info(pa_context *c, uint32_t idx, pa_module_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);

@@ -78,6 +78,52 @@ pa_context_get_protocol_version(pa_context *c)
     return PA_PROTOCOL_VERSION;
 }
 
+static void
+pa_context_get_server_info_impl(pa_operation *op)
+{
+    pa_server_info info = {
+        .user_name = "apulse_user_name",    // TODO: actual user name
+        .host_name = "apulse_host_name",    // TODO: actual host name
+        .server_version = "5.0",
+        .server_name = "pulseaudio",
+        .sample_spec = {
+            .format = PA_SAMPLE_S16LE,
+            .rate = 44100,
+            .channels = 2,
+        },
+        .default_sink_name = "default_sink_name",
+        .default_source_name = "default_source_name",
+        .cookie = 1,
+        .channel_map = {
+            .channels = 2,
+            .map = {
+                PA_CHANNEL_POSITION_FRONT_LEFT,
+                PA_CHANNEL_POSITION_FRONT_RIGHT
+            },
+        },
+    };
+
+    if (op->server_info_cb)
+        op->server_info_cb(op->c, &info, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_get_server_info(pa_context *c, pa_server_info_cb_t cb, void *userdata)
+{
+    trace_info_f("F %s c=%p, cb=%p, userdata=%p\n", __func__, c, &cb, userdata);
+
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_server_info_impl);
+    op->c = c;
+    op->server_info_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
+}
+
 APULSE_EXPORT
 uint32_t
 pa_context_get_server_protocol_version(pa_context *c)
