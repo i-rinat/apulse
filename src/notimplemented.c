@@ -27,12 +27,6 @@
 
 
 APULSE_EXPORT
-void pa_mainloop_api_once(pa_mainloop_api*m, void (*callback)(pa_mainloop_api*m, void *userdata), void *userdata)
-{
-    trace_info_z("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
 size_t pa_sample_size_of_format(pa_sample_format_t f)
 {
     trace_info_z("Z %s\n", __func__);

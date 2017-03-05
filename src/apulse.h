@@ -123,6 +123,8 @@ struct pa_operation {
 
     pa_mainloop_api *api;
 
+    void (*mainloop_api_once_cb)(pa_mainloop_api *m, void *userdata);
+
     void (*handler)(pa_operation *op);
 
     int     ref_cnt;

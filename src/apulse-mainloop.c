@@ -184,6 +184,28 @@ ml_api_time_set_destroy(pa_time_event *e, pa_time_event_destroy_cb_t cb)
     trace_info_z("Z %s\n", __func__);
 }
 
+static void
+pa_mainloop_api_once_impl(pa_operation *op)
+{
+    if (op->mainloop_api_once_cb)
+        op->mainloop_api_once_cb(op->api, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
+APULSE_EXPORT
+void
+pa_mainloop_api_once(pa_mainloop_api *m, void (*callback)(pa_mainloop_api *m, void *userdata),
+                     void *userdata)
+{
+    trace_info_f("F %s\n", __func__);
+    pa_operation *op = pa_operation_new(m, pa_mainloop_api_once_impl);
+    op->mainloop_api_once_cb = callback;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+}
+
 static
 void
 recover_pcm(snd_pcm_t *pcm)
