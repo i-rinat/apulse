@@ -881,13 +881,6 @@ uint32_t pa_stream_get_monitor_stream(pa_stream *s)
 }
 
 APULSE_EXPORT
-pa_operation* pa_context_get_sink_info_by_name(pa_context *c, const char *name, pa_sink_info_cb_t cb, void *userdata)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 pa_operation* pa_context_get_sink_info_by_index(pa_context *c, uint32_t idx, pa_sink_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);

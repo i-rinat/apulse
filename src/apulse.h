@@ -118,6 +118,7 @@ struct pa_operation {
     pa_operation_state_t    state;
     pa_stream_success_cb_t  stream_success_cb;
     pa_sink_input_info_cb_t sink_input_info_cb;
+    pa_sink_info_cb_t       sink_info_cb;
     pa_context_success_cb_t context_success_cb;
     pa_server_info_cb_t     server_info_cb;
     void                   *cb_userdata;

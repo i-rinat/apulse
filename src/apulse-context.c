@@ -133,6 +133,78 @@ pa_context_get_server_protocol_version(pa_context *c)
 }
 
 static void
+pa_context_get_sink_info_by_name_impl(pa_operation *op)
+{
+    // TODO: real data
+    pa_sink_info info = {
+        .name = "default_sink_name",
+        .index = 0,
+        .description = "default and only sink",
+        .sample_spec = {
+            .format = PA_SAMPLE_S16LE,
+            .rate = 44100,
+            .channels = 2,
+        },
+        .channel_map = {
+            .channels = 2,
+            .map = {
+                PA_CHANNEL_POSITION_FRONT_LEFT,
+                PA_CHANNEL_POSITION_FRONT_RIGHT
+            },
+        },
+        .owner_module = PA_INVALID_INDEX,
+        .volume = {
+            .channels = 2,
+            .values = {
+                PA_VOLUME_NORM,
+                PA_VOLUME_NORM,
+            },
+        },
+        .mute = 0,
+        .monitor_source = 0,
+        .monitor_source_name = "monitor_source_name",
+        .latency = 100000,
+        .driver = "apulse",
+        .flags = 0,
+        .proplist = NULL,
+        .configured_latency = 100000,
+        .base_volume = PA_VOLUME_NORM,
+        .state = PA_SINK_RUNNING,
+        .n_volume_steps = 0,
+        .card = PA_INVALID_INDEX,
+        .n_ports = 0,
+        .ports = NULL,
+        .active_port = NULL,
+    };
+
+    if (op->sink_info_cb) {
+        op->sink_info_cb(op->c, &info, 0, op->cb_userdata);
+        op->sink_info_cb(op->c, NULL, 1, op->cb_userdata);
+    }
+
+    free(op->char_ptr_arg_1);
+
+    pa_operation_done(op);
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_get_sink_info_by_name(pa_context *c, const char *name, pa_sink_info_cb_t cb,
+                                 void *userdata)
+{
+    trace_info_f("F %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name, cb, userdata);
+
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_info_by_name_impl);
+    op->c = c;
+    op->char_ptr_arg_1 = strdup(name ? name : "");
+    op->sink_info_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
+}
+
+static void
 pa_context_get_sink_input_info_impl(pa_operation *op)
 {
     uint32_t idx = op->int_arg_1;
