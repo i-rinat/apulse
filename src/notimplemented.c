@@ -175,13 +175,6 @@ int pa_proplist_equal(pa_proplist *a, pa_proplist *b)
 }
 
 APULSE_EXPORT
-pa_channel_map* pa_channel_map_init(pa_channel_map *m)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 const char* pa_channel_position_to_pretty_string(pa_channel_position_t pos)
 {
     trace_info_z("Z %s\n", __func__);

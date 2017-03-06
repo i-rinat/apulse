@@ -81,6 +81,16 @@ static const char *channel_name[PA_CHANNEL_POSITION_MAX] = {
 
 APULSE_EXPORT
 pa_channel_map *
+pa_channel_map_init(pa_channel_map *m)
+{
+    trace_info_f("F %s m=%p\n", __func__, m);
+    if (m)
+        memset(m, 0, sizeof(*m));
+    return m;
+}
+
+APULSE_EXPORT
+pa_channel_map *
 pa_channel_map_init_auto(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def)
 {
     trace_info_z("Z %s m=%p, channels=%u, def=%u\n", __func__, m, channels, def);
