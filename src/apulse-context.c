@@ -196,6 +196,15 @@ pa_context_ref(pa_context *c)
 }
 
 APULSE_EXPORT
+pa_time_event *
+pa_context_rttime_new(pa_context *c, pa_usec_t usec, pa_time_event_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s c=%p, usec=%" PRIu64 " cb=%p, userdata=%p\n", __func__, c, (uint64_t)usec,
+                 cb, userdata);
+    return NULL;
+}
+
+APULSE_EXPORT
 pa_operation *
 pa_context_set_sink_input_mute(pa_context *c, uint32_t idx, int mute, pa_context_success_cb_t cb,
                                void *userdata)

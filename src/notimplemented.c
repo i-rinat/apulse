@@ -468,13 +468,6 @@ uint32_t pa_context_get_index(pa_context *s)
 }
 
 APULSE_EXPORT
-pa_time_event* pa_context_rttime_new(pa_context *c, pa_usec_t usec, pa_time_event_cb_t cb, void *userdata)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
 void pa_context_rttime_restart(pa_context *c, pa_time_event *e, pa_usec_t usec)
 {
     trace_info_z("Z %s\n", __func__);
