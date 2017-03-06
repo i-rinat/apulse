@@ -210,6 +210,18 @@ pa_path_get_filename(const char *p)
 }
 
 APULSE_EXPORT
+pa_usec_t
+pa_rtclock_now(void)
+{
+    trace_info_f("F %s (void)\n", __func__);
+
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+
+    return (pa_usec_t)now.tv_sec * 1000000 + now.tv_nsec / 1000;
+}
+
+APULSE_EXPORT
 void
 pa_xfree(void *p)
 {

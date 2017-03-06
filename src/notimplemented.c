@@ -1472,10 +1472,3 @@ pa_usec_t pa_timeval_load(const struct timeval *tv)
     trace_info_z("Z %s\n", __func__);
     return 0;
 }
-
-APULSE_EXPORT
-pa_usec_t pa_rtclock_now(void)
-{
-    trace_info_z("Z %s\n", __func__);
-    return 0;
-}
