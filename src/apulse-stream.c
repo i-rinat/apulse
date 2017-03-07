@@ -347,6 +347,9 @@ pa_stream_disconnect(pa_stream *s)
 {
     trace_info_f("F %s s=%p\n", __func__, s);
 
+    if (s->state != PA_STREAM_READY)
+        return PA_ERR_BADSTATE;
+
     for (int k = 0; k < s->nioe; k ++) {
         pa_mainloop_api *api = s->c->mainloop_api;
         api->io_free(s->ioe[k]);
