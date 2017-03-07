@@ -353,10 +353,10 @@ pa_stream_disconnect(pa_stream *s)
     }
     free(s->ioe);
 
-    if (snd_pcm_close(s->ph) == 0)
-        return 0;
+    snd_pcm_close(s->ph);
+    s->state = PA_STREAM_TERMINATED;
 
-    return -1;
+    return PA_OK;
 }
 
 static void
