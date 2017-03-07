@@ -78,6 +78,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     snd_pcm_sframes_t   frame_count;
     size_t              frame_size = pa_frame_size(&s->ss);
     char                buf[16 * 1024];
+    const size_t        buf_size = (sizeof(buf) / frame_size) * frame_size;
     int                 paused = g_atomic_int_get(&s->paused);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {
@@ -121,7 +122,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     if (events & PA_IO_EVENT_OUTPUT) {
         if (paused) {
             // client stream is corked. Pass silence to ALSA
-            size_t bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+            size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             memset(buf, 0, bytecnt);
             snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
         } else {
@@ -130,12 +131,12 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
             if (s->write_cb && writable_size > 0)
                 s->write_cb(s, writable_size, s->write_cb_userdata);
 
-            size_t bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+            size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             bytecnt = ringbuffer_read(s->rb, buf, bytecnt);
 
             if (bytecnt == 0) {
                 // application is not ready yet, play silence
-                bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+                bytecnt = MIN(buf_size, frame_count * frame_size);
                 memset(buf, 0, bytecnt);
             }
             snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
@@ -145,7 +146,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     if (events & PA_IO_EVENT_INPUT) {
         if (paused) {
             // client stream is corked. Read data from ALSA and discard them
-            size_t bytecnt = MIN(sizeof(buf), frame_count * frame_size);
+            size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
         } else {
             size_t bytecnt = ringbuffer_writable_size(s->rb);
@@ -158,7 +159,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
             }
 
             bytecnt = MIN(bytecnt, frame_count * frame_size);
-            bytecnt = MIN(bytecnt, sizeof(buf));
+            bytecnt = MIN(bytecnt, buf_size);
 
             if (bytecnt > 0) {
                 snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
