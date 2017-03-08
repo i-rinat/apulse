@@ -339,15 +339,43 @@ pa_context_set_sink_input_mute(pa_context *c, uint32_t idx, int mute, pa_context
     return NULL;
 }
 
+static void
+pa_context_set_sink_input_volume_impl(pa_operation *op)
+{
+    memset(&op->c->sink_volume, 0, sizeof(op->c->sink_volume));
+
+    const uint32_t channels = MIN(op->pa_cvolume_arg_1.channels, PA_CHANNELS_MAX);
+
+    for (uint32_t k = 0; k < channels; k++)
+        op->c->sink_volume[k] = op->pa_cvolume_arg_1.values[k];
+
+    if (op->context_success_cb)
+        op->context_success_cb(op->c, 1, op->cb_userdata);
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_context_set_sink_input_volume(pa_context *c, uint32_t idx, const pa_cvolume *volume,
                                  pa_context_success_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s c=%p, idx=%u, volume=%p, cb=%p, userdata=%p\n", __func__, c, idx, volume, cb,
-               userdata);
+    gchar *s_volume = trace_pa_volume_as_string(volume);
+    trace_info_f("F %s c=%p, idx=%u, volume=%s, cb=%p, userdata=%p\n", __func__, c, idx, s_volume,
+                 cb, userdata);
+    g_free(s_volume);
 
-    return NULL;
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_set_sink_input_volume_impl);
+    op->c = c;
+    op->int_arg_1 = idx;
+    op->context_success_cb = cb;
+    op->cb_userdata = userdata;
+
+    if (volume)
+        op->pa_cvolume_arg_1 = *volume;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
