@@ -753,16 +753,20 @@ pa_stream_writable_size(pa_stream *s)
 
     const size_t limit = 16 * 1024; // TODO: adaptive values?
 
-    return writable_size >= limit ? writable_size
-                                  : 0;
+    if (writable_size < limit)
+        writable_size = 0;
+
+    return pa_find_multiple_of(writable_size, pa_frame_size(&s->ss));
 }
 
 APULSE_EXPORT
-size_t pa_stream_readable_size(pa_stream *s)
+size_t
+pa_stream_readable_size(pa_stream *s)
 {
     trace_info_f("F %s s=%p\n", __func__, s);
 
-    return ringbuffer_readable_size(s->rb);
+    size_t readable_size = ringbuffer_readable_size(s->rb);
+    return pa_find_multiple_of(readable_size, pa_frame_size(&s->ss));
 }
 
 APULSE_EXPORT
