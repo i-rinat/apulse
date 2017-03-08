@@ -23,6 +23,7 @@
  */
 
 #include "util.h"
+#include "trace.h"
 
 int
 pa_format_to_alsa(pa_sample_format_t format)
@@ -86,4 +87,74 @@ size_t
 pa_find_multiple_of(size_t number, size_t multiple_of)
 {
     return number - (number % multiple_of);
+}
+
+void
+pa_apply_volume_multiplier(void *buf, size_t sz, const pa_volume_t volume[PA_CHANNELS_MAX],
+                           const pa_sample_spec *ss)
+{
+    char *p = buf;
+    char *last = p + sz;
+    float fvol[PA_CHANNELS_MAX];
+    uint32_t channels = MIN(ss->channels, PA_CHANNELS_MAX);
+
+    if (channels == 0) {
+        // No channels — nothing to scale.
+        return;
+    }
+
+    int all_normal = 1;
+    for (uint32_t k = 0; k < channels; k++)
+        all_normal = all_normal && (volume[k] == PA_VOLUME_NORM);
+
+    if (all_normal) {
+        // No scaling required.
+        return;
+    }
+
+    for (uint32_t k = 0; k < channels; k++)
+        fvol[k] = pa_sw_volume_to_linear(volume[k]);
+
+    switch (ss->format) {
+    case PA_SAMPLE_FLOAT32NE:
+        while (p < last) {
+            for (uint32_t k = 0; k < channels && p < last; k++) {
+                float sample;
+                memcpy(&sample, p, sizeof(sample));
+                sample *= fvol[k];
+                memcpy(p, &sample, sizeof(sample));
+                p += sizeof(sample);
+            }
+        }
+        break;
+
+    case PA_SAMPLE_S16NE:
+        while (p < last) {
+            for (uint32_t k = 0; k < channels && p < last; k++) {
+                uint16_t sample;
+                memcpy(&sample, p, sizeof(sample));
+                float sample_scaled = sample * fvol[k];
+                sample = CLAMP(sample_scaled, 0.0, 65535.0);
+                memcpy(p, &sample, sizeof(sample));
+                p += sizeof(sample);
+            }
+        }
+        break;
+
+    case PA_SAMPLE_U8:
+    case PA_SAMPLE_ALAW:
+    case PA_SAMPLE_ULAW:
+    case PA_SAMPLE_S16RE:
+    case PA_SAMPLE_FLOAT32RE:
+    case PA_SAMPLE_S32NE:
+    case PA_SAMPLE_S32RE:
+    case PA_SAMPLE_S24NE:
+    case PA_SAMPLE_S24RE:
+    case PA_SAMPLE_S24_32NE:
+    case PA_SAMPLE_S24_32RE:
+    default:
+        trace_error("format %s is not implemented in %s\n", pa_sample_format_to_string(ss->format),
+                    __func__);
+        break;
+    }
 }

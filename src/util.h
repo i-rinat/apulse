@@ -39,4 +39,8 @@ pa_sample_format_from_string(const char *str);
 size_t
 pa_find_multiple_of(size_t number, size_t multiple_of);
 
+void
+pa_apply_volume_multiplier(void *buf, size_t sz, const pa_volume_t volume[PA_CHANNELS_MAX],
+                           const pa_sample_spec *ss);
+
 #endif // APULSE__UTIL_H

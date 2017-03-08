@@ -134,6 +134,8 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
             size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             bytecnt = ringbuffer_read(s->rb, buf, bytecnt);
 
+            pa_apply_volume_multiplier(buf, bytecnt, s->c->sink_volume, &s->ss);
+
             if (bytecnt == 0) {
                 // application is not ready yet, play silence
                 bytecnt = MIN(buf_size, frame_count * frame_size);
@@ -163,6 +165,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
 
             if (bytecnt > 0) {
                 snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
+                pa_apply_volume_multiplier(buf, bytecnt, s->c->source_volume, &s->ss);
                 ringbuffer_write(s->rb, buf, bytecnt);
             }
 
