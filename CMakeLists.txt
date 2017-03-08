@@ -42,9 +42,10 @@ add_library(pulse SHARED
     src/apulse-signal.c
     src/apulse-stream.c
     src/apulse-threaded-mainloop.c
-    src/util.c
-    src/ringbuffer.c
+    src/apulse-volume.c
     src/notimplemented.c
+    src/ringbuffer.c
+    src/util.c
 )
 
 add_library(pulse-simple SHARED
