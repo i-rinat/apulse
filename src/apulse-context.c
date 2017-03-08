@@ -450,8 +450,8 @@ pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx, const pa_cvol
                                       pa_context_success_cb_t cb, void *userdata)
 {
     gchar *s_volume = trace_pa_volume_as_string(volume);
-    trace_info_z("Z %s c=%p, idx=%u, volume=%s, cb=%p, userdata=%p\n", __func__, c, idx, s_volume,
-               cb, userdata);
+    trace_info_f("Z %s c=%p, idx=%u, volume=%s, cb=%p, userdata=%p\n", __func__, c, idx, s_volume,
+                 cb, userdata);
     g_free(s_volume);
 
     pa_operation *op =
