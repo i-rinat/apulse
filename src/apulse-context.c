@@ -298,6 +298,12 @@ pa_context_new_with_proplist(pa_mainloop_api *mainloop_api, const char *name, pa
     c->name = strdup(name ? name : "");
     c->ref_cnt = 1;
     c->streams_ht = g_hash_table_new(g_direct_hash, g_direct_equal);
+
+    for (uint32_t k = 0; k < PA_CHANNELS_MAX; k++) {
+        c->sink_volume[k] = PA_VOLUME_NORM;
+        c->source_volume[k] = PA_VOLUME_NORM;
+    }
+
     return c;
 }
 

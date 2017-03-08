@@ -45,6 +45,8 @@ struct pa_context {
     int                     ref_cnt;
     int                     next_stream_idx;
     GHashTable             *streams_ht;
+    pa_volume_t             source_volume[PA_CHANNELS_MAX];
+    pa_volume_t             sink_volume[PA_CHANNELS_MAX];
 };
 
 struct pa_io_event {
