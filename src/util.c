@@ -81,3 +81,9 @@ pa_sample_format_from_string(const char *str)
         return 0;
     }
 }
+
+size_t
+pa_find_multiple_of(size_t number, size_t multiple_of)
+{
+    return number - (number % multiple_of);
+}

@@ -78,7 +78,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     snd_pcm_sframes_t   frame_count;
     size_t              frame_size = pa_frame_size(&s->ss);
     char                buf[16 * 1024];
-    const size_t        buf_size = (sizeof(buf) / frame_size) * frame_size;
+    const size_t        buf_size = pa_find_multiple_of(sizeof(buf), frame_size);
     int                 paused = g_atomic_int_get(&s->paused);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {

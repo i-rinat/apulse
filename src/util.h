@@ -35,4 +35,8 @@ pa_format_to_alsa(pa_sample_format_t format);
 pa_sample_format_t
 pa_sample_format_from_string(const char *str);
 
+/// finds largest number that is less or equal than |number| and multiple of |multiple_of|.
+size_t
+pa_find_multiple_of(size_t number, size_t multiple_of);
+
 #endif // APULSE__UTIL_H
