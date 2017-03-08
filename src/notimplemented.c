@@ -642,13 +642,6 @@ double pa_sw_volume_to_dB(pa_volume_t v)
 }
 
 APULSE_EXPORT
-double pa_sw_volume_to_linear(pa_volume_t v)
-{
-    trace_info_z("Z %s\n", __func__);
-    return 0.0;
-}
-
-APULSE_EXPORT
 pa_cvolume *pa_cvolume_remap(pa_cvolume *v, const pa_channel_map *from, const pa_channel_map *to)
 {
     trace_info_z("Z %s\n", __func__);

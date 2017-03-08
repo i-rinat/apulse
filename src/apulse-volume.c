@@ -36,8 +36,20 @@ pa_sw_volume_from_linear(double v)
     if (v <= 0.0)
         return PA_VOLUME_MUTED;
 
-    int64_t v_linear = PA_VOLUME_NORM * cbrt(v);
+    int64_t v_linear = lround(PA_VOLUME_NORM * cbrt(v));
     assert(v_linear >= 0);
 
     return MIN(v_linear, PA_VOLUME_MAX);
+}
+
+APULSE_EXPORT
+double
+pa_sw_volume_to_linear(pa_volume_t v)
+{
+    trace_info_f("F %s v=%u\n", __func__, v);
+
+    uint32_t v_clamped = MIN(v, PA_VOLUME_MAX);
+
+    double v_linear = v_clamped * (1.0 / PA_VOLUME_NORM);
+    return v_linear * v_linear * v_linear;
 }
