@@ -135,6 +135,8 @@ struct pa_operation {
     int     int_arg_1;
     char   *char_ptr_arg_1;
 
+    pa_cvolume pa_cvolume_arg_1;
+
     pa_stream  *s;
     pa_context *c;
 };

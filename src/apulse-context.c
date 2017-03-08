@@ -432,6 +432,9 @@ pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx, const pa_cvol
     op->context_success_cb = cb;
     op->cb_userdata = userdata;
 
+    if (volume)
+        op->pa_cvolume_arg_1 = *volume;
+
     pa_operation_launch(op);
     return op;
 }
