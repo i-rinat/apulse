@@ -131,10 +131,10 @@ pa_apply_volume_multiplier(void *buf, size_t sz, const pa_volume_t volume[PA_CHA
     case PA_SAMPLE_S16NE:
         while (p < last) {
             for (uint32_t k = 0; k < channels && p < last; k++) {
-                uint16_t sample;
+                int16_t sample;
                 memcpy(&sample, p, sizeof(sample));
                 float sample_scaled = sample * fvol[k];
-                sample = CLAMP(sample_scaled, 0.0, 65535.0);
+                sample = CLAMP(sample_scaled, -32768.0, 32767.0);
                 memcpy(p, &sample, sizeof(sample));
                 p += sizeof(sample);
             }
