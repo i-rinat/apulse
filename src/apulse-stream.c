@@ -286,6 +286,22 @@ pa_stream_cancel_write(pa_stream *p)
     return 0;
 }
 
+static void
+stream_adjust_buffer_attrs(pa_stream *s, const pa_buffer_attr *attr)
+{
+    pa_buffer_attr *ba = &s->buffer_attr;
+
+    if (attr) {
+        *ba = *attr;
+    } else {
+        ba->maxlength = (uint32_t)-1;
+        ba->tlength = (uint32_t)-1;
+        ba->prebuf = (uint32_t)-1;
+        ba->minreq = (uint32_t)-1;
+        ba->fragsize = (uint32_t)-1;
+    }
+}
+
 APULSE_EXPORT
 int
 pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *attr,
@@ -298,15 +314,7 @@ pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *
     g_free(s_attr);
 
     s->direction = PA_STREAM_PLAYBACK;
-    if (attr) {
-        s->buffer_attr = *attr;
-    } else {
-        s->buffer_attr.maxlength = (uint32_t)-1;
-        s->buffer_attr.tlength = (uint32_t)-1;
-        s->buffer_attr.prebuf = (uint32_t)-1;
-        s->buffer_attr.minreq = (uint32_t)-1;
-        s->buffer_attr.fragsize = (uint32_t)-1;
-    }
+    stream_adjust_buffer_attrs(s, attr);
 
     if (do_connect_pcm(s, SND_PCM_STREAM_PLAYBACK) != 0)
         goto err;
@@ -810,15 +818,7 @@ pa_stream_connect_record(pa_stream *s, const char *dev, const pa_buffer_attr *at
     g_free(s_attr);
 
     s->direction = PA_STREAM_RECORD;
-    if (attr) {
-        s->buffer_attr = *attr;
-    } else {
-        s->buffer_attr.maxlength = (uint32_t)-1;
-        s->buffer_attr.tlength = (uint32_t)-1;
-        s->buffer_attr.prebuf = (uint32_t)-1;
-        s->buffer_attr.minreq = (uint32_t)-1;
-        s->buffer_attr.fragsize = (uint32_t)-1;
-    }
+    stream_adjust_buffer_attrs(s, attr);
 
     if (do_connect_pcm(s, SND_PCM_STREAM_CAPTURE) != 0)
         goto err;
