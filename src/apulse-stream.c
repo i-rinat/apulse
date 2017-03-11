@@ -128,8 +128,9 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
         } else {
             size_t writable_size = pa_stream_writable_size(s);
 
-            if (s->write_cb && writable_size > 0)
-                s->write_cb(s, writable_size, s->write_cb_userdata);
+            // Ask client for data, but only if we are ready for at least |minreq| bytes.
+            if (s->write_cb && writable_size >= s->buffer_attr.minreq)
+                s->write_cb(s, s->buffer_attr.minreq, s->write_cb_userdata);
 
             size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             bytecnt = ringbuffer_read(s->rb, buf, bytecnt);
