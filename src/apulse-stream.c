@@ -78,7 +78,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     snd_pcm_sframes_t   frame_count;
     size_t              frame_size = pa_frame_size(&s->ss);
     char                buf[16 * 1024];
-    const size_t        buf_size = pa_find_multiple_of(sizeof(buf), frame_size);
+    const size_t        buf_size = pa_find_multiple_of(sizeof(buf), frame_size, 0);
     int                 paused = g_atomic_int_get(&s->paused);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {
@@ -128,8 +128,9 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
         } else {
             size_t writable_size = pa_stream_writable_size(s);
 
-            if (s->write_cb && writable_size > 0)
-                s->write_cb(s, writable_size, s->write_cb_userdata);
+            // Ask client for data, but only if we are ready for at least |minreq| bytes.
+            if (s->write_cb && writable_size >= s->buffer_attr.minreq)
+                s->write_cb(s, s->buffer_attr.minreq, s->write_cb_userdata);
 
             size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             bytecnt = ringbuffer_read(s->rb, buf, bytecnt);
@@ -286,6 +287,72 @@ pa_stream_cancel_write(pa_stream *p)
     return 0;
 }
 
+static void
+stream_adjust_buffer_attrs(pa_stream *s, const pa_buffer_attr *attr)
+{
+    pa_buffer_attr *ba = &s->buffer_attr;
+    const size_t frame_size = pa_frame_size(&s->ss);
+
+    if (attr) {
+        *ba = *attr;
+    } else {
+        // If client passed NULL, all parameters have default values.
+        ba->maxlength = (uint32_t)-1;
+        ba->tlength = (uint32_t)-1;
+        ba->prebuf = (uint32_t)-1;
+        ba->minreq = (uint32_t)-1;
+        ba->fragsize = (uint32_t)-1;
+    }
+
+    // Adjust default values.
+    // Overall buffer length.
+    if (ba->maxlength == (uint32_t)-1)
+        ba->maxlength = 4 * 1024 * 1024;
+
+    if (ba->maxlength == 0)
+        ba->maxlength = frame_size;
+
+    // Target length of a buffer.
+    if (ba->tlength == (uint32_t)-1)
+        ba->tlength = pa_usec_to_bytes(2 * 1000 * 1000, &s->ss);
+
+    if (ba->tlength == 0)
+        ba->tlength = frame_size;
+
+    ba->tlength = MIN(ba->tlength, ba->maxlength);
+
+    // Minimum request (playback).
+    if (ba->minreq == (uint32_t)-1) {
+        ba->minreq = pa_usec_to_bytes(20 * 1000, &s->ss);
+        ba->minreq = MIN(ba->minreq, ba->tlength / 4);
+    }
+
+    if (ba->minreq == 0)
+        ba->minreq = frame_size;
+
+    // Fragment size (recording).
+    if (ba->fragsize == (uint32_t)-1) {
+        ba->fragsize = pa_usec_to_bytes(20 * 1000, &s->ss);
+    }
+
+    if (ba->fragsize == 0)
+        ba->fragsize = frame_size;
+
+    // Pre-buffering.
+    if (ba->prebuf == (uint32_t)-1)
+        ba->prebuf = ba->tlength - ba->minreq;
+
+    if (ba->prebuf > ba->tlength - ba->minreq)
+        ba->prebuf = ba->tlength - ba->minreq;
+
+    // Ensure values are all multiple of |frame_size|.
+    ba->maxlength = pa_find_multiple_of(ba->maxlength, frame_size, 1);
+    ba->tlength = pa_find_multiple_of(ba->tlength, frame_size, 1);
+    ba->prebuf = pa_find_multiple_of(ba->prebuf, frame_size, 1);
+    ba->minreq = pa_find_multiple_of(ba->minreq, frame_size, 1);
+    ba->fragsize = pa_find_multiple_of(ba->fragsize, frame_size, 1);
+}
+
 APULSE_EXPORT
 int
 pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *attr,
@@ -298,15 +365,7 @@ pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *
     g_free(s_attr);
 
     s->direction = PA_STREAM_PLAYBACK;
-    if (attr) {
-        s->buffer_attr = *attr;
-    } else {
-        s->buffer_attr.maxlength = (uint32_t)-1;
-        s->buffer_attr.tlength = (uint32_t)-1;
-        s->buffer_attr.prebuf = (uint32_t)-1;
-        s->buffer_attr.minreq = (uint32_t)-1;
-        s->buffer_attr.fragsize = (uint32_t)-1;
-    }
+    stream_adjust_buffer_attrs(s, attr);
 
     if (do_connect_pcm(s, SND_PCM_STREAM_PLAYBACK) != 0)
         goto err;
@@ -759,7 +818,7 @@ pa_stream_writable_size(pa_stream *s)
     if (writable_size < limit)
         writable_size = 0;
 
-    return pa_find_multiple_of(writable_size, pa_frame_size(&s->ss));
+    return pa_find_multiple_of(writable_size, pa_frame_size(&s->ss), 0);
 }
 
 APULSE_EXPORT
@@ -769,7 +828,7 @@ pa_stream_readable_size(pa_stream *s)
     trace_info_f("F %s s=%p\n", __func__, s);
 
     size_t readable_size = ringbuffer_readable_size(s->rb);
-    return pa_find_multiple_of(readable_size, pa_frame_size(&s->ss));
+    return pa_find_multiple_of(readable_size, pa_frame_size(&s->ss), 0);
 }
 
 APULSE_EXPORT
@@ -810,15 +869,7 @@ pa_stream_connect_record(pa_stream *s, const char *dev, const pa_buffer_attr *at
     g_free(s_attr);
 
     s->direction = PA_STREAM_RECORD;
-    if (attr) {
-        s->buffer_attr = *attr;
-    } else {
-        s->buffer_attr.maxlength = (uint32_t)-1;
-        s->buffer_attr.tlength = (uint32_t)-1;
-        s->buffer_attr.prebuf = (uint32_t)-1;
-        s->buffer_attr.minreq = (uint32_t)-1;
-        s->buffer_attr.fragsize = (uint32_t)-1;
-    }
+    stream_adjust_buffer_attrs(s, attr);
 
     if (do_connect_pcm(s, SND_PCM_STREAM_CAPTURE) != 0)
         goto err;

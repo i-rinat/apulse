@@ -84,9 +84,13 @@ pa_sample_format_from_string(const char *str)
 }
 
 size_t
-pa_find_multiple_of(size_t number, size_t multiple_of)
+pa_find_multiple_of(size_t number, size_t multiple_of, int towards_larger_numbers)
 {
-    return number - (number % multiple_of);
+    if (multiple_of == 0)
+        return number;
+
+    size_t n = towards_larger_numbers ? (number + multiple_of - 1) : number;
+    return n - (n % multiple_of);
 }
 
 void
