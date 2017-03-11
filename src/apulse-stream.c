@@ -78,7 +78,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     snd_pcm_sframes_t   frame_count;
     size_t              frame_size = pa_frame_size(&s->ss);
     char                buf[16 * 1024];
-    const size_t        buf_size = pa_find_multiple_of(sizeof(buf), frame_size);
+    const size_t        buf_size = pa_find_multiple_of(sizeof(buf), frame_size, 0);
     int                 paused = g_atomic_int_get(&s->paused);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {
@@ -759,7 +759,7 @@ pa_stream_writable_size(pa_stream *s)
     if (writable_size < limit)
         writable_size = 0;
 
-    return pa_find_multiple_of(writable_size, pa_frame_size(&s->ss));
+    return pa_find_multiple_of(writable_size, pa_frame_size(&s->ss), 0);
 }
 
 APULSE_EXPORT
@@ -769,7 +769,7 @@ pa_stream_readable_size(pa_stream *s)
     trace_info_f("F %s s=%p\n", __func__, s);
 
     size_t readable_size = ringbuffer_readable_size(s->rb);
-    return pa_find_multiple_of(readable_size, pa_frame_size(&s->ss));
+    return pa_find_multiple_of(readable_size, pa_frame_size(&s->ss), 0);
 }
 
 APULSE_EXPORT
