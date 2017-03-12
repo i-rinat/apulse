@@ -62,17 +62,31 @@ trace_warning(const char *fmt, ...)
 void
 trace_error(const char *fmt, ...)
 {
+    static int stdout_tested = 0;
+    static int stdout_is_a_tty = 0;
+
     pthread_mutex_lock(&lock);
+
+    if (!stdout_tested) {
+        stdout_is_a_tty = isatty(1);
+        stdout_tested = 1;
+    }
+
     va_list args;
     fprintf(stderr, "[apulse] [error] ");
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);
     va_end(args);
 
-    fprintf(stdout, "[apulse] [error] ");
-    va_start(args, fmt);
-    vfprintf(stdout, fmt, args);
-    va_end(args);
+    if (!stdout_is_a_tty) {
+        // If stdout is redirected to a file, make sure it also gets error messages.
+        // That helps to figure out where errors were.
+        fprintf(stdout, "[apulse] [error] ");
+        va_start(args, fmt);
+        vfprintf(stdout, fmt, args);
+        va_end(args);
+    }
+
     pthread_mutex_unlock(&lock);
 }
 
