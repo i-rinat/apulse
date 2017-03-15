@@ -280,7 +280,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     }
 
     trace_info_f("%s: requested period size of %d frames, got %d frames for %s\n", __func__,
-                 (int)requested_period_size, (int)period_size_in, device_description);
+                 (int)requested_period_size, (int)period_size, device_description);
 
     snd_pcm_uframes_t requested_buffer_size = s->buffer_attr.tlength / frame_size;
     snd_pcm_uframes_t buffer_size = requested_buffer_size;
