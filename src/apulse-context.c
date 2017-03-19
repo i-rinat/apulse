@@ -204,6 +204,39 @@ pa_context_get_sink_info_by_name(pa_context *c, const char *name, pa_sink_info_c
     return op;
 }
 
+APULSE_EXPORT
+pa_operation *
+pa_context_get_sink_info_list(pa_context *c, pa_sink_info_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_get_source_info_list(pa_context *c, pa_source_info_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_get_source_info_by_name(pa_context *c, const char *name, pa_source_info_cb_t cb,
+                                   void *userdata)
+{
+    trace_info_z("Z %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name, cb, userdata);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_get_sink_info_by_index(pa_context *c, uint32_t idx, pa_sink_info_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx, cb, userdata);
+    return NULL;
+}
+
 static void
 pa_context_get_sink_input_info_impl(pa_operation *op)
 {
