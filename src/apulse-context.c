@@ -344,6 +344,14 @@ pa_context_set_sink_input_volume_impl(pa_operation *op)
     uint32_t idx = op->int_arg_1;
     pa_stream *s = g_hash_table_lookup(op->c->streams_ht, GINT_TO_POINTER(idx));
 
+    if (!s) {
+        // Can't find a stream with selected index.
+        if (op->context_success_cb)
+            op->context_success_cb(op->c, 0, op->cb_userdata);
+
+        return;
+    }
+
     memset(s->volume, 0, sizeof(s->volume));
 
     const uint32_t channels = MIN(op->pa_cvolume_arg_1.channels, PA_CHANNELS_MAX);
