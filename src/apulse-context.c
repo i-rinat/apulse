@@ -300,7 +300,6 @@ pa_context_new_with_proplist(pa_mainloop_api *mainloop_api, const char *name, pa
     c->streams_ht = g_hash_table_new(g_direct_hash, g_direct_equal);
 
     for (uint32_t k = 0; k < PA_CHANNELS_MAX; k++) {
-        c->sink_volume[k] = PA_VOLUME_NORM;
         c->source_volume[k] = PA_VOLUME_NORM;
     }
 
@@ -342,12 +341,15 @@ pa_context_set_sink_input_mute(pa_context *c, uint32_t idx, int mute, pa_context
 static void
 pa_context_set_sink_input_volume_impl(pa_operation *op)
 {
-    memset(&op->c->sink_volume, 0, sizeof(op->c->sink_volume));
+    uint32_t idx = op->int_arg_1;
+    pa_stream *s = g_hash_table_lookup(op->c->streams_ht, GINT_TO_POINTER(idx));
+
+    memset(s->volume, 0, sizeof(s->volume));
 
     const uint32_t channels = MIN(op->pa_cvolume_arg_1.channels, PA_CHANNELS_MAX);
 
     for (uint32_t k = 0; k < channels; k++)
-        op->c->sink_volume[k] = op->pa_cvolume_arg_1.values[k];
+        s->volume[k] = op->pa_cvolume_arg_1.values[k];
 
     if (op->context_success_cb)
         op->context_success_cb(op->c, 1, op->cb_userdata);
