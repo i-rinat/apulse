@@ -124,7 +124,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
             size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             bytecnt = ringbuffer_read(s->rb, buf, bytecnt);
 
-            pa_apply_volume_multiplier(buf, bytecnt, s->c->sink_volume, &s->ss);
+            pa_apply_volume_multiplier(buf, bytecnt, s->volume, &s->ss);
 
             if (bytecnt == 0) {
                 // application is not ready yet, play silence
@@ -775,6 +775,9 @@ pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spe
 
     s->rb = ringbuffer_new(72 * 1024);    // TODO: figure out size
     s->peek_buffer = malloc(s->rb->end - s->rb->start);
+
+    for (uint32_t k = 0; k < PA_CHANNELS_MAX; k++)
+        s->volume[k] = PA_VOLUME_NORM;
 
     return s;
 }

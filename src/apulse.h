@@ -46,7 +46,6 @@ struct pa_context {
     int                     next_stream_idx;
     GHashTable             *streams_ht;
     pa_volume_t             source_volume[PA_CHANNELS_MAX];
-    pa_volume_t             sink_volume[PA_CHANNELS_MAX];
 };
 
 struct pa_io_event {
@@ -114,6 +113,7 @@ struct pa_stream {
     size_t                  peek_buffer_data_len;
     void                   *write_buffer;
     volatile int            paused;
+    pa_volume_t             volume[PA_CHANNELS_MAX];
 };
 
 struct pa_operation {
