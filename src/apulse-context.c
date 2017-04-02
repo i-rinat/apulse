@@ -213,12 +213,32 @@ pa_context_get_sink_info_by_name(pa_context *c, const char *name, pa_sink_info_c
     return op;
 }
 
+static void
+pa_context_get_sink_info_list_impl(pa_operation *op)
+{
+    pa_sink_info info = pai_fill_default_sink_info();
+
+    if (op->sink_info_cb) {
+        op->sink_info_cb(op->c, &info, 0, op->cb_userdata);
+        op->sink_info_cb(op->c, NULL, 1, op->cb_userdata);
+    }
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_context_get_sink_info_list(pa_context *c, pa_sink_info_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
-    return NULL;
+    trace_info_f("F %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
+
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_info_list_impl);
+    op->c = c;
+    op->sink_info_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
