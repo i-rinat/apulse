@@ -241,12 +241,82 @@ pa_context_get_sink_info_list(pa_context *c, pa_sink_info_cb_t cb, void *userdat
     return op;
 }
 
+static pa_source_info
+pai_fill_default_source_info(void)
+{
+    // TODO: real data
+    pa_source_info info = {
+        .name = "default_source_name",
+        .index = 0,
+        .description = "default_source_name",
+        .sample_spec = {
+            .format = PA_SAMPLE_S16LE,
+            .rate = 44100,
+            .channels = 2,
+        },
+        .channel_map = {
+            .channels = 2,
+            .map = {
+                PA_CHANNEL_POSITION_FRONT_LEFT,
+                PA_CHANNEL_POSITION_FRONT_RIGHT,
+            },
+        },
+        .owner_module = PA_INVALID_INDEX,
+        .volume = {
+            .channels = 2,
+            .values = {
+                PA_VOLUME_NORM,
+                PA_VOLUME_NORM,
+            },
+        },
+        .mute = 0,
+        .monitor_of_sink = 0,
+        .monitor_of_sink_name = NULL,
+        .latency = 100000, // TODO: where to get latency figures?
+        .driver = "apulse",
+        .flags = 0,
+        .proplist = NULL,
+        .configured_latency = 100000,
+        .base_volume = PA_VOLUME_NORM,
+        .state = PA_SOURCE_RUNNING,
+        .n_volume_steps = 0,
+        .card = PA_INVALID_INDEX,
+        .n_ports = 0,
+        .ports = NULL,
+        .active_port = NULL,
+        .n_formats = 0,
+        .formats = NULL,
+    };
+
+    return info;
+}
+
+static void
+pa_context_get_source_info_list_impl(pa_operation *op)
+{
+    pa_source_info info = pai_fill_default_source_info();
+
+    if (op->source_info_cb) {
+        op->source_info_cb(op->c, &info, 0, op->cb_userdata);
+        op->source_info_cb(op->c, NULL, 1, op->cb_userdata);
+    }
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_context_get_source_info_list(pa_context *c, pa_source_info_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
-    return NULL;
+    trace_info_f("F %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
+
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_source_info_list_impl);
+    op->c = c;
+    op->source_info_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT

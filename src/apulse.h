@@ -123,6 +123,7 @@ struct pa_operation {
     pa_sink_info_cb_t       sink_info_cb;
     pa_context_success_cb_t context_success_cb;
     pa_server_info_cb_t     server_info_cb;
+    pa_source_info_cb_t     source_info_cb;
     void                   *cb_userdata;
 
     pa_mainloop_api *api;
