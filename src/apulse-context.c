@@ -351,12 +351,34 @@ pa_context_get_source_info_by_name(pa_context *c, const char *name, pa_source_in
     return op;
 }
 
+static void
+pa_context_get_sink_info_by_index_impl(pa_operation *op)
+{
+    pa_sink_info info = pai_fill_default_sink_info();
+
+    if (op->sink_info_cb) {
+        if (op->int_arg_1 == info.index)
+            op->sink_info_cb(op->c, &info, 0, op->cb_userdata);
+        op->sink_info_cb(op->c, NULL, 1, op->cb_userdata);
+    }
+
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_context_get_sink_info_by_index(pa_context *c, uint32_t idx, pa_sink_info_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx, cb, userdata);
-    return NULL;
+    trace_info_f("F %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx, cb, userdata);
+
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_info_by_index_impl);
+    op->c = c;
+    op->int_arg_1 = idx;
+    op->sink_info_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 static void
