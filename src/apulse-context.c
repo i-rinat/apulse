@@ -132,8 +132,8 @@ pa_context_get_server_protocol_version(pa_context *c)
     return 8;   // PA headers say "8" is the protocol version used in PulseAudio 0.9
 }
 
-static void
-pa_context_get_sink_info_by_name_impl(pa_operation *op)
+static pa_sink_info
+pai_fill_default_sink_info(void)
 {
     // TODO: real data
     pa_sink_info info = {
@@ -177,8 +177,17 @@ pa_context_get_sink_info_by_name_impl(pa_operation *op)
         .active_port = NULL,
     };
 
+    return info;
+}
+
+static void
+pa_context_get_sink_info_by_name_impl(pa_operation *op)
+{
+    pa_sink_info info = pai_fill_default_sink_info();
+
     if (op->sink_info_cb) {
-        op->sink_info_cb(op->c, &info, 0, op->cb_userdata);
+        if (strcmp(op->char_ptr_arg_1, info.name) == 0)
+            op->sink_info_cb(op->c, &info, 0, op->cb_userdata);
         op->sink_info_cb(op->c, NULL, 1, op->cb_userdata);
     }
 
