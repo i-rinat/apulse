@@ -319,13 +319,36 @@ pa_context_get_source_info_list(pa_context *c, pa_source_info_cb_t cb, void *use
     return op;
 }
 
+static void
+pa_context_get_source_info_by_name_impl(pa_operation *op)
+{
+    pa_source_info info = pai_fill_default_source_info();
+
+    if (op->source_info_cb) {
+        if (strcmp(op->char_ptr_arg_1, info.name) == 0)
+            op->source_info_cb(op->c, &info, 0, op->cb_userdata);
+        op->source_info_cb(op->c, NULL, 1, op->cb_userdata);
+    }
+
+    free(op->char_ptr_arg_1);
+    pa_operation_done(op);
+}
+
 APULSE_EXPORT
 pa_operation *
 pa_context_get_source_info_by_name(pa_context *c, const char *name, pa_source_info_cb_t cb,
                                    void *userdata)
 {
-    trace_info_z("Z %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name, cb, userdata);
-    return NULL;
+    trace_info_f("F %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name, cb, userdata);
+
+    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_source_info_by_name_impl);
+    op->c = c;
+    op->char_ptr_arg_1 = strdup(name ? name : "");
+    op->source_info_cb = cb;
+    op->cb_userdata = userdata;
+
+    pa_operation_launch(op);
+    return op;
 }
 
 APULSE_EXPORT
