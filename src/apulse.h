@@ -62,6 +62,7 @@ struct pa_io_event {
 struct pa_mainloop {
     pa_mainloop_api     api;
     GQueue             *deferred_events_queue;
+    GQueue             *timed_events_queue;
     GHashTable         *events_ht;  ///< a set of (pa_io_event *)
     struct pollfd      *fds;
     nfds_t              nfds;
@@ -149,6 +150,14 @@ struct pa_defer_event {
     pa_mainloop            *mainloop;
 };
 
+struct pa_time_event {
+    int                         enabled;
+    struct timeval              when;
+    pa_time_event_cb_t          cb;
+    void                       *userdata;
+    pa_mainloop                *mainloop;
+    pa_time_event_destroy_cb_t  destroy_cb;
+};
 
 pa_operation *
 pa_operation_new(pa_mainloop_api *api, void (*handler)(pa_operation *op));
