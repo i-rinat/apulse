@@ -135,6 +135,24 @@ pa_context_get_server_protocol_version(pa_context *c)
 static pa_sink_info
 pai_fill_default_sink_info(void)
 {
+    static pa_proplist *proplist = NULL;
+
+    if (!proplist) {
+        // TODO: free memory
+        proplist = pa_proplist_new();
+    }
+
+    static pa_sink_port_info sink_port = {
+        .name = "ALSA sink",
+        .description = "ALSA sink",
+        .priority = 1,
+        .available = PA_PORT_AVAILABLE_YES,
+    };
+
+    static pa_sink_port_info *sink_ports[] = {
+        &sink_port,
+    };
+
     // TODO: real data
     pa_sink_info info = {
         .name = "default_sink_name",
@@ -166,15 +184,15 @@ pai_fill_default_sink_info(void)
         .latency = 100000,
         .driver = "apulse",
         .flags = 0,
-        .proplist = NULL,
+        .proplist = proplist,
         .configured_latency = 100000,
         .base_volume = PA_VOLUME_NORM,
         .state = PA_SINK_RUNNING,
         .n_volume_steps = 0,
-        .card = PA_INVALID_INDEX,
-        .n_ports = 0,
-        .ports = NULL,
-        .active_port = NULL,
+        .card = 0,
+        .n_ports = 1,
+        .ports = sink_ports,
+        .active_port = &sink_port,
     };
 
     return info;
@@ -244,6 +262,24 @@ pa_context_get_sink_info_list(pa_context *c, pa_sink_info_cb_t cb, void *userdat
 static pa_source_info
 pai_fill_default_source_info(void)
 {
+    static pa_proplist *proplist = NULL;
+
+    if (!proplist) {
+        // TODO: free memory
+        proplist = pa_proplist_new();
+    }
+
+    static pa_source_port_info source_port = {
+        .name = "ALSA source",
+        .description = "ALSA source",
+        .priority = 1,
+        .available = PA_PORT_AVAILABLE_YES,
+    };
+
+    static pa_source_port_info *source_ports[] = {
+        &source_port,
+    };
+
     // TODO: real data
     pa_source_info info = {
         .name = "default_source_name",
@@ -275,15 +311,15 @@ pai_fill_default_source_info(void)
         .latency = 100000, // TODO: where to get latency figures?
         .driver = "apulse",
         .flags = 0,
-        .proplist = NULL,
+        .proplist = proplist,
         .configured_latency = 100000,
         .base_volume = PA_VOLUME_NORM,
         .state = PA_SOURCE_RUNNING,
         .n_volume_steps = 0,
         .card = PA_INVALID_INDEX,
-        .n_ports = 0,
-        .ports = NULL,
-        .active_port = NULL,
+        .n_ports = 1,
+        .ports = source_ports,
+        .active_port = &source_port,
         .n_formats = 0,
         .formats = NULL,
     };
