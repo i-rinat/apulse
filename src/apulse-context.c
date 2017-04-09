@@ -180,7 +180,7 @@ pai_fill_default_sink_info(void)
         },
         .mute = 0,
         .monitor_source = 0,
-        .monitor_source_name = "monitor_source_name",
+        .monitor_source_name = NULL,
         .latency = 100000,
         .driver = "apulse",
         .flags = 0,
