@@ -65,7 +65,7 @@ ml_api_defer_free(pa_defer_event *e)
     trace_info_f("F %s\n", __func__);
 
     pa_mainloop *ml = e->mainloop;
-    g_queue_remove(ml->queue, e);
+    g_queue_remove(ml->deferred_events_queue, e);
     g_slice_free(pa_defer_event, e);
     pa_mainloop_wakeup(ml);
 }
@@ -82,7 +82,7 @@ ml_api_defer_new(pa_mainloop_api *a, pa_defer_event_cb_t cb, void *userdata)
     de->cb = cb;
     de->userdata = userdata;
     de->mainloop = ml;
-    g_queue_push_tail(ml->queue, de);
+    g_queue_push_tail(ml->deferred_events_queue, de);
 
     pa_mainloop_wakeup(ml);
     return de;
@@ -271,11 +271,11 @@ pa_mainloop_dispatch(pa_mainloop *m)
         m->fds[0].revents = 0;
     }
 
-    pa_defer_event *de = g_queue_pop_head(m->queue);
+    pa_defer_event *de = g_queue_pop_head(m->deferred_events_queue);
     while (de) {
         if (de->cb)
             de->cb(&m->api, de, de->userdata);
-        de = g_queue_pop_head(m->queue);
+        de = g_queue_pop_head(m->deferred_events_queue);
     }
 
     return cnt;
@@ -287,7 +287,7 @@ pa_mainloop_free(pa_mainloop *m)
 {
     trace_info_f("F %s m=%p\n", __func__, m);
 
-    g_queue_free(m->queue);
+    g_queue_free(m->deferred_events_queue);
     g_hash_table_unref(m->events_ht);
     close(m->wakeup_pipe[0]);
     close(m->wakeup_pipe[1]);
@@ -365,7 +365,7 @@ pa_mainloop_new(void)
     m->api.defer_set_destroy = ml_api_defer_set_destroy;
     m->api.quit              = ml_api_quit;
 
-    m->queue = g_queue_new();
+    m->deferred_events_queue = g_queue_new();
     m->events_ht = g_hash_table_new(g_direct_hash, g_direct_equal);
     m->recreate_fds = 1;
 

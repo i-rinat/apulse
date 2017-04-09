@@ -61,7 +61,7 @@ struct pa_io_event {
 
 struct pa_mainloop {
     pa_mainloop_api     api;
-    GQueue             *queue;
+    GQueue             *deferred_events_queue;
     GHashTable         *events_ht;  ///< a set of (pa_io_event *)
     struct pollfd      *fds;
     nfds_t              nfds;
