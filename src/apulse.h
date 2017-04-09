@@ -62,7 +62,7 @@ struct pa_io_event {
 struct pa_mainloop {
     pa_mainloop_api     api;
     GQueue             *queue;
-    GHashTable         *events_ht;
+    GHashTable         *events_ht;  ///< a set of (pa_io_event *)
     struct pollfd      *fds;
     nfds_t              nfds;
     int                 recreate_fds; ///< 1 if fds array needs to be recreated from events_ht
