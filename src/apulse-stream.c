@@ -340,8 +340,9 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     trace_info_f("%s: requested period size of %d frames, got %d frames for %s\n", __func__,
                  (int)requested_period_size, (int)period_size, device_description);
 
+    // Set up buffer size. Ensure it's at least four times larger than a period size.
     snd_pcm_uframes_t requested_buffer_size = s->buffer_attr.tlength / frame_size;
-    snd_pcm_uframes_t buffer_size = requested_buffer_size;
+    snd_pcm_uframes_t buffer_size = MAX(requested_buffer_size, 4 * period_size);
     errcode = snd_pcm_hw_params_set_buffer_size_near(s->ph, hw_params, &buffer_size);
     if (errcode != 0) {
         trace_error(
