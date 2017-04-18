@@ -24,6 +24,11 @@
 
 #include "apulse.h"
 #include "trace.h"
+#include <pulse/ext-device-manager.h>
+#include <pulse/ext-device-restore.h>
+#include <pulse/ext-stream-restore.h>
+#include <pulse/glib-mainloop.h>
+#include <pulse/simple.h>
 
 
 APULSE_EXPORT
@@ -1401,4 +1406,202 @@ pa_usec_t pa_timeval_load(const struct timeval *tv)
 {
     trace_info_z("Z %s\n", __func__);
     return 0;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_manager_test(pa_context *c, pa_ext_device_manager_test_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_manager_read(pa_context *c, pa_ext_device_manager_read_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_manager_set_device_description(pa_context *c, const char *device,
+                                             const char *description, pa_context_success_cb_t cb,
+                                             void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_manager_delete(pa_context *c, const char *const s[], pa_context_success_cb_t cb,
+                             void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_manager_enable_role_device_priority_routing(pa_context *c, int enable,
+                                                          pa_context_success_cb_t cb,
+                                                          void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_manager_reorder_devices_for_role(pa_context *c, const char *role,
+                                               const char **devices, pa_context_success_cb_t cb,
+                                               void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_manager_subscribe(pa_context *c, int enable, pa_context_success_cb_t cb,
+                                void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+void
+pa_ext_device_manager_set_subscribe_cb(pa_context *c, pa_ext_device_manager_subscribe_cb_t cb,
+                                       void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_restore_test(pa_context *c, pa_ext_device_restore_test_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_restore_subscribe(pa_context *c, int enable, pa_context_success_cb_t cb,
+                                void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+void
+pa_ext_device_restore_set_subscribe_cb(pa_context *c, pa_ext_device_restore_subscribe_cb_t cb,
+                                       void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_restore_read_formats_all(pa_context *c,
+                                       pa_ext_device_restore_read_device_formats_cb_t cb,
+                                       void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_restore_read_formats(pa_context *c, pa_device_type_t type, uint32_t idx,
+                                   pa_ext_device_restore_read_device_formats_cb_t cb,
+                                   void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_device_restore_save_formats(pa_context *c, pa_device_type_t type, uint32_t idx,
+                                   uint8_t n_formats, pa_format_info **formats,
+                                   pa_context_success_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_stream_restore_test(pa_context *c, pa_ext_stream_restore_test_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_stream_restore_read(pa_context *c, pa_ext_stream_restore_read_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_stream_restore_write(pa_context *c, pa_update_mode_t mode,
+                            const pa_ext_stream_restore_info data[], unsigned n,
+                            int apply_immediately, pa_context_success_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_stream_restore_delete(pa_context *c, const char *const s[], pa_context_success_cb_t cb,
+                             void *userdata);
+
+APULSE_EXPORT
+pa_operation *
+pa_ext_stream_restore_subscribe(pa_context *c, int enable, pa_context_success_cb_t cb,
+                                void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+void
+pa_ext_stream_restore_set_subscribe_cb(pa_context *c, pa_ext_stream_restore_subscribe_cb_t cb,
+                                       void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+pa_glib_mainloop *
+pa_glib_mainloop_new(GMainContext *c)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+void
+pa_glib_mainloop_free(pa_glib_mainloop *g)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+pa_mainloop_api *
+pa_glib_mainloop_get_api(pa_glib_mainloop *g)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
 }
