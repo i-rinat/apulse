@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015  Rinat Ibragimov
+ * Copyright © 2014-2017  Rinat Ibragimov
  *
  * This file is part of "apulse" project.
  *
