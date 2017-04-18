@@ -65,7 +65,7 @@ ml_api_defer_free(pa_defer_event *e)
     trace_info_f("F %s\n", __func__);
 
     pa_mainloop *ml = e->mainloop;
-    g_queue_remove(ml->queue, e);
+    g_queue_remove(ml->deferred_events_queue, e);
     g_slice_free(pa_defer_event, e);
     pa_mainloop_wakeup(ml);
 }
@@ -82,7 +82,7 @@ ml_api_defer_new(pa_mainloop_api *a, pa_defer_event_cb_t cb, void *userdata)
     de->cb = cb;
     de->userdata = userdata;
     de->mainloop = ml;
-    g_queue_push_tail(ml->queue, de);
+    g_queue_push_tail(ml->deferred_events_queue, de);
 
     pa_mainloop_wakeup(ml);
     return de;
@@ -154,34 +154,92 @@ ml_api_quit(pa_mainloop_api *a, int retval)
     trace_info_z("Z %s\n", __func__);
 }
 
-static
-void
-ml_api_time_free(pa_time_event* e)
+static void
+ml_api_time_free(pa_time_event *e)
 {
-    trace_info_z("Z %s\n", __func__);
+    trace_info_f("F %s e=%p\n", __func__, e);
+
+    pa_mainloop *ml = e->mainloop;
+    g_queue_remove(ml->timed_events_queue, e);
+
+    if (e->destroy_cb)
+        e->destroy_cb(&ml->api, e, e->userdata);
+
+    g_slice_free(pa_time_event, e);
+    pa_mainloop_wakeup(ml);
 }
 
-static
-pa_time_event *
+/// Comparator function for |timed_events_queue|. Orders events by value of |when| parameter.
+static gint
+time_event_comparator(gconstpointer a, gconstpointer b, gpointer user_data)
+{
+    const pa_time_event *te_a = a;
+    const pa_time_event *te_b = b;
+
+    // First, try to compare seconds.
+    if (te_a->when.tv_sec < te_b->when.tv_sec)
+        return -1;
+
+    if (te_a->when.tv_sec > te_b->when.tv_sec)
+        return 1;
+
+    // If we got here, tv_sec fields are equal.
+
+    // Then, compare microseconds.
+    if (te_a->when.tv_usec < te_b->when.tv_usec)
+        return -1;
+
+    if (te_a->when.tv_usec > te_b->when.tv_usec)
+        return 1;
+
+    // Timestamps are equal.
+    return 0;
+}
+
+static pa_time_event *
 ml_api_time_new(pa_mainloop_api *a, const struct timeval *tv, pa_time_event_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s\n", __func__);
+    trace_info_f("F %s a=%p, tv=%p {%ld, %ld}, cb=%p, userdata=%p\n", __func__, a, tv,
+                 tv ? tv->tv_sec : 0, tv ? tv->tv_usec : 0, cb, userdata);
 
-    return NULL;
+    pa_mainloop *ml = a->userdata;
+    pa_time_event *te = g_slice_new0(pa_time_event);
+    te->enabled = 1;
+    te->when = tv ? *tv : (struct timeval){};
+    te->cb = cb;
+    te->userdata = userdata;
+    te->mainloop = ml;
+
+    g_queue_insert_sorted(ml->timed_events_queue, te, time_event_comparator, NULL);
+
+    pa_mainloop_wakeup(ml);
+    return te;
 }
 
-static
-void
-ml_api_time_restart(pa_time_event* e, const struct timeval *tv)
+static void
+ml_api_time_restart(pa_time_event *e, const struct timeval *tv)
 {
-    trace_info_z("Z %s\n", __func__);
+    trace_info_f("F %s e=%p, tv=%p {%ld, %ld}\n", __func__, e, tv, tv ? tv->tv_sec : 0,
+                 tv ? tv->tv_usec : 0);
+
+    pa_mainloop *ml = e->mainloop;
+
+    g_queue_remove(ml->timed_events_queue, e);
+
+    e->enabled = 1;
+    e->when = tv ? *tv : (struct timeval){};
+
+    g_queue_insert_sorted(ml->timed_events_queue, e, time_event_comparator, NULL);
+
+    pa_mainloop_wakeup(ml);
 }
 
-static
-void
+static void
 ml_api_time_set_destroy(pa_time_event *e, pa_time_event_destroy_cb_t cb)
 {
-    trace_info_z("Z %s\n", __func__);
+    trace_info_f("F %s e=%p, cb=%p\n", __func__, e, cb);
+
+    e->destroy_cb = cb;
 }
 
 static void
@@ -222,6 +280,12 @@ recover_pcm(snd_pcm_t *pcm)
         snd_pcm_prepare(pcm);
         break;
     }
+}
+
+static long
+microseconds_till_event(pa_usec_t now, const struct timeval *event_when)
+{
+    return (uint64_t)event_when->tv_sec * 1000 * 1000 + event_when->tv_usec - now;
 }
 
 APULSE_EXPORT
@@ -271,11 +335,20 @@ pa_mainloop_dispatch(pa_mainloop *m)
         m->fds[0].revents = 0;
     }
 
-    pa_defer_event *de = g_queue_pop_head(m->queue);
+    pa_usec_t now = pa_rtclock_now();
+    pa_time_event *te = g_queue_peek_head(m->timed_events_queue);
+    while (te && microseconds_till_event(now, &te->when) <= 0) {
+        if (te->cb && te->enabled)
+            te->cb(&m->api, te, &te->when, te->userdata);
+        g_queue_pop_head(m->timed_events_queue);
+        te = g_queue_peek_head(m->timed_events_queue);
+    }
+
+    pa_defer_event *de = g_queue_pop_head(m->deferred_events_queue);
     while (de) {
         if (de->cb)
             de->cb(&m->api, de, de->userdata);
-        de = g_queue_pop_head(m->queue);
+        de = g_queue_pop_head(m->deferred_events_queue);
     }
 
     return cnt;
@@ -287,7 +360,8 @@ pa_mainloop_free(pa_mainloop *m)
 {
     trace_info_f("F %s m=%p\n", __func__, m);
 
-    g_queue_free(m->queue);
+    g_queue_free(m->deferred_events_queue);
+    g_queue_free(m->timed_events_queue);
     g_hash_table_unref(m->events_ht);
     close(m->wakeup_pipe[0]);
     close(m->wakeup_pipe[1]);
@@ -365,7 +439,8 @@ pa_mainloop_new(void)
     m->api.defer_set_destroy = ml_api_defer_set_destroy;
     m->api.quit              = ml_api_quit;
 
-    m->queue = g_queue_new();
+    m->deferred_events_queue = g_queue_new();
+    m->timed_events_queue = g_queue_new();
     m->events_ht = g_hash_table_new(g_direct_hash, g_direct_equal);
     m->recreate_fds = 1;
 
@@ -382,11 +457,33 @@ pa_mainloop_poll(pa_mainloop *m)
 {
     trace_info_f("F %s m=%p\n", __func__, m);
 
+    long int timeout = m->timeout;
+
+    pa_time_event *te = g_queue_peek_head(m->timed_events_queue);
+    if (te) {
+        pa_usec_t now = pa_rtclock_now();
+        long int msecs_till_next_event = microseconds_till_event(now, &te->when) / PA_USEC_PER_MSEC;
+
+        // Ensure delay is non-negative, even if event is already expired.
+        msecs_till_next_event = MAX(msecs_till_next_event, 0);
+
+        if (timeout < 0) {
+            // poll() call was supposed to wait for indefinite period of time.
+            timeout = msecs_till_next_event;
+
+        } else {
+            timeout = MIN(timeout, msecs_till_next_event);
+        }
+
+        // |timeout| value should fit int limits.
+        timeout = MIN(timeout, INT32_MAX);
+    }
+
     int ret;
     if (m->poll_func) {
-        ret = m->poll_func(m->fds, m->nfds, m->timeout, m->poll_func_userdata);
+        ret = m->poll_func(m->fds, m->nfds, timeout, m->poll_func_userdata);
     } else {
-        ret = poll(m->fds, m->nfds, m->timeout);
+        ret = poll(m->fds, m->nfds, timeout);
     }
 
     return ret;

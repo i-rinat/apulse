@@ -535,9 +535,15 @@ APULSE_EXPORT
 pa_time_event *
 pa_context_rttime_new(pa_context *c, pa_usec_t usec, pa_time_event_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s c=%p, usec=%" PRIu64 " cb=%p, userdata=%p\n", __func__, c, (uint64_t)usec,
+    trace_info_f("F %s c=%p, usec=%" PRIu64 " cb=%p, userdata=%p\n", __func__, c, (uint64_t)usec,
                  cb, userdata);
-    return NULL;
+
+    struct timeval when = {
+        .tv_sec = usec / PA_USEC_PER_SEC,
+        .tv_usec = usec % PA_USEC_PER_SEC,
+    };
+
+    return c->mainloop_api->time_new(c->mainloop_api, &when, cb, userdata);
 }
 
 APULSE_EXPORT
