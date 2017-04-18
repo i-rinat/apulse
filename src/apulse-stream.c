@@ -91,6 +91,64 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
                 ret = snd_pcm_recover(s->ph, frame_count, 1);
             } while (ret == -1 && errno == EINTR && cnt < 5);
 
+            switch (snd_pcm_state(s->ph)) {
+            case SND_PCM_STATE_OPEN:
+                // Highly unlikely device will be here in this state. But if it is, there is nothing
+                // can be done.
+                trace_error(
+                    "Stream '%s' of context '%s' have its associated PCM device in "
+                    "SND_PCM_STATE_OPEN state. Reconfiguration is required, but is not possible at "
+                    "the moment. Giving up.",
+                    s->name ? s->name : "", s->c->name ? s->c->name : "");
+                break;
+
+            case SND_PCM_STATE_SETUP:
+                // There is configuration, but device is not prepared and not started.
+                snd_pcm_prepare(s->ph);
+                snd_pcm_start(s->ph);
+                break;
+
+            case SND_PCM_STATE_PREPARED:
+                // Device prepared, but not started.
+                snd_pcm_start(s->ph);
+                break;
+
+            case SND_PCM_STATE_RUNNING:
+                // That's the expected state.
+                break;
+
+            case SND_PCM_STATE_XRUN:
+                trace_error(
+                    "Stream '%s' of context '%s' have its associated device in SND_PCM_STATE_XRUN "
+                    "state even after xrun recovery.",
+                    s->name ? s->name : "", s->c->name ? s->c->name : "");
+                break;
+
+            case SND_PCM_STATE_DRAINING:
+                trace_error(
+                    "Stream '%s' of context '%s' have its associated device in "
+                    "SND_PCM_STATE_DRAINING state, which is highly unusual.",
+                    s->name ? s->name : "", s->c->name ? s->c->name : "");
+                break;
+
+            case SND_PCM_STATE_PAUSED:
+                // Resume from paused state.
+                snd_pcm_pause(s->ph, 0);
+                break;
+
+            case SND_PCM_STATE_SUSPENDED:
+                // Resume from suspended state.
+                snd_pcm_resume(s->ph);
+                break;
+
+            case SND_PCM_STATE_DISCONNECTED:
+                trace_error(
+                    "Stream '%s' of context '%s' have its associated device in "
+                    "SND_PCM_STATE_DISCONNECTED state. Giving up.",
+                    s->name ? s->name : "", s->c->name ? s->c->name : "");
+                break;
+            }
+
 #if HAVE_SND_PCM_AVAIL
             frame_count = snd_pcm_avail(s->ph);
 #else
