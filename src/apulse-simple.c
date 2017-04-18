@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015  Rinat Ibragimov
+ * Copyright © 2014-2017  Rinat Ibragimov
  *
  * This file is part of "apulse" project.
  *
@@ -43,4 +43,44 @@ pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, c
     trace_info_z("Z %s server=%s, name=%s, dir=%d, dev=%s, stream_name=%s, ss=%p, map=%p, attr=%p\n",
                __func__, server, name, dir, dev, stream_name, ss, map, attr);
     return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_simple_write(pa_simple *s, const void *data, size_t bytes, int *error)
+{
+    trace_info_z("Z %s\n", __func__);
+    return -1;
+}
+
+APULSE_EXPORT
+int
+pa_simple_drain(pa_simple *s, int *error)
+{
+    trace_info_z("Z %s\n", __func__);
+    return -1;
+}
+
+APULSE_EXPORT
+int
+pa_simple_read(pa_simple *s, void *data, size_t bytes, int *error)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+pa_usec_t
+pa_simple_get_latency(pa_simple *s, int *error)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_simple_flush(pa_simple *s, int *error)
+{
+    trace_info_z("Z %s\n", __func__);
+    return -1;
 }
