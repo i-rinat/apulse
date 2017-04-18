@@ -379,12 +379,15 @@ APULSE_EXPORT
 int
 pa_stream_begin_write(pa_stream *p, void **data, size_t *nbytes)
 {
-    trace_info_f("F %s p=%p\n", __func__, p);
+    trace_info_f("F %s p=%p nbytes=%p(%" PRIu64 ")\n", __func__, p, nbytes,
+                 (uint64_t)(nbytes ? *nbytes : 0));
 
     free(p->write_buffer);
 
     if (*nbytes == (size_t)-1)
         *nbytes = 8192;
+
+    *nbytes = pa_find_multiple_of(*nbytes, pa_frame_size(&p->ss), 0);
 
     p->write_buffer = malloc(*nbytes);
 
