@@ -280,7 +280,7 @@ int
 pa_simple_read(pa_simple *s, void *data, size_t bytes, int *error)
 {
     trace_info_z("Z %s\n", __func__);
-    return 0;
+    return -1;
 }
 
 APULSE_EXPORT
