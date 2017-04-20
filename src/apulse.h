@@ -159,6 +159,14 @@ struct pa_time_event {
     pa_time_event_destroy_cb_t  destroy_cb;
 };
 
+struct pa_simple {
+    pa_context             *context;
+    pa_threaded_mainloop   *mainloop;
+    pa_stream              *stream;
+    pa_stream_direction_t   direction;
+    int                     initialized;
+};
+
 pa_operation *
 pa_operation_new(pa_mainloop_api *api, void (*handler)(pa_operation *op));
 
