@@ -90,6 +90,25 @@ It's possible to install apulse libraries to `/usr/lib`. Wrapper script won't
 be required, but then all applications will try to use PulseAudio API, despite
 they can use ALSA.
 
+Per-app RPATH trick
+-------------------
+
+There is the RPATH property of ELF executable format, which is used to specify
+paths to search for dynamic libraries. It's like LD_LIBRARY_PATH variable, but
+per-executable. Since all that `apulse` launcher script does is setting
+LD_LIBRARY_PATH value before launching an application, it's possible to bake
+paths to apulse libraries into target executable itself. And so to launch it
+as usual, without helper script.
+
+For example, for Firefox it would be:
+
+```
+# patchelf --set-rpath /usr/lib/apulse /usr/lib/firefox/libxul.so
+```
+
+For some reason, it doesn't work if RPATH is set for `/usr/lib/firefox/firefox`
+itself, so some experiments are required to make it work.
+
 
 License
 =======
