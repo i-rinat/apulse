@@ -7,6 +7,8 @@ find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(REQ glib-2.0 alsa REQUIRED)
 
+list(APPEND REQ_LIBRARIES m)
+
 set(WITH_TRACE 0 CACHE STRING "trace level: no tracing (0) / unimplemented only (1) / all (2)")
 
 # trace level
