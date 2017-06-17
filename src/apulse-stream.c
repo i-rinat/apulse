@@ -430,6 +430,15 @@ fatal_error:
         "conversions on CPU.\n",
         __func__);
 
+    if (errcode == -EACCES) {
+        trace_error(
+            "%s: additionally, the error code is %d, which means access was denied. That looks "
+            "like access restriction in a sandbox. If the app you are running uses sandboxing "
+            "techniques, make sure /dev/snd/ directory is added into the allowed list. Both "
+            "reading and writing access to the files in that directory are required.\n",
+            __func__, -EACCES);
+    }
+
     g_free(device_description);
     return -1;
 }
