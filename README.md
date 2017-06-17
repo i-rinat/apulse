@@ -109,6 +109,57 @@ For example, for Firefox it would be:
 For some reason, it doesn't work if RPATH is set for `/usr/lib/firefox/firefox`
 itself, so some experiments are required to make it work.
 
+Known issues
+============
+
+Not implemented functions, application crashes
+----------------------------------------------
+
+Large portion of PulseAudio API is not implemented. There are functions that do
+nothing and return some arbitraty values. Often, if application tries to call
+something not implemented, it crashes while trying to dereference a NULL
+pointer.  By default, tracing level is set to `0`, which means no messages are
+printed to standard output. It's possible to increase that value to `1`, which
+shows unimplemented function calls, or to `2`, which shows all function calls.
+
+To change level, use `WITH_TRACE` parameter when calling `cmake`. Something like
+`cmake -DWITH_TRACE=1 ..`
+
+Building apulse with trace level 1 won't fix issues, but will at least help to
+identify if crashes are caused by not implemented functions.
+
+Generic errors in do_connect_pcm
+--------------------------------
+
+Apulse acts as a generic ALSA client. It tries to open audio device, and
+sometimes fails.  At its core, apulse does neither audio mixing nor
+resampling. Instead, it relies on `plug`, `dmix`, and `dsnoop` ALSA plugins,
+which are usually enabled by default. These plugins handle multiple audio
+sources, performing resampling and mixing transparently. For years now ALSA
+comes with those plugins enabled. Audio just works without configuring
+anything. But not everybody use default settings.
+
+On custom configurations apulse may fail to output and/or capture audio. There
+could be no sound at all, or just a single audio stream playing at a time.  It's
+also possible that adapters with hardware mixers, which capable of playing
+multiple streams, may still be unable to handle multiple capture
+streams. Depending on hardware, you may still need either `dmix` or `dsnoop`
+plugins. Or both.
+
+In other words, for apulse to work, your setup should be capable of playing and
+capturing multiple streams simultaneously.
+
+Access errors in do_connect_pcm
+-------------------------------
+
+If other applications output sound just fine, it's possible that application you
+are using restricts itself.
+
+For example, Firefox now have a sandbox, that blocks file access. It has
+predefined list of allowed paths, but ALSA devices are not included by
+default. Fortunately, it's possible to add those path by hand. Add "/dev/snd/"
+to "security.sandbox.content.write_path_whitelist" parameter in
+`about:config`. Note that trailing slash in "/dev/snd/" is required.
 
 License
 =======
