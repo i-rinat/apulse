@@ -230,7 +230,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 {
     snd_pcm_hw_params_t *hw_params;
     snd_pcm_sw_params_t *sw_params;
-    int errcode;
+    int errcode = 0;
     const char *device_name;
     const char *direction_name;
 
