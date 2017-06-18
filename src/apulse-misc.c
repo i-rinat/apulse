@@ -86,7 +86,11 @@ APULSE_EXPORT
 pa_usec_t
 pa_bytes_to_usec(uint64_t length, const pa_sample_spec *spec)
 {
-    return 1000 * 1000 * length / pa_bytes_per_second(spec);
+    size_t bytes_per_second = pa_bytes_per_second(spec);
+    if (bytes_per_second == 0)
+        return 0;
+
+    return 1000 * 1000 * length / bytes_per_second;
 }
 
 APULSE_EXPORT
