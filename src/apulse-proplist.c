@@ -145,3 +145,115 @@ pa_proplist_gets(pa_proplist *p, const char *key)
 
     return v->data;
 }
+
+APULSE_EXPORT
+pa_proplist *
+pa_proplist_copy(const pa_proplist *p)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+unsigned
+pa_proplist_size(pa_proplist *p)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_isempty(pa_proplist *p)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_equal(pa_proplist *a, pa_proplist *b)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_key_valid(const char *key)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_setp(pa_proplist *p, const char *pair)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_setf(pa_proplist *p, const char *key, const char *format, ...)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_get(pa_proplist *p, const char *key, const void **data, size_t *nbytes)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_unset(pa_proplist *p, const char *key)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_proplist_unset_many(pa_proplist *p, const char *const keys[])
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+const char *
+pa_proplist_iterate(pa_proplist *p, void **state)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_proplist_to_string(pa_proplist *p)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_proplist_to_string_sep(pa_proplist *p, const char *sep)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_proplist *
+pa_proplist_from_string(const char *str)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}

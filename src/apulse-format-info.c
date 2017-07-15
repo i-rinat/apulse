@@ -99,3 +99,153 @@ int pa_format_info_valid(const pa_format_info *f)
 
     return encoding_valid && plist_valid;
 }
+
+APULSE_EXPORT
+pa_format_info *
+pa_format_info_copy(const pa_format_info *src)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_is_pcm(const pa_format_info *f)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_is_compatible(const pa_format_info *first, const pa_format_info *second)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+char *
+pa_format_info_snprint(char *s, size_t l, const pa_format_info *f)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_format_info *
+pa_format_info_from_string(const char *str)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_format_info *
+pa_format_info_from_sample_spec(const pa_sample_spec *ss, const pa_channel_map *map)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_to_sample_spec(const pa_format_info *f, pa_sample_spec *ss, pa_channel_map *map)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+pa_prop_type_t
+pa_format_info_get_prop_type(const pa_format_info *f, const char *key)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_get_prop_int(const pa_format_info *f, const char *key, int *v)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_get_prop_int_range(const pa_format_info *f, const char *key, int *min, int *max)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_get_prop_int_array(const pa_format_info *f, const char *key, int **values,
+                                  int *n_values)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_get_prop_string(const pa_format_info *f, const char *key, char **v)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_format_info_get_prop_string_array(const pa_format_info *f, const char *key, char ***values,
+                                     int *n_values)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+void
+pa_format_info_free_string_array(char **values, int n_values)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_format_info_set_prop_int(pa_format_info *f, const char *key, int value)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_format_info_set_prop_int_array(pa_format_info *f, const char *key, const int *values,
+                                  int n_values)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_format_info_set_prop_int_range(pa_format_info *f, const char *key, int min, int max)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_format_info_set_prop_string(pa_format_info *f, const char *key, const char *value)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_format_info_set_prop_string_array(pa_format_info *f, const char *key, const char **values,
+                                     int n_values)
+{
+    trace_info_z("Z %s\n", __func__);
+}

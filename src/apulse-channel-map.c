@@ -308,3 +308,75 @@ pa_channel_position_to_string(pa_channel_position_t pos)
 
     return s;
 }
+
+APULSE_EXPORT
+const char *
+pa_channel_position_to_pretty_string(pa_channel_position_t pos)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_channel_map_equal(const pa_channel_map *a, const pa_channel_map *b)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_channel_map_superset(const pa_channel_map *a, const pa_channel_map *b)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_channel_map_can_balance(const pa_channel_map *map)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_channel_map_can_fade(const pa_channel_map *map)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+const char *
+pa_channel_map_to_name(const pa_channel_map *map)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+const char *
+pa_channel_map_to_pretty_name(const pa_channel_map *map)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_channel_map_has_position(const pa_channel_map *map, pa_channel_position_t p)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+pa_channel_position_mask_t
+pa_channel_map_mask(const pa_channel_map *map)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}

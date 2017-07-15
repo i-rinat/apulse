@@ -76,3 +76,251 @@ pa_close(int fd)
     close(fd);
     return 0;
 }
+
+APULSE_EXPORT
+char *
+pa_ascii_filter(const char *str)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_ascii_valid(const char *str)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_utf8_filter(const char *str)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_utf8_to_locale(const char *str)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_utf8_valid(const char *str)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_bytes_snprint(char *s, size_t l, unsigned v)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+const char *
+pa_encoding_to_string(pa_encoding_t e)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_encoding_t
+pa_encoding_from_string(const char *encoding)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+char *
+pa_get_fqdn(char *s, size_t l)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_get_home_dir(char *s, size_t l)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_msleep(unsigned long t)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+pa_usec_t
+pa_timeval_diff(const struct timeval *a, const struct timeval *b)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_timeval_cmp(const struct timeval *a, const struct timeval *b)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+pa_usec_t
+pa_timeval_age(const struct timeval *tv)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+struct timeval *
+pa_timeval_add(struct timeval *tv, pa_usec_t v)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+struct timeval *
+pa_timeval_sub(struct timeval *tv, pa_usec_t v)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+struct timeval *
+pa_timeval_store(struct timeval *tv, pa_usec_t v)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_usec_t
+pa_timeval_load(const struct timeval *tv)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+char *
+pa_get_host_name(char *s, size_t l)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_get_user_name(char *s, size_t l)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+struct timeval *
+pa_gettimeofday(struct timeval *tv)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+void *
+pa_xmemdup(const void *p, size_t l)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+void *
+pa_xrealloc(void *ptr, size_t size)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_xstrdup(const char *s)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+char *
+pa_xstrndup(const char *s, size_t l)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_sample_format_is_le(pa_sample_format_t f)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_sample_format_is_be(pa_sample_format_t f)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+size_t
+pa_sample_size_of_format(pa_sample_format_t f)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+pa_sample_spec *
+pa_sample_spec_init(pa_sample_spec *spec)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_sample_spec_equal(const pa_sample_spec *a, const pa_sample_spec *b)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+pa_sample_format_t
+pa_parse_sample_format(const char *format)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}

@@ -1154,3 +1154,152 @@ pa_stream_set_underflow_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *u
 {
     trace_info_z("Z %s\n", __func__);
 }
+
+APULSE_EXPORT
+pa_context *
+pa_stream_get_context(pa_stream *p)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+void
+pa_stream_set_overflow_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+int64_t
+pa_stream_get_underflow_index(pa_stream *p)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+void
+pa_stream_set_started_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_stream_set_moved_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_stream_set_suspended_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_stream_set_event_callback(pa_stream *p, pa_stream_event_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+void
+pa_stream_set_buffer_attr_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_stream_prebuf(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+const pa_channel_map *
+pa_stream_get_channel_map(pa_stream *s)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+const pa_format_info *
+pa_stream_get_format_info(pa_stream *s)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_stream_set_buffer_attr(pa_stream *s, const pa_buffer_attr *attr, pa_stream_success_cb_t cb,
+                          void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_stream_update_sample_rate(pa_stream *s, uint32_t rate, pa_stream_success_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_stream_proplist_update(pa_stream *s, pa_update_mode_t mode, pa_proplist *p,
+                          pa_stream_success_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_stream_proplist_remove(pa_stream *s, const char *const keys[], pa_stream_success_cb_t cb,
+                          void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+int
+pa_stream_set_monitor_stream(pa_stream *s, uint32_t sink_input_idx)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+uint32_t
+pa_stream_get_monitor_stream(pa_stream *s)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_stream_connect_upload(pa_stream *s, size_t length)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+int
+pa_stream_finish_upload(pa_stream *s)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
