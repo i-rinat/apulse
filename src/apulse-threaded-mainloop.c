@@ -170,3 +170,25 @@ pa_threaded_mainloop_wait(pa_threaded_mainloop *m)
 
     pthread_cond_wait(&m->cond, &m->lock);
 }
+
+APULSE_EXPORT
+void
+pa_threaded_mainloop_accept(pa_threaded_mainloop *m)
+{
+    trace_info_z("Z %s\n", __func__);
+}
+
+APULSE_EXPORT
+int
+pa_threaded_mainloop_get_retval(pa_threaded_mainloop *m)
+{
+    trace_info_z("Z %s\n", __func__);
+    return 0;
+}
+
+APULSE_EXPORT
+void
+pa_threaded_mainloop_set_name(pa_threaded_mainloop *m, const char *name)
+{
+    trace_info_z("Z %s\n", __func__);
+}

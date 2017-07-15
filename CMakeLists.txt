@@ -37,6 +37,7 @@ add_library(pulse SHARED
     src/apulse-channel-map.c
     src/apulse-common.c
     src/apulse-context.c
+    src/apulse-ext.c
     src/apulse-format-info.c
     src/apulse-mainloop.c
     src/apulse-misc.c
@@ -46,7 +47,6 @@ add_library(pulse SHARED
     src/apulse-stream.c
     src/apulse-threaded-mainloop.c
     src/apulse-volume.c
-    src/notimplemented.c
     src/ringbuffer.c
     src/util.c
 )

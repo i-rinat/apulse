@@ -124,6 +124,343 @@ trace_pa_volume_as_string(const pa_cvolume *v)
     return g_string_free(s, FALSE);
 }
 
+gchar *
+trace_pa_channel_position_t_as_string(const pa_channel_position_t pos)
+{
+    const char *s_pos;
+
+    switch (pos) {
+    case PA_CHANNEL_POSITION_INVALID:
+        s_pos = "INVALID";
+        break;
+
+    case PA_CHANNEL_POSITION_MONO:
+        s_pos = "MONO";
+        break;
+
+    case PA_CHANNEL_POSITION_FRONT_LEFT:
+        s_pos = "FRONT_LEFT";
+        break;
+
+    case PA_CHANNEL_POSITION_FRONT_RIGHT:
+        s_pos = "FRONT_RIGHT";
+        break;
+
+    case PA_CHANNEL_POSITION_FRONT_CENTER:
+        s_pos = "FRONT_CENTER";
+        break;
+
+    case PA_CHANNEL_POSITION_REAR_CENTER:
+        s_pos = "REAR_CENTER";
+        break;
+
+    case PA_CHANNEL_POSITION_REAR_LEFT:
+        s_pos = "REAR_LEFT";
+        break;
+
+    case PA_CHANNEL_POSITION_REAR_RIGHT:
+        s_pos = "REAR_RIGHT";
+        break;
+
+    case PA_CHANNEL_POSITION_LFE:
+        s_pos = "LFE";
+        break;
+
+    case PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER:
+        s_pos = "FRONT_LEFT_OF_CENTER";
+        break;
+
+    case PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER:
+        s_pos = "FRONT_RIGHT_OF_CENTER";
+        break;
+
+    case PA_CHANNEL_POSITION_SIDE_LEFT:
+        s_pos = "SIDE_LEFT";
+        break;
+
+    case PA_CHANNEL_POSITION_SIDE_RIGHT:
+        s_pos = "SIDE_RIGHT";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX0:
+        s_pos = "AUX0";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX1:
+        s_pos = "AUX1";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX2:
+        s_pos = "AUX2";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX3:
+        s_pos = "AUX3";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX4:
+        s_pos = "AUX4";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX5:
+        s_pos = "AUX5";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX6:
+        s_pos = "AUX6";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX7:
+        s_pos = "AUX7";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX8:
+        s_pos = "AUX8";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX9:
+        s_pos = "AUX9";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX10:
+        s_pos = "AUX10";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX11:
+        s_pos = "AUX11";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX12:
+        s_pos = "AUX12";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX13:
+        s_pos = "AUX13";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX14:
+        s_pos = "AUX14";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX15:
+        s_pos = "AUX15";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX16:
+        s_pos = "AUX16";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX17:
+        s_pos = "AUX17";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX18:
+        s_pos = "AUX18";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX19:
+        s_pos = "AUX19";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX20:
+        s_pos = "AUX20";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX21:
+        s_pos = "AUX21";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX22:
+        s_pos = "AUX22";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX23:
+        s_pos = "AUX23";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX24:
+        s_pos = "AUX24";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX25:
+        s_pos = "AUX25";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX26:
+        s_pos = "AUX26";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX27:
+        s_pos = "AUX27";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX28:
+        s_pos = "AUX28";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX29:
+        s_pos = "AUX29";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX30:
+        s_pos = "AUX30";
+        break;
+
+    case PA_CHANNEL_POSITION_AUX31:
+        s_pos = "AUX31";
+        break;
+
+    case PA_CHANNEL_POSITION_TOP_CENTER:
+        s_pos = "TOP_CENTER";
+        break;
+
+    case PA_CHANNEL_POSITION_TOP_FRONT_LEFT:
+        s_pos = "TOP_FRONT_LEFT";
+        break;
+
+    case PA_CHANNEL_POSITION_TOP_FRONT_RIGHT:
+        s_pos = "TOP_FRONT_RIGHT";
+        break;
+
+    case PA_CHANNEL_POSITION_TOP_FRONT_CENTER:
+        s_pos = "TOP_FRONT_CENTER";
+        break;
+
+    case PA_CHANNEL_POSITION_TOP_REAR_LEFT:
+        s_pos = "TOP_REAR_LEFT";
+        break;
+
+    case PA_CHANNEL_POSITION_TOP_REAR_RIGHT:
+        s_pos = "TOP_REAR_RIGHT";
+        break;
+
+    case PA_CHANNEL_POSITION_TOP_REAR_CENTER:
+        s_pos = "TOP_REAR_CENTER";
+        break;
+
+    case PA_CHANNEL_POSITION_MAX:
+        s_pos = "MAX";
+        break;
+
+    default:
+        s_pos = "UNKNOWN";
+        break;
+    }
+
+    return g_strdup_printf("%s(%d)", s_pos, pos);
+}
+
+gchar *
+trace_pa_channel_map_as_string(const pa_channel_map *m)
+{
+    if (!m)
+        return g_strdup("(nil)");
+
+    GString *s = g_string_new(NULL);
+
+    g_string_append_printf(s, "%u:{", m->channels);
+
+    const unsigned int channel_count = MIN(m->channels, PA_CHANNELS_MAX);
+    for (unsigned int k = 0; k < channel_count; k++) {
+        if (k != 0)
+            g_string_append(s, ",");
+        gchar *s_channel_pos = trace_pa_channel_position_t_as_string(m->map[k]);
+        g_string_append(s, s_channel_pos);
+        g_free(s_channel_pos);
+    }
+
+    g_string_append(s, "}");
+
+    return g_string_free(s, FALSE);
+}
+
+gchar *
+trace_pa_sample_format_t_as_string(pa_sample_format_t sf)
+{
+    const char *fmt;
+    switch (sf) {
+    case PA_SAMPLE_U8:
+        fmt = "U8";
+        break;
+
+    case PA_SAMPLE_ALAW:
+        fmt = "ALAW";
+        break;
+
+    case PA_SAMPLE_ULAW:
+        fmt = "ULAW";
+        break;
+
+    case PA_SAMPLE_S16LE:
+        fmt = "S16LE";
+        break;
+
+    case PA_SAMPLE_S16BE:
+        fmt = "S16BE";
+        break;
+
+    case PA_SAMPLE_FLOAT32LE:
+        fmt = "FLOAT32LE";
+        break;
+
+    case PA_SAMPLE_FLOAT32BE:
+        fmt = "FLOAT32BE";
+        break;
+
+    case PA_SAMPLE_S32LE:
+        fmt = "S32LE";
+        break;
+
+    case PA_SAMPLE_S32BE:
+        fmt = "S32BE";
+        break;
+
+    case PA_SAMPLE_S24LE:
+        fmt = "S24LE";
+        break;
+
+    case PA_SAMPLE_S24BE:
+        fmt = "S24BE";
+        break;
+
+    case PA_SAMPLE_S24_32LE:
+        fmt = "S24_32LE";
+        break;
+
+    case PA_SAMPLE_S24_32BE:
+        fmt = "S24_32BE";
+        break;
+
+    case PA_SAMPLE_MAX:
+        fmt = "MAX";
+        break;
+
+    case PA_SAMPLE_INVALID:
+        fmt = "INVALID";
+        break;
+
+    default:
+        fmt = "UNKNONW";
+        break;
+    }
+
+    return g_strdup_printf("%s(%d)", fmt, sf);
+}
+
+gchar *
+trace_pa_sample_spec_as_string(const pa_sample_spec *ss)
+{
+    if (!ss)
+        return g_strdup("(nil)");
+
+    gchar *s_format = trace_pa_sample_format_t_as_string(ss->format);
+    gchar *str =
+        g_strdup_printf("{.format=%s,.rate=%u,.channels=%u}", s_format, ss->rate, ss->channels);
+    g_free(s_format);
+
+    return str;
+}
+
 void
 trace_lock(void)
 {
