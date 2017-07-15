@@ -27,6 +27,7 @@
 
 #include <glib.h>
 #include <pulse/pulseaudio.h>
+#include <pulse/channelmap.h>
 
 #if WITH_TRACE >= 2
 
@@ -54,6 +55,12 @@ trace_pa_buffer_attr_as_string(const pa_buffer_attr *attr);
 
 gchar *
 trace_pa_volume_as_string(const pa_cvolume *v);
+
+gchar *
+trace_pa_channel_position_t_as_string(const pa_channel_position_t pos);
+
+gchar *
+trace_pa_channel_map_as_string(const pa_channel_map *m);
 
 void
 trace_lock(void);

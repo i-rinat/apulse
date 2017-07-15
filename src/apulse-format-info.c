@@ -54,7 +54,10 @@ APULSE_EXPORT
 void
 pa_format_info_set_channel_map(pa_format_info *f, const pa_channel_map *map)
 {
-    trace_info_f("F %s f=%p, map=%p\n", __func__, f, map);
+    gchar *s_map = trace_pa_channel_map_as_string(map);
+    trace_info_f("F %s f=%p, map=%s\n", __func__, f, s_map);
+    g_free(s_map);
+
     char buf[PA_CHANNEL_MAP_SNPRINT_MAX];
     pa_channel_map_snprint(buf, sizeof(buf), map);
     pa_proplist_sets(f->plist, PA_PROP_FORMAT_CHANNEL_MAP, buf);

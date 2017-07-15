@@ -154,9 +154,11 @@ pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, c
               const char *stream_name, const pa_sample_spec *ss, const pa_channel_map *map,
               const pa_buffer_attr *attr, int *error)
 {
+    gchar *s_map = trace_pa_channel_map_as_string(map);
     trace_info_f(
-        "F %s server=%s, name=%s, dir=%d, dev=%s, stream_name=%s, ss=%p, map=%p, attr=%p\n",
-        __func__, server, name, dir, dev, stream_name, ss, map, attr);
+        "F %s server=%s, name=%s, dir=%d, dev=%s, stream_name=%s, ss=%p, map=%s, attr=%p\n",
+        __func__, server, name, dir, dev, stream_name, ss, s_map, attr);
+    g_free(s_map);
 
     pa_simple *simple = calloc(sizeof(*simple), 1);
     if (!simple) {

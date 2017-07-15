@@ -765,7 +765,9 @@ APULSE_EXPORT
 pa_stream *
 pa_stream_new(pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map)
 {
-    trace_info_f("F %s c=%p, name=%s, ss=%p, map=%p\n", __func__, c, name, ss, map);
+    gchar *s_map = trace_pa_channel_map_as_string(map);
+    trace_info_f("F %s c=%p, name=%s, ss=%p, map=%s\n", __func__, c, name, ss, s_map);
+    g_free(s_map);
 
     pa_proplist *p = pa_proplist_new();
     pa_stream *s = pa_stream_new_with_proplist(c, name, ss, map, p);
@@ -817,8 +819,10 @@ pa_stream *
 pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spec *ss,
                             const pa_channel_map *map, pa_proplist *p)
 {
-    trace_info_f("F %s c=%p, name=%s, ss={.format=%d, .rate=%u, .channels=%u}, map=%p, p=%p\n",
-               __func__, c, name, ss->format, ss->rate, ss->channels, map, p);
+    gchar *s_map = trace_pa_channel_map_as_string(map);
+    trace_info_f("F %s c=%p, name=%s, ss={.format=%d, .rate=%u, .channels=%u}, map=%s, p=%p\n",
+               __func__, c, name, ss->format, ss->rate, ss->channels, s_map, p);
+    g_free(s_map);
 
     pa_stream *s = calloc(1, sizeof(pa_stream));
     s->c = c;
