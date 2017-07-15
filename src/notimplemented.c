@@ -27,7 +27,6 @@
 #include <pulse/ext-device-manager.h>
 #include <pulse/ext-device-restore.h>
 #include <pulse/ext-stream-restore.h>
-#include <pulse/glib-mainloop.h>
 #include <pulse/simple.h>
 
 APULSE_EXPORT
@@ -1831,27 +1830,4 @@ pa_ext_stream_restore_set_subscribe_cb(pa_context *c, pa_ext_stream_restore_subs
                                        void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
-pa_glib_mainloop *
-pa_glib_mainloop_new(GMainContext *c)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
-void
-pa_glib_mainloop_free(pa_glib_mainloop *g)
-{
-    trace_info_z("Z %s\n", __func__);
-}
-
-APULSE_EXPORT
-pa_mainloop_api *
-pa_glib_mainloop_get_api(pa_glib_mainloop *g)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
 }
