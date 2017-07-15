@@ -313,7 +313,12 @@ APULSE_EXPORT
 int
 pa_sample_spec_equal(const pa_sample_spec *a, const pa_sample_spec *b)
 {
-    trace_info_z("Z %s\n", __func__);
+    gchar *s_a = trace_pa_sample_spec_as_string(a);
+    gchar *s_b = trace_pa_sample_spec_as_string(b);
+    trace_info_z("Z %s a=%s, b=%s\n", __func__, s_a, s_b);
+    g_free(s_b);
+    g_free(s_a);
+
     return 0;
 }
 

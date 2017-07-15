@@ -144,7 +144,12 @@ APULSE_EXPORT
 pa_format_info *
 pa_format_info_from_sample_spec(const pa_sample_spec *ss, const pa_channel_map *map)
 {
-    trace_info_z("Z %s\n", __func__);
+    gchar *s_ss = trace_pa_sample_spec_as_string(ss);
+    gchar *s_map = trace_pa_channel_map_as_string(map);
+    trace_info_z("Z %s ss=%s, map=%s\n", __func__, s_ss, s_map);
+    g_free(s_map);
+    g_free(s_ss);
+
     return NULL;
 }
 

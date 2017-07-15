@@ -374,6 +374,93 @@ trace_pa_channel_map_as_string(const pa_channel_map *m)
     return g_string_free(s, FALSE);
 }
 
+gchar *
+trace_pa_sample_format_t_as_string(pa_sample_format_t sf)
+{
+    const char *fmt;
+    switch (sf) {
+    case PA_SAMPLE_U8:
+        fmt = "U8";
+        break;
+
+    case PA_SAMPLE_ALAW:
+        fmt = "ALAW";
+        break;
+
+    case PA_SAMPLE_ULAW:
+        fmt = "ULAW";
+        break;
+
+    case PA_SAMPLE_S16LE:
+        fmt = "S16LE";
+        break;
+
+    case PA_SAMPLE_S16BE:
+        fmt = "S16BE";
+        break;
+
+    case PA_SAMPLE_FLOAT32LE:
+        fmt = "FLOAT32LE";
+        break;
+
+    case PA_SAMPLE_FLOAT32BE:
+        fmt = "FLOAT32BE";
+        break;
+
+    case PA_SAMPLE_S32LE:
+        fmt = "S32LE";
+        break;
+
+    case PA_SAMPLE_S32BE:
+        fmt = "S32BE";
+        break;
+
+    case PA_SAMPLE_S24LE:
+        fmt = "S24LE";
+        break;
+
+    case PA_SAMPLE_S24BE:
+        fmt = "S24BE";
+        break;
+
+    case PA_SAMPLE_S24_32LE:
+        fmt = "S24_32LE";
+        break;
+
+    case PA_SAMPLE_S24_32BE:
+        fmt = "S24_32BE";
+        break;
+
+    case PA_SAMPLE_MAX:
+        fmt = "MAX";
+        break;
+
+    case PA_SAMPLE_INVALID:
+        fmt = "INVALID";
+        break;
+
+    default:
+        fmt = "UNKNONW";
+        break;
+    }
+
+    return g_strdup_printf("%s(%d)", fmt, sf);
+}
+
+gchar *
+trace_pa_sample_spec_as_string(const pa_sample_spec *ss)
+{
+    if (!ss)
+        return g_strdup("(nil)");
+
+    gchar *s_format = trace_pa_sample_format_t_as_string(ss->format);
+    gchar *str =
+        g_strdup_printf("{.format=%s,.rate=%u,.channels=%u}", s_format, ss->rate, ss->channels);
+    g_free(s_format);
+
+    return str;
+}
+
 void
 trace_lock(void)
 {

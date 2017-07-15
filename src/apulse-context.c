@@ -1219,7 +1219,10 @@ APULSE_EXPORT
 size_t
 pa_context_get_tile_size(pa_context *c, const pa_sample_spec *ss)
 {
-    trace_info_z("Z %s\n", __func__);
+    gchar *s_ss = trace_pa_sample_spec_as_string(ss);
+    trace_info_z("Z %s c=%p, ss=%s\n", __func__, c, s_ss);
+    g_free(s_ss);
+
     return 0;
 }
 

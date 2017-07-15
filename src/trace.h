@@ -62,6 +62,12 @@ trace_pa_channel_position_t_as_string(const pa_channel_position_t pos);
 gchar *
 trace_pa_channel_map_as_string(const pa_channel_map *m);
 
+gchar *
+trace_pa_sample_format_t_as_string(pa_sample_format_t sf);
+
+gchar *
+trace_pa_sample_spec_as_string(const pa_sample_spec *ss);
+
 void
 trace_lock(void);
 

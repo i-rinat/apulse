@@ -188,7 +188,9 @@ APULSE_EXPORT
 char *
 pa_sample_spec_snprint(char *s, size_t l, const pa_sample_spec *spec)
 {
-    trace_info_f("F %s s=%p, l=%u, spec=%p\n", __func__, s, (unsigned)l, spec);
+    gchar *s_spec = trace_pa_sample_spec_as_string(spec);
+    trace_info_f("F %s s=%p, l=%u, spec=%s\n", __func__, s, (unsigned)l, s_spec);
+    g_free(s_spec);
 
     if (spec && pa_sample_spec_valid(spec)) {
         snprintf(s, l, "%s %uch %uHz", pa_sample_format_to_string(spec->format), spec->channels,

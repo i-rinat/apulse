@@ -285,7 +285,12 @@ pa_cvolume *
 pa_cvolume_set_position(pa_cvolume *cv, const pa_channel_map *map, pa_channel_position_t t,
                         pa_volume_t v)
 {
-    trace_info_z("Z %s\n", __func__);
+    gchar *s_map = trace_pa_channel_map_as_string(map);
+    gchar *s_t = trace_pa_channel_position_t_as_string(t);
+    trace_info_z("Z %s cv=%p, map=%s, t=%s, v=%u\n", __func__, cv, s_map, s_t, v);
+    g_free(s_t);
+    g_free(s_map);
+
     return NULL;
 }
 
@@ -293,7 +298,12 @@ APULSE_EXPORT
 pa_volume_t
 pa_cvolume_get_position(pa_cvolume *cv, const pa_channel_map *map, pa_channel_position_t t)
 {
-    trace_info_z("Z %s\n", __func__);
+    gchar *s_map = trace_pa_channel_map_as_string(map);
+    gchar *s_t = trace_pa_channel_position_t_as_string(t);
+    trace_info_z("Z %s cv=%p, map=%s, t=%s\n", __func__, cv, s_map, s_t);
+    g_free(s_t);
+    g_free(s_map);
+
     return 0;
 }
 
