@@ -257,8 +257,13 @@ APULSE_EXPORT
 void *
 pa_xrealloc(void *ptr, size_t size)
 {
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
+    trace_info_f("F %s ptr=%p, size=%zu\n", __func__, ptr, size);
+
+    void *p = realloc(ptr, size);
+    if (!p)
+        return ptr;
+
+    return p;
 }
 
 APULSE_EXPORT
