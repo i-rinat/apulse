@@ -459,6 +459,9 @@ pa_channel_map_valid(const pa_channel_map *map)
     trace_info_f("F %s map=%s\n", __func__, s_map);
     g_free(s_map);
 
+    if (!map)
+        return 0;
+
     const int channel_count_valid = (0 < map->channels && map->channels <= PA_CHANNELS_MAX);
     if (!channel_count_valid)
         return 0;
