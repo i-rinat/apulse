@@ -160,7 +160,10 @@ static
 void
 ml_api_quit(pa_mainloop_api *a, int retval)
 {
-    trace_info_z("Z %s\n", __func__);
+    trace_info_f("F %s a=%p, retval=%d\n", __func__, a, retval);
+
+    pa_mainloop *ml = a->userdata;
+    pa_mainloop_quit(ml, retval);
 }
 
 static void
