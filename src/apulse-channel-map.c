@@ -316,7 +316,22 @@ APULSE_EXPORT
 pa_channel_map *
 pa_channel_map_init_extend(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def)
 {
-    trace_info_z("Z %s m=%p, channels=%u, def=(%u)\n", __func__, m, channels, def);
+    trace_info_f("F %s m=%p, channels=%u, def=(%u)\n", __func__, m, channels, def);
+
+    channels = MIN(channels, PA_CHANNELS_MAX);
+
+    // Try to find a channel map with largest number of channels
+    for (unsigned int k = channels; k > 0; k--) {
+        if (pa_channel_map_init_auto(m, k, def) != NULL) {
+            // Found a channel map. Now fill remaining position with AUX.
+            unsigned int n = k;
+            for (/* void */; k < channels; k++)
+                m->map[k] = PA_CHANNEL_POSITION_AUX0 + (k - n);
+
+            m->channels = channels;
+            return m;
+        }
+    }
 
     return NULL;
 }
