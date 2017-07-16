@@ -342,11 +342,11 @@ pa_channel_map_compatible(const pa_channel_map *map, const pa_sample_spec *ss)
 {
     gchar *s_map = trace_pa_channel_map_as_string(map);
     gchar *s_ss = trace_pa_sample_spec_as_string(ss);
-    trace_info_z("Z %s map=%s, ss=%s\n", __func__, s_map, s_ss);
+    trace_info_f("F %s map=%s, ss=%s\n", __func__, s_map, s_ss);
     g_free(s_ss);
     g_free(s_map);
 
-    return 1;
+    return map->channels == ss->channels;
 }
 
 APULSE_EXPORT
