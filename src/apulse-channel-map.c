@@ -93,7 +93,190 @@ APULSE_EXPORT
 pa_channel_map *
 pa_channel_map_init_auto(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def)
 {
-    trace_info_z("Z %s m=%p, channels=%u, def=%u\n", __func__, m, channels, def);
+    trace_info_f("F %s m=%p, channels=%u, def=%u\n", __func__, m, channels, def);
+
+    if (!m)
+        return NULL;
+
+    memset(m, 0, sizeof(*m));
+    channels = MIN(channels, PA_CHANNELS_MAX);
+    m->channels = channels;
+
+    switch (def) {
+    default:
+    case PA_CHANNEL_MAP_AIFF:
+        switch (channels) {
+        case 1:
+            m->map[0] = PA_CHANNEL_POSITION_MONO;
+            return m;
+
+        case 2:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            return m;
+
+        case 3:
+            m->map[0] = PA_CHANNEL_POSITION_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_RIGHT;
+            m->map[2] = PA_CHANNEL_POSITION_CENTER;
+            return m;
+
+        case 4:
+            m->map[0] = PA_CHANNEL_POSITION_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_CENTER;
+            m->map[2] = PA_CHANNEL_POSITION_RIGHT;
+            m->map[3] = PA_CHANNEL_POSITION_REAR_CENTER;
+            return m;
+
+        case 5:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            m->map[2] = PA_CHANNEL_POSITION_FRONT_CENTER;
+            m->map[3] = PA_CHANNEL_POSITION_REAR_LEFT;
+            m->map[4] = PA_CHANNEL_POSITION_REAR_RIGHT;
+            return m;
+
+        case 6:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER;
+            m->map[2] = PA_CHANNEL_POSITION_CENTER;
+            m->map[3] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            m->map[4] = PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER;
+            m->map[5] = PA_CHANNEL_POSITION_REAR_CENTER;
+            return m;
+
+        default:
+            return NULL;
+        }
+        break;
+
+    case PA_CHANNEL_MAP_ALSA:
+        switch (channels) {
+        case 1:
+            m->map[0] = PA_CHANNEL_POSITION_MONO;
+            return m;
+
+        case 2:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            return m;
+
+        case 4:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            m->map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+            m->map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+            return m;
+
+        case 5:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            m->map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+            m->map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+            m->map[4] = PA_CHANNEL_POSITION_FRONT_CENTER;
+            return m;
+
+        case 6:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            m->map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+            m->map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+            m->map[4] = PA_CHANNEL_POSITION_FRONT_CENTER;
+            m->map[5] = PA_CHANNEL_POSITION_LFE;
+            return m;
+
+        case 8:
+            m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+            m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+            m->map[2] = PA_CHANNEL_POSITION_REAR_LEFT;
+            m->map[3] = PA_CHANNEL_POSITION_REAR_RIGHT;
+            m->map[4] = PA_CHANNEL_POSITION_FRONT_CENTER;
+            m->map[5] = PA_CHANNEL_POSITION_LFE;
+            m->map[6] = PA_CHANNEL_POSITION_SIDE_LEFT;
+            m->map[7] = PA_CHANNEL_POSITION_SIDE_RIGHT;
+            return m;
+
+        default:
+            return NULL;
+        }
+        break;
+
+    case PA_CHANNEL_MAP_AUX:
+        for (unsigned int k = 0; k < channels; k++)
+            m->map[k] = PA_CHANNEL_POSITION_AUX0 + k;
+
+        return m;
+
+    case PA_CHANNEL_MAP_WAVEEX:
+        m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m->map[2] = PA_CHANNEL_POSITION_FRONT_CENTER;
+        m->map[3] = PA_CHANNEL_POSITION_LFE;
+        m->map[4] = PA_CHANNEL_POSITION_REAR_LEFT;
+        m->map[5] = PA_CHANNEL_POSITION_REAR_RIGHT;
+        m->map[6] = PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER;
+        m->map[7] = PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER;
+        m->map[8] = PA_CHANNEL_POSITION_REAR_CENTER;
+        m->map[9] = PA_CHANNEL_POSITION_SIDE_LEFT;
+        m->map[10] = PA_CHANNEL_POSITION_SIDE_RIGHT;
+        m->map[11] = PA_CHANNEL_POSITION_TOP_CENTER;
+        m->map[12] = PA_CHANNEL_POSITION_TOP_FRONT_LEFT;
+        m->map[13] = PA_CHANNEL_POSITION_TOP_FRONT_CENTER;
+        m->map[14] = PA_CHANNEL_POSITION_TOP_FRONT_RIGHT;
+        m->map[15] = PA_CHANNEL_POSITION_TOP_REAR_LEFT;
+        m->map[16] = PA_CHANNEL_POSITION_TOP_REAR_CENTER;
+        m->map[17] = PA_CHANNEL_POSITION_TOP_REAR_RIGHT;
+
+        switch (channels) {
+        case 1:
+            m->map[0] = PA_CHANNEL_POSITION_MONO;
+            return m;
+
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+        case 8:
+        case 9:
+        case 11:
+        case 12:
+        case 15:
+        case 18:
+            return m;
+
+        default:
+            return NULL;
+        }
+
+        break;
+
+    case PA_CHANNEL_MAP_OSS:
+        m->map[0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+        m->map[1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+        m->map[2] = PA_CHANNEL_POSITION_FRONT_CENTER;
+        m->map[3] = PA_CHANNEL_POSITION_LFE;
+        m->map[4] = PA_CHANNEL_POSITION_SIDE_LEFT;
+        m->map[5] = PA_CHANNEL_POSITION_SIDE_RIGHT;
+        m->map[6] = PA_CHANNEL_POSITION_REAR_LEFT;
+        m->map[7] = PA_CHANNEL_POSITION_REAR_RIGHT;
+
+        switch (channels) {
+        case 1:
+            m->map[0] = PA_CHANNEL_POSITION_MONO;
+            return m;
+
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+        case 8:
+            return m;
+
+        default:
+            return NULL;
+        }
+        break;
+    }
 
     return NULL;
 }
