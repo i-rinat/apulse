@@ -99,7 +99,16 @@ static
 void
 ml_api_io_enable(pa_io_event *e, pa_io_event_flags_t events)
 {
-    trace_info_z("Z %s\n", __func__);
+    trace_info_f("F %s e=%p, events=0x%x\n", __func__, e, events);
+
+    if (e->events == events)
+        return;
+
+    e->events = events;
+
+    pa_mainloop *ml = e->mainloop;
+    ml->recreate_fds = 1;
+    pa_mainloop_wakeup(ml);
 }
 
 static
