@@ -161,6 +161,16 @@ default. Fortunately, it's possible to add those path by hand. Add "/dev/snd/"
 to "security.sandbox.content.write_path_whitelist" parameter in
 `about:config`. Note that trailing slash in "/dev/snd/" is required.
 
+Firefox 58 tabs crashing when trying to play audio
+--------------------------------------------------
+
+Firefox 58 (Nightly) tightened its sandbox a bit more. Now `ioctl()` calls are
+forbidden too, but are used by ALSA libraries. That causes sandbox violation
+with subsequent process termination. Exception can be added by setting parameter
+`security.sandbox.content.syscall_whitelist` in `about:config`. That field
+accepts a comma separated list of system call numbers. Add there `16` for
+x86-64, or `54` for x86 or ARM.
+
 License
 =======
 
