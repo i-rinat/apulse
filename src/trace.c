@@ -440,7 +440,7 @@ trace_pa_sample_format_t_as_string(pa_sample_format_t sf)
         break;
 
     default:
-        fmt = "UNKNONW";
+        fmt = "UNKNOWN";
         break;
     }
 
