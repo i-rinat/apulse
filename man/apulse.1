@@ -1,0 +1,56 @@
+.TH APULSE 1 2017-10-23 "apulse" "apulse"
+.SH NAME
+.B apulse
+\- The PulseAudio emulator for \fBALSA\fR
+.SH SYNOPSIS
+.B apulse
+.RI <program-name>
+.RI [program-parameters]...
+
+.SH DESCRIPTION
+
+The program provides an alternative partial implementation of the PulseAudio
+API. It consists of a loader script and a number of shared libraries with the
+same names as from original PulseAudio, so applications could dynamically load
+them and think they are talking to PulseAudio. Internally, no separate sound
+mixing daemon is used. Instead, \fBapulse\fR relies on \fBALSA\fR's \fBdmix\fR,
+\fBdsnoop\fR, and \fBplug\fR plugins to handle multiple sound sources and
+capture streams running at the same time. \fBdmix\fR plugin muxes multiple
+playback streams; \fBdsnoop\fR plugin allow multiple applications to capture
+from a single microphone; and \fBplug\fR plugin transparently converts audio
+between various sample formats, sample rates and channel numbers. For more than
+a decade now, \fBALSA\fR comes with these plugins enabled and configured by
+default.
+
+\fBapulse\fR wasn't designed to be a drop-in replacement of PulseAudio. It's
+pointless, since that will be just reimplementation of original PulseAudio,
+with the same client-daemon architecture, required by the complete feature set.
+Instead, only parts of the API that are crucial to specific applications are
+implemented. That's why there is a loader script, named \fBapulse\fR. It
+updates value of LD_LIBRARY_PATH environment variable to point also to the
+directory where \fBapulse\fR's libraries are installed, making them available
+to the application.
+
+Name comes from names of both \fBALSA\fR and PulseAudio. As \fBaoss\fR was a
+compatibility layer between OSS programs and \fBALSA\fR, \fBapulse\fR was
+designed to be compatibility layer between PulseAudio applications and
+\fBALSA\fR.
+
+.SH RETURN VALUE
+
+\fBapulse\fR is a simple shell wrapper script that calls \fBexec\fR on the
+program given in parameters. Except for cases when the wrapper itself fails to
+load, return value is the return value of that program.
+
+.SH EXAMPLE
+
+Run a newer Firefox browser with fake PulseAudio:
+
+.nf
+.sp
+	apulse firefox
+.fi
+
+.SH AUTHORS
+
+\fBapulse\fR was written by Rinat Ibragimov in 2014-2017.

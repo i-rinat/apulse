@@ -79,3 +79,4 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/apulse.template"
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/apulse" DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 install(TARGETS pulse-simple pulse pulse-mainloop-glib DESTINATION "${APULSEPATH}")
+install(FILES "${CMAKE_SOURCE_DIR}/man/apulse.1" DESTINATION share/man/man1)
