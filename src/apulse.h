@@ -38,6 +38,7 @@
 
 struct pa_context {
     pa_context_state_t      state;
+    pa_context_state_t      new_state;
     pa_context_notify_cb_t  state_cb;
     void                   *state_cb_userdata;
     pa_mainloop_api        *mainloop_api;

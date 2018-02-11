@@ -25,14 +25,31 @@
 #include "apulse.h"
 #include "trace.h"
 
-
-static
-void
-deh_context_state_changed(pa_mainloop_api *api, pa_defer_event *de, void *userdata)
+static void
+pai_context_set_state(pa_context *c, pa_context_state_t new_state)
 {
-    pa_context *c = userdata;
+    if (c->state == new_state)
+        return;
+
+    pa_context_ref(c);
+    c->state = new_state;
+
     if (c->state_cb)
         c->state_cb(c, c->state_cb_userdata);
+
+    if (new_state == PA_CONTEXT_FAILED || new_state == PA_CONTEXT_TERMINATED) {
+        c->state_cb = NULL;
+    }
+
+    pa_context_unref(c);
+}
+
+static void
+pai_context_state_changed(pa_mainloop_api *api, pa_defer_event *de,
+                          void *userdata)
+{
+    pa_context *c = userdata;
+    pai_context_set_state(c, c->new_state);
     pa_context_unref(c);
 }
 
@@ -41,11 +58,13 @@ int
 pa_context_connect(pa_context *c, const char *server, pa_context_flags_t flags,
                    const pa_spawn_api *api)
 {
-    trace_info_f("P %s c=%p, server=%s, flags=%u, api=%p\n", __func__, c, server, flags, api);
+    trace_info_f("P %s c=%p, server=%s, flags=%u, api=%p\n", __func__, c,
+                 server, flags, api);
 
     pa_context_ref(c);
-    c->state = PA_CONTEXT_READY;
-    c->mainloop_api->defer_new(c->mainloop_api, deh_context_state_changed, c);
+    pai_context_set_state(c, PA_CONTEXT_CONNECTING);
+    c->new_state = PA_CONTEXT_READY;
+    c->mainloop_api->defer_new(c->mainloop_api, pai_context_state_changed, c);
 
     return 0;
 }
@@ -57,8 +76,8 @@ pa_context_disconnect(pa_context *c)
     trace_info_f("F %s c=%p\n", __func__, c);
 
     pa_context_ref(c);
-    c->state = PA_CONTEXT_TERMINATED;
-    c->mainloop_api->defer_new(c->mainloop_api, deh_context_state_changed, c);
+    c->new_state = PA_CONTEXT_TERMINATED;
+    c->mainloop_api->defer_new(c->mainloop_api, pai_context_state_changed, c);
 }
 
 APULSE_EXPORT
