@@ -75,9 +75,7 @@ pa_context_disconnect(pa_context *c)
 {
     trace_info_f("F %s c=%p\n", __func__, c);
 
-    pa_context_ref(c);
-    c->new_state = PA_CONTEXT_TERMINATED;
-    c->mainloop_api->defer_new(c->mainloop_api, pai_context_state_changed, c);
+    pai_context_set_state(c, PA_CONTEXT_TERMINATED);
 }
 
 APULSE_EXPORT
