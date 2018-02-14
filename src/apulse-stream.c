@@ -58,6 +58,7 @@ deh_stream_first_readwrite_callback(pa_mainloop_api *api, pa_defer_event *de, vo
     pa_stream_unref(s);
 }
 
+static int xruns=0;
 static
 void
 data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_event_flags_t events,
@@ -167,11 +168,13 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     }
 
     if (events & PA_IO_EVENT_OUTPUT) {
+      int r;
+    
         if (paused) {
             // client stream is corked. Pass silence to ALSA
             size_t bytecnt = MIN(buf_size, frame_count * frame_size);
             memset(buf, 0, bytecnt);
-            snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
+            r= snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
         } else {
             size_t writable_size = pa_stream_writable_size(s);
 
@@ -188,9 +191,29 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
                 // application is not ready yet, play silence
                 bytecnt = MIN(buf_size, frame_count * frame_size);
                 memset(buf, 0, bytecnt);
+		trace_warning("application not ready\n");
             }
-            snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
+            r = snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
         }
+
+        if (r < 0) {
+	  switch (r) {
+	    case -EAGAIN:  // non-blocking I/O, no need to do anything
+	      break;
+	    case -EBADFD:  // FD in wrong state
+	      trace_warning("ALSA badfd: rv=%d\n", r);
+	      snd_pcm_prepare(s->ph);
+	      break;
+	    case -EPIPE:  // XRUN
+	      xruns++;
+	      trace_warning("ALSA xrun: rv=%d, xruns=%d\n", r, xruns);
+	      snd_pcm_recover(s->ph, r, 1);
+	      break;
+	    default:
+	      trace_warning("ALSA error: rv=%d\n", r);
+	      snd_pcm_recover(s->ph, r, 1);
+	  }
+	}
     }
 
     if (events & PA_IO_EVENT_INPUT) {
