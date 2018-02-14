@@ -129,15 +129,30 @@ pa_threaded_mainloop_signal(pa_threaded_mainloop *m, int wait_for_accept)
     pthread_cond_signal(&m->cond);
 }
 
+#define AUDIO_THREAD_RT_PRIORITY 60
+
 APULSE_EXPORT
 int
 pa_threaded_mainloop_start(pa_threaded_mainloop *m)
 {
+    struct sched_param rtparam;
+    int err;
     trace_info_f("F %s m=%p\n", __func__, m);
 
     if (m->running)
         return 1;
     pthread_create(&m->t, NULL, mainloop_thread, m);
+    
+    memset(&rtparam, 0, sizeof(rtparam));
+    rtparam.sched_priority = AUDIO_THREAD_RT_PRIORITY;
+
+    if ((err = pthread_setschedparam(m->t, SCHED_FIFO, &rtparam)) != 0) {
+      trace_warning(
+          "cannot use real-time scheduling (FIFO at priority %d) "
+          "for audio thread (%d: %s)",
+          rtparam.sched_priority, err, strerror(err));
+    }
+
     m->running = 1;
     return 0;
 }
