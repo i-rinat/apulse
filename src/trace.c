@@ -40,9 +40,9 @@ trace_info(const char *fmt, ...)
     va_list args;
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    fprintf(stdout, "%d.%03d [apulse %5d] ", (int)tv.tv_sec, (int)tv.tv_usec/1000, (int)syscall(__NR_gettid));
+    fprintf(stderr, "%d.%03d [apulse %5d] ", (int)tv.tv_sec, (int)tv.tv_usec/1000, (int)syscall(__NR_gettid));
     va_start(args, fmt);
-    vfprintf(stdout, fmt, args);
+    vfprintf(stderr, fmt, args);
     va_end(args);
     pthread_mutex_unlock(&lock);
 }
@@ -52,9 +52,9 @@ trace_warning(const char *fmt, ...)
 {
     pthread_mutex_lock(&lock);
     va_list args;
-    fprintf(stdout, "[apulse] [warning] ");
+    fprintf(stderr, "[apulse] [warning] ");
     va_start(args, fmt);
-    vfprintf(stdout, fmt, args);
+    vfprintf(stderr, fmt, args);
     va_end(args);
     pthread_mutex_unlock(&lock);
 }
@@ -62,14 +62,14 @@ trace_warning(const char *fmt, ...)
 void
 trace_error(const char *fmt, ...)
 {
-    static int stdout_tested = 0;
-    static int stdout_is_a_tty = 0;
+    static int stderr_tested = 0;
+    static int stderr_is_a_tty = 0;
 
     pthread_mutex_lock(&lock);
 
-    if (!stdout_tested) {
-        stdout_is_a_tty = isatty(1);
-        stdout_tested = 1;
+    if (!stderr_tested) {
+        stderr_is_a_tty = isatty(2);
+        stderr_tested = 1;
     }
 
     va_list args;
@@ -78,12 +78,12 @@ trace_error(const char *fmt, ...)
     vfprintf(stderr, fmt, args);
     va_end(args);
 
-    if (!stdout_is_a_tty) {
-        // If stdout is redirected to a file, make sure it also gets error messages.
+    if (!stderr_is_a_tty) {
+        // If stderr is redirected to a file, make sure it also gets error messages.
         // That helps to figure out where errors were.
-        fprintf(stdout, "[apulse] [error] ");
+        fprintf(stderr, "[apulse] [error] ");
         va_start(args, fmt);
-        vfprintf(stdout, fmt, args);
+        vfprintf(stderr, fmt, args);
         va_end(args);
     }
 
