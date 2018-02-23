@@ -77,6 +77,10 @@ struct pa_mainloop {
     int                 alsa_special_cnt;
 };
 
+struct pa_glib_mainloop {
+    pa_mainloop_api     api;
+};
+
 struct pa_threaded_mainloop {
     pa_mainloop        *m;
     pthread_mutex_t     lock;
