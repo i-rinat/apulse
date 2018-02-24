@@ -30,18 +30,20 @@
 #include <unistd.h>
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static int log_to_stderr = 0;
 
 void
 trace_info(const char *fmt, ...)
 {
+    FILE *fp = log_to_stderr ? stderr : stdout;
     pthread_mutex_lock(&lock);
     va_list args;
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    fprintf(stdout, "%d.%03d [apulse %5d] ", (int)tv.tv_sec,
+    fprintf(fp, "%d.%03d [apulse %5d] ", (int)tv.tv_sec,
             (int)tv.tv_usec / 1000, (int)syscall(__NR_gettid));
     va_start(args, fmt);
-    vfprintf(stdout, fmt, args);
+    vfprintf(fp, fmt, args);
     va_end(args);
     pthread_mutex_unlock(&lock);
 }
@@ -49,11 +51,12 @@ trace_info(const char *fmt, ...)
 void
 trace_warning(const char *fmt, ...)
 {
+    FILE *fp = log_to_stderr ? stderr : stdout;
     pthread_mutex_lock(&lock);
     va_list args;
-    fprintf(stdout, "[apulse] [warning] ");
+    fprintf(fp, "[apulse] [warning] ");
     va_start(args, fmt);
-    vfprintf(stdout, fmt, args);
+    vfprintf(fp, fmt, args);
     va_end(args);
     pthread_mutex_unlock(&lock);
 }
@@ -77,9 +80,8 @@ trace_error(const char *fmt, ...)
     vfprintf(stderr, fmt, args);
     va_end(args);
 
-    if (!stdout_is_a_tty) {
-        // If stdout is redirected to a file, make sure it also gets error
-        // messages. That helps to figure out where errors were.
+    if (!log_to_stderr && !stdout_is_a_tty) {
+        // Send a copy to stdout, if it's redirected to a file.
         fprintf(stdout, "[apulse] [error] ");
         va_start(args, fmt);
         vfprintf(stdout, fmt, args);
