@@ -119,7 +119,7 @@ Large portion of PulseAudio API is not implemented. There are functions that do
 nothing and return some arbitraty values. Often, if application tries to call
 something not implemented, it crashes while trying to dereference a NULL
 pointer.  By default, tracing level is set to `0`, which means no messages are
-printed to standard output. It's possible to increase that value to `1`, which
+printed to standard error. It's possible to increase that value to `1`, which
 shows unimplemented function calls, or to `2`, which shows all function calls.
 
 To change level, use `WITH_TRACE` parameter when calling `cmake`. Something like
