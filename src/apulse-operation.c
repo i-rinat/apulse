@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -25,9 +25,7 @@
 #include "apulse.h"
 #include "trace.h"
 
-
-static
-void
+static void
 deh_perform_operation(pa_mainloop_api *api, pa_defer_event *de, void *userdata)
 {
     pa_operation *op = userdata;
@@ -87,7 +85,7 @@ pa_operation_ref(pa_operation *o)
 
     if (!o)
         return NULL;
-    o->ref_cnt ++;
+    o->ref_cnt++;
     return o;
 }
 
@@ -99,14 +97,15 @@ pa_operation_unref(pa_operation *o)
 
     if (!o)
         return;
-    o->ref_cnt --;
+    o->ref_cnt--;
     if (o->ref_cnt == 0)
         g_slice_free(pa_operation, o);
 }
 
 APULSE_EXPORT
 void
-pa_operation_set_state_callback(pa_operation *o, pa_operation_notify_cb_t cb, void *userdata)
+pa_operation_set_state_callback(pa_operation *o, pa_operation_notify_cb_t cb,
+                                void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }

@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -22,10 +22,9 @@
  * SOFTWARE.
  */
 
-#include <pulse/simple.h>
 #include "apulse.h"
 #include "trace.h"
-
+#include <pulse/simple.h>
 
 APULSE_EXPORT
 void
@@ -84,8 +83,7 @@ pai_simple_stream_write_cb(pa_stream *s, size_t length, void *user_data)
     pa_threaded_mainloop_signal(simple->mainloop, 0);
 }
 
-static
-void
+static void
 pai_simple_stream_read_cb(pa_stream *s, size_t length, void *user_data)
 {
     pa_simple *simple = user_data;
@@ -100,8 +98,9 @@ pai_simple_stream_latency_update_cb(pa_stream *s, void *user_data)
 }
 
 static int
-pai_simple_stream_connect(pa_simple *simple, pa_stream_direction_t dir, const char *stream_name,
-                          const pa_sample_spec *ss, const pa_buffer_attr *attr)
+pai_simple_stream_connect(pa_simple *simple, pa_stream_direction_t dir,
+                          const char *stream_name, const pa_sample_spec *ss,
+                          const pa_buffer_attr *attr)
 {
     simple->stream = pa_stream_new(simple->context, stream_name, ss, NULL);
     if (!simple->stream) {
@@ -109,14 +108,19 @@ pai_simple_stream_connect(pa_simple *simple, pa_stream_direction_t dir, const ch
         goto err_1;
     }
 
-    pa_stream_set_state_callback(simple->stream, pai_simple_stream_state_cb, simple);
-    pa_stream_set_read_callback(simple->stream, pai_simple_stream_read_cb, simple);
-    pa_stream_set_write_callback(simple->stream, pai_simple_stream_write_cb, simple);
-    pa_stream_set_latency_update_callback(simple->stream, pai_simple_stream_latency_update_cb,
-                                          simple);
+    pa_stream_set_state_callback(simple->stream, pai_simple_stream_state_cb,
+                                 simple);
+    pa_stream_set_read_callback(simple->stream, pai_simple_stream_read_cb,
+                                simple);
+    pa_stream_set_write_callback(simple->stream, pai_simple_stream_write_cb,
+                                 simple);
+    pa_stream_set_latency_update_callback(
+        simple->stream, pai_simple_stream_latency_update_cb, simple);
 
     if (dir == PA_STREAM_PLAYBACK) {
-        if (pa_stream_connect_playback(simple->stream, NULL, attr, 0, NULL, NULL) < 0) {
+        if (pa_stream_connect_playback(simple->stream, NULL, attr, 0, NULL,
+                                       NULL) < 0)
+        {
             trace_error("%s: can't connect playback stream", __func__);
             goto err_2;
         }
@@ -150,14 +154,16 @@ err_1:
 
 APULSE_EXPORT
 pa_simple *
-pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, const char *dev,
-              const char *stream_name, const pa_sample_spec *ss, const pa_channel_map *map,
+pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir,
+              const char *dev, const char *stream_name,
+              const pa_sample_spec *ss, const pa_channel_map *map,
               const pa_buffer_attr *attr, int *error)
 {
     gchar *s_map = trace_pa_channel_map_as_string(map);
     gchar *s_ss = trace_pa_sample_spec_as_string(ss);
     trace_info_f(
-        "F %s server=%s, name=%s, dir=%d, dev=%s, stream_name=%s, ss=%s, map=%s, attr=%p\n",
+        "F %s server=%s, name=%s, dir=%d, dev=%s, stream_name=%s, ss=%s, "
+        "map=%s, attr=%p\n",
         __func__, server, name, dir, dev, stream_name, s_ss, s_map, attr);
     g_free(s_ss);
     g_free(s_map);
@@ -174,15 +180,18 @@ pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, c
         goto err_1;
     }
 
-    simple->context = pa_context_new(pa_threaded_mainloop_get_api(simple->mainloop), name);
+    simple->context =
+        pa_context_new(pa_threaded_mainloop_get_api(simple->mainloop), name);
     if (!simple->context) {
         trace_error("%s: can't create context", __func__);
         goto err_2;
     }
 
-    pa_context_set_state_callback(simple->context, pai_simple_context_state_cb, simple->mainloop);
+    pa_context_set_state_callback(simple->context, pai_simple_context_state_cb,
+                                  simple->mainloop);
 
-    if (pa_context_connect(simple->context, NULL, PA_CONTEXT_NOFLAGS, NULL) < 0) {
+    if (pa_context_connect(simple->context, NULL, PA_CONTEXT_NOFLAGS, NULL) < 0)
+    {
         trace_error("%s: can't connect context", __func__);
         goto err_3;
     }
@@ -237,7 +246,8 @@ APULSE_EXPORT
 int
 pa_simple_write(pa_simple *s, const void *data, size_t bytes, int *error)
 {
-    trace_info_f("F %s s=%p, data=%p, bytes=%zu, error=%p\n", __func__, s, data, bytes, error);
+    trace_info_f("F %s s=%p, data=%p, bytes=%zu, error=%p\n", __func__, s, data,
+                 bytes, error);
 
     size_t to_write = bytes;
     const char *p = data;
@@ -253,7 +263,9 @@ pa_simple_write(pa_simple *s, const void *data, size_t bytes, int *error)
         }
 
         chunk_size = MIN(chunk_size, to_write);
-        if (pa_stream_write(s->stream, p, chunk_size, NULL, 0, PA_SEEK_RELATIVE) < 0) {
+        if (pa_stream_write(s->stream, p, chunk_size, NULL, 0,
+                            PA_SEEK_RELATIVE) < 0)
+        {
             trace_error("%s: can't write", __func__);
             goto err;
         }

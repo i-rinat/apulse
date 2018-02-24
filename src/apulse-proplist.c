@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -25,15 +25,14 @@
 #include "apulse.h"
 #include "trace.h"
 
-
 struct prop {
-    size_t  len;
-    char   *data;
+    size_t len;
+    char *data;
 };
 
 APULSE_EXPORT
 void
-pa_proplist_free(pa_proplist* p)
+pa_proplist_free(pa_proplist *p)
 {
     trace_info_f("F %s p=%p\n", __func__, p);
 
@@ -41,15 +40,13 @@ pa_proplist_free(pa_proplist* p)
     free(p);
 }
 
-static
-void
+static void
 string_destroy_func(gpointer data)
 {
     free(data);
 }
 
-static
-void
+static void
 prop_destroy_func(gpointer data)
 {
     struct prop *p = data;
@@ -65,16 +62,18 @@ pa_proplist_new(void)
     trace_info_f("F %s (void)\n", __func__);
 
     pa_proplist *p = calloc(1, sizeof(pa_proplist));
-    p->ht = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                  string_destroy_func, prop_destroy_func);
+    p->ht = g_hash_table_new_full(g_str_hash, g_str_equal, string_destroy_func,
+                                  prop_destroy_func);
     return p;
 }
 
 APULSE_EXPORT
 int
-pa_proplist_set(pa_proplist *p, const char *key, const void *data, size_t nbytes)
+pa_proplist_set(pa_proplist *p, const char *key, const void *data,
+                size_t nbytes)
 {
-    trace_info_f("F %s p=%p, key=%s, data=%p, nbytes=%d\n", __func__, p, key, data, (int)nbytes);
+    trace_info_f("F %s p=%p, key=%s, data=%p, nbytes=%d\n", __func__, p, key,
+                 data, (int)nbytes);
 
     struct prop *v = g_slice_alloc(sizeof(*v));
     if (!v)
@@ -112,7 +111,8 @@ pa_proplist_clear(pa_proplist *p)
 
 APULSE_EXPORT
 void
-pa_proplist_update(pa_proplist *p, pa_update_mode_t mode, const pa_proplist *other)
+pa_proplist_update(pa_proplist *p, pa_update_mode_t mode,
+                   const pa_proplist *other)
 {
     trace_info_z("Z %s\n", __func__);
 }
@@ -141,7 +141,7 @@ pa_proplist_gets(pa_proplist *p, const char *key)
         return NULL;
 
     if (v->data[v->len - 1] != '\0')
-        return NULL; // not a string
+        return NULL;  // not a string
 
     return v->data;
 }
@@ -204,7 +204,8 @@ pa_proplist_setf(pa_proplist *p, const char *key, const char *format, ...)
 
 APULSE_EXPORT
 int
-pa_proplist_get(pa_proplist *p, const char *key, const void **data, size_t *nbytes)
+pa_proplist_get(pa_proplist *p, const char *key, const void **data,
+                size_t *nbytes)
 {
     trace_info_z("Z %s\n", __func__);
     return 0;

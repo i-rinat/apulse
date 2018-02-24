@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -56,8 +56,8 @@ pa_sw_volume_to_linear(pa_volume_t v)
 
 APULSE_EXPORT
 char *
-pa_cvolume_snprint_verbose(char *s, size_t l, const pa_cvolume *c, const pa_channel_map *map,
-                           int print_dB)
+pa_cvolume_snprint_verbose(char *s, size_t l, const pa_cvolume *c,
+                           const pa_channel_map *map, int print_dB)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -89,7 +89,8 @@ pa_volume_snprint_verbose(char *s, size_t l, pa_volume_t v, int print_dB)
 
 APULSE_EXPORT
 pa_volume_t
-pa_cvolume_avg_mask(const pa_cvolume *a, const pa_channel_map *cm, pa_channel_position_mask_t mask)
+pa_cvolume_avg_mask(const pa_cvolume *a, const pa_channel_map *cm,
+                    pa_channel_position_mask_t mask)
 {
     trace_info_z("Z %s\n", __func__);
     return 0;
@@ -105,7 +106,8 @@ pa_cvolume_max(const pa_cvolume *a)
 
 APULSE_EXPORT
 pa_volume_t
-pa_cvolume_max_mask(const pa_cvolume *a, const pa_channel_map *cm, pa_channel_position_mask_t mask)
+pa_cvolume_max_mask(const pa_cvolume *a, const pa_channel_map *cm,
+                    pa_channel_position_mask_t mask)
 {
     trace_info_z("Z %s\n", __func__);
     return 0;
@@ -121,7 +123,8 @@ pa_cvolume_min(const pa_cvolume *a)
 
 APULSE_EXPORT
 pa_volume_t
-pa_cvolume_min_mask(const pa_cvolume *a, const pa_channel_map *cm, pa_channel_position_mask_t mask)
+pa_cvolume_min_mask(const pa_cvolume *a, const pa_channel_map *cm,
+                    pa_channel_position_mask_t mask)
 {
     trace_info_z("Z %s\n", __func__);
     return 0;
@@ -153,7 +156,8 @@ pa_sw_volume_multiply(pa_volume_t a, pa_volume_t b)
 
 APULSE_EXPORT
 pa_cvolume *
-pa_sw_cvolume_multiply(pa_cvolume *dest, const pa_cvolume *a, const pa_cvolume *b)
+pa_sw_cvolume_multiply(pa_cvolume *dest, const pa_cvolume *a,
+                       const pa_cvolume *b)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -161,7 +165,8 @@ pa_sw_cvolume_multiply(pa_cvolume *dest, const pa_cvolume *a, const pa_cvolume *
 
 APULSE_EXPORT
 pa_cvolume *
-pa_sw_cvolume_multiply_scalar(pa_cvolume *dest, const pa_cvolume *a, pa_volume_t b)
+pa_sw_cvolume_multiply_scalar(pa_cvolume *dest, const pa_cvolume *a,
+                              pa_volume_t b)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -185,7 +190,8 @@ pa_sw_cvolume_divide(pa_cvolume *dest, const pa_cvolume *a, const pa_cvolume *b)
 
 APULSE_EXPORT
 pa_cvolume *
-pa_sw_cvolume_divide_scalar(pa_cvolume *dest, const pa_cvolume *a, pa_volume_t b)
+pa_sw_cvolume_divide_scalar(pa_cvolume *dest, const pa_cvolume *a,
+                            pa_volume_t b)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -209,7 +215,8 @@ pa_sw_volume_to_dB(pa_volume_t v)
 
 APULSE_EXPORT
 pa_cvolume *
-pa_cvolume_remap(pa_cvolume *v, const pa_channel_map *from, const pa_channel_map *to)
+pa_cvolume_remap(pa_cvolume *v, const pa_channel_map *from,
+                 const pa_channel_map *to)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -225,7 +232,8 @@ pa_cvolume_compatible(const pa_cvolume *v, const pa_sample_spec *ss)
 
 APULSE_EXPORT
 int
-pa_cvolume_compatible_with_channel_map(const pa_cvolume *v, const pa_channel_map *cm)
+pa_cvolume_compatible_with_channel_map(const pa_cvolume *v,
+                                       const pa_channel_map *cm)
 {
     trace_info_z("Z %s\n", __func__);
     return 0;
@@ -241,7 +249,8 @@ pa_cvolume_get_balance(const pa_cvolume *v, const pa_channel_map *map)
 
 APULSE_EXPORT
 pa_cvolume *
-pa_cvolume_set_balance(pa_cvolume *v, const pa_channel_map *map, float new_balance)
+pa_cvolume_set_balance(pa_cvolume *v, const pa_channel_map *map,
+                       float new_balance)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -282,12 +291,13 @@ pa_cvolume_scale_mask(pa_cvolume *v, pa_volume_t max, pa_channel_map *cm,
 
 APULSE_EXPORT
 pa_cvolume *
-pa_cvolume_set_position(pa_cvolume *cv, const pa_channel_map *map, pa_channel_position_t t,
-                        pa_volume_t v)
+pa_cvolume_set_position(pa_cvolume *cv, const pa_channel_map *map,
+                        pa_channel_position_t t, pa_volume_t v)
 {
     gchar *s_map = trace_pa_channel_map_as_string(map);
     gchar *s_t = trace_pa_channel_position_t_as_string(t);
-    trace_info_z("Z %s cv=%p, map=%s, t=%s, v=%u\n", __func__, cv, s_map, s_t, v);
+    trace_info_z("Z %s cv=%p, map=%s, t=%s, v=%u\n", __func__, cv, s_map, s_t,
+                 v);
     g_free(s_t);
     g_free(s_map);
 
@@ -296,7 +306,8 @@ pa_cvolume_set_position(pa_cvolume *cv, const pa_channel_map *map, pa_channel_po
 
 APULSE_EXPORT
 pa_volume_t
-pa_cvolume_get_position(pa_cvolume *cv, const pa_channel_map *map, pa_channel_position_t t)
+pa_cvolume_get_position(pa_cvolume *cv, const pa_channel_map *map,
+                        pa_channel_position_t t)
 {
     gchar *s_map = trace_pa_channel_map_as_string(map);
     gchar *s_t = trace_pa_channel_position_t_as_string(t);

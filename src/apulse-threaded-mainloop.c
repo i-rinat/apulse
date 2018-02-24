@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -22,12 +22,11 @@
  * SOFTWARE.
  */
 
-#define _XOPEN_SOURCE   500
+#define _XOPEN_SOURCE 500
 #include "apulse.h"
 #include "trace.h"
 
-static
-void *
+static void *
 mainloop_thread(void *param)
 {
     pa_threaded_mainloop *m = param;
@@ -40,8 +39,7 @@ mainloop_thread(void *param)
     return NULL;
 }
 
-static
-int
+static int
 poll_func(struct pollfd *fds, nfds_t nfds, int timeout, void *userdata)
 {
     pthread_mutex_t *lock = userdata;
@@ -121,7 +119,8 @@ APULSE_EXPORT
 void
 pa_threaded_mainloop_signal(pa_threaded_mainloop *m, int wait_for_accept)
 {
-    trace_info_f("F %s m=%p, wait_for_accept=%d\n", __func__, m, wait_for_accept);
+    trace_info_f("F %s m=%p, wait_for_accept=%d\n", __func__, m,
+                 wait_for_accept);
 
     if (wait_for_accept != 0)
         trace_error("%s, not implemented branch\n", __func__);

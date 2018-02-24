@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -22,35 +22,31 @@
  * SOFTWARE.
  */
 
-#define _XOPEN_SOURCE   500
-#include <assert.h>
-#include <unistd.h>
+#define _XOPEN_SOURCE 500
 #include "apulse.h"
 #include "trace.h"
+#include <assert.h>
+#include <unistd.h>
 
-
-static
-int
+static int
 from_pa_io_event_flags(pa_io_event_flags_t flags)
 {
-    return ((flags & PA_IO_EVENT_INPUT)  ? POLLIN : 0) |
+    return ((flags & PA_IO_EVENT_INPUT) ? POLLIN : 0) |
            ((flags & PA_IO_EVENT_OUTPUT) ? POLLOUT : 0) |
            ((flags & PA_IO_EVENT_HANGUP) ? POLLHUP : 0) |
-           ((flags & PA_IO_EVENT_ERROR)  ? POLLERR : 0);
+           ((flags & PA_IO_EVENT_ERROR) ? POLLERR : 0);
 }
 
-static
-pa_io_event_flags_t
+static pa_io_event_flags_t
 to_pa_io_event_flags(int flags)
 {
-    return ((flags & POLLIN) ?  PA_IO_EVENT_INPUT: 0) |
-           ((flags & POLLOUT) ? PA_IO_EVENT_OUTPUT: 0) |
-           ((flags & POLLHUP) ? PA_IO_EVENT_HANGUP: 0) |
-           ((flags & POLLERR) ? PA_IO_EVENT_ERROR: 0);
+    return ((flags & POLLIN) ? PA_IO_EVENT_INPUT : 0) |
+           ((flags & POLLOUT) ? PA_IO_EVENT_OUTPUT : 0) |
+           ((flags & POLLHUP) ? PA_IO_EVENT_HANGUP : 0) |
+           ((flags & POLLERR) ? PA_IO_EVENT_ERROR : 0);
 }
 
-static
-void
+static void
 ml_api_defer_enable(pa_defer_event *e, int b)
 {
     trace_info_f("F %s\n", __func__);
@@ -58,8 +54,7 @@ ml_api_defer_enable(pa_defer_event *e, int b)
     e->enabled = b;
 }
 
-static
-void
+static void
 ml_api_defer_free(pa_defer_event *e)
 {
     trace_info_f("F %s\n", __func__);
@@ -70,8 +65,7 @@ ml_api_defer_free(pa_defer_event *e)
     pa_mainloop_wakeup(ml);
 }
 
-static
-pa_defer_event *
+static pa_defer_event *
 ml_api_defer_new(pa_mainloop_api *a, pa_defer_event_cb_t cb, void *userdata)
 {
     trace_info_f("F %s\n", __func__);
@@ -88,15 +82,13 @@ ml_api_defer_new(pa_mainloop_api *a, pa_defer_event_cb_t cb, void *userdata)
     return de;
 }
 
-static
-void
+static void
 ml_api_defer_set_destroy(pa_defer_event *e, pa_defer_event_destroy_cb_t cb)
 {
     trace_info_z("Z %s\n", __func__);
 }
 
-static
-void
+static void
 ml_api_io_enable(pa_io_event *e, pa_io_event_flags_t events)
 {
     trace_info_f("F %s e=%p, events=0x%x\n", __func__, e, events);
@@ -111,8 +103,7 @@ ml_api_io_enable(pa_io_event *e, pa_io_event_flags_t events)
     pa_mainloop_wakeup(ml);
 }
 
-static
-void
+static void
 ml_api_io_free(pa_io_event *e)
 {
     trace_info_f("F %s e=%p\n", __func__, e);
@@ -124,23 +115,22 @@ ml_api_io_free(pa_io_event *e)
     pa_mainloop_wakeup(ml);
 }
 
-static
-pa_io_event *
-ml_api_io_new(pa_mainloop_api *a, int fd, pa_io_event_flags_t events, pa_io_event_cb_t cb,
-              void *userdata)
+static pa_io_event *
+ml_api_io_new(pa_mainloop_api *a, int fd, pa_io_event_flags_t events,
+              pa_io_event_cb_t cb, void *userdata)
 {
-    trace_info_f("F %s a=%p, fd=%d, events=0x%x, cb=%p, userdata=%p\n", __func__, a, fd, events,
-               cb, userdata);
+    trace_info_f("F %s a=%p, fd=%d, events=0x%x, cb=%p, userdata=%p\n",
+                 __func__, a, fd, events, cb, userdata);
 
     pa_mainloop *ml = a->userdata;
     pa_io_event *ioe = g_slice_new(pa_io_event);
-    ioe->fd =           fd;
-    ioe->events =       events;
-    ioe->cb =           cb;
-    ioe->cb_userdata =  userdata;
-    ioe->mainloop =     ml;
-    ioe->pollfd =       NULL;
-    ioe->pcm =          NULL;
+    ioe->fd = fd;
+    ioe->events = events;
+    ioe->cb = cb;
+    ioe->cb_userdata = userdata;
+    ioe->mainloop = ml;
+    ioe->pollfd = NULL;
+    ioe->pcm = NULL;
 
     g_hash_table_replace(ml->events_ht, ioe, ioe);
     ml->recreate_fds = 1;
@@ -149,15 +139,13 @@ ml_api_io_new(pa_mainloop_api *a, int fd, pa_io_event_flags_t events, pa_io_even
     return ioe;
 }
 
-static
-void
+static void
 ml_api_io_set_destroy(pa_io_event *e, pa_io_event_destroy_cb_t cb)
 {
     trace_info_z("Z %s\n", __func__);
 }
 
-static
-void
+static void
 ml_api_quit(pa_mainloop_api *a, int retval)
 {
     trace_info_f("F %s a=%p, retval=%d\n", __func__, a, retval);
@@ -181,7 +169,8 @@ ml_api_time_free(pa_time_event *e)
     pa_mainloop_wakeup(ml);
 }
 
-/// Comparator function for |timed_events_queue|. Orders events by value of |when| parameter.
+/// Comparator function for |timed_events_queue|. Orders events by value of
+/// |when| parameter.
 static gint
 time_event_comparator(gconstpointer a, gconstpointer b, gpointer user_data)
 {
@@ -209,10 +198,12 @@ time_event_comparator(gconstpointer a, gconstpointer b, gpointer user_data)
 }
 
 static pa_time_event *
-ml_api_time_new(pa_mainloop_api *a, const struct timeval *tv, pa_time_event_cb_t cb, void *userdata)
+ml_api_time_new(pa_mainloop_api *a, const struct timeval *tv,
+                pa_time_event_cb_t cb, void *userdata)
 {
-    trace_info_f("F %s a=%p, tv=%p {%ld, %ld}, cb=%p, userdata=%p\n", __func__, a, tv,
-                 tv ? tv->tv_sec : 0, tv ? tv->tv_usec : 0, cb, userdata);
+    trace_info_f("F %s a=%p, tv=%p {%ld, %ld}, cb=%p, userdata=%p\n", __func__,
+                 a, tv, tv ? tv->tv_sec : 0, tv ? tv->tv_usec : 0, cb,
+                 userdata);
 
     pa_mainloop *ml = a->userdata;
     pa_time_event *te = g_slice_new0(pa_time_event);
@@ -222,7 +213,8 @@ ml_api_time_new(pa_mainloop_api *a, const struct timeval *tv, pa_time_event_cb_t
     te->userdata = userdata;
     te->mainloop = ml;
 
-    g_queue_insert_sorted(ml->timed_events_queue, te, time_event_comparator, NULL);
+    g_queue_insert_sorted(ml->timed_events_queue, te, time_event_comparator,
+                          NULL);
 
     pa_mainloop_wakeup(ml);
     return te;
@@ -231,8 +223,8 @@ ml_api_time_new(pa_mainloop_api *a, const struct timeval *tv, pa_time_event_cb_t
 static void
 ml_api_time_restart(pa_time_event *e, const struct timeval *tv)
 {
-    trace_info_f("F %s e=%p, tv=%p {%ld, %ld}\n", __func__, e, tv, tv ? tv->tv_sec : 0,
-                 tv ? tv->tv_usec : 0);
+    trace_info_f("F %s e=%p, tv=%p {%ld, %ld}\n", __func__, e, tv,
+                 tv ? tv->tv_sec : 0, tv ? tv->tv_usec : 0);
 
     pa_mainloop *ml = e->mainloop;
 
@@ -241,7 +233,8 @@ ml_api_time_restart(pa_time_event *e, const struct timeval *tv)
     e->enabled = 1;
     e->when = tv ? *tv : (struct timeval){};
 
-    g_queue_insert_sorted(ml->timed_events_queue, e, time_event_comparator, NULL);
+    g_queue_insert_sorted(ml->timed_events_queue, e, time_event_comparator,
+                          NULL);
 
     pa_mainloop_wakeup(ml);
 }
@@ -265,7 +258,8 @@ pa_mainloop_api_once_impl(pa_operation *op)
 
 APULSE_EXPORT
 void
-pa_mainloop_api_once(pa_mainloop_api *m, void (*callback)(pa_mainloop_api *m, void *userdata),
+pa_mainloop_api_once(pa_mainloop_api *m,
+                     void (*callback)(pa_mainloop_api *m, void *userdata),
                      void *userdata)
 {
     trace_info_f("F %s\n", __func__);
@@ -276,8 +270,7 @@ pa_mainloop_api_once(pa_mainloop_api *m, void (*callback)(pa_mainloop_api *m, vo
     pa_operation_launch(op);
 }
 
-static
-void
+static void
 recover_pcm(snd_pcm_t *pcm)
 {
     switch (snd_pcm_state(pcm)) {
@@ -297,7 +290,8 @@ recover_pcm(snd_pcm_t *pcm)
 static long
 microseconds_till_event(pa_usec_t now, const struct timeval *event_when)
 {
-    return (uint64_t)event_when->tv_sec * 1000 * 1000 + event_when->tv_usec - now;
+    return (uint64_t)event_when->tv_sec * 1000 * 1000 + event_when->tv_usec -
+           now;
 }
 
 APULSE_EXPORT
@@ -318,19 +312,20 @@ pa_mainloop_dispatch(pa_mainloop *m)
             unsigned short revents = 0;
 
             if (0 < idx && idx <= m->alsa_special_cnt) {
-                snd_pcm_poll_descriptors_revents(ioe->pcm, ioe->pollfd, 1, &revents);
+                snd_pcm_poll_descriptors_revents(ioe->pcm, ioe->pollfd, 1,
+                                                 &revents);
             } else {
                 revents = ioe->pollfd->revents;
             }
 
-            if (revents & (~(POLLOUT|POLLIN))) {
+            if (revents & (~(POLLOUT | POLLIN))) {
                 recover_pcm(ioe->pcm);
             } else {
                 pa_io_event_flags_t eflags = to_pa_io_event_flags(revents);
                 if (ioe->cb)
                     ioe->cb(&m->api, ioe, ioe->fd, eflags, ioe->cb_userdata);
                 ioe->pollfd->revents = 0;
-                cnt ++;
+                cnt++;
             }
         }
 
@@ -420,8 +415,7 @@ pa_mainloop_iterate(pa_mainloop *m, int block, int *retval)
     return err;
 }
 
-static
-void
+static void
 make_nonblock(int fd)
 {
     int flags = fcntl(fd, F_GETFL, 0);
@@ -436,20 +430,20 @@ pa_mainloop_new(void)
 
     pa_mainloop *m = calloc(1, sizeof(pa_mainloop));
 
-    m->api.userdata          = m;
-    m->api.io_new            = ml_api_io_new;
-    m->api.io_enable         = ml_api_io_enable;
-    m->api.io_free           = ml_api_io_free;
-    m->api.io_set_destroy    = ml_api_io_set_destroy;
-    m->api.time_new          = ml_api_time_new;
-    m->api.time_restart      = ml_api_time_restart;
-    m->api.time_free         = ml_api_time_free;
-    m->api.time_set_destroy  = ml_api_time_set_destroy;
-    m->api.defer_new         = ml_api_defer_new;
-    m->api.defer_enable      = ml_api_defer_enable;
-    m->api.defer_free        = ml_api_defer_free;
+    m->api.userdata = m;
+    m->api.io_new = ml_api_io_new;
+    m->api.io_enable = ml_api_io_enable;
+    m->api.io_free = ml_api_io_free;
+    m->api.io_set_destroy = ml_api_io_set_destroy;
+    m->api.time_new = ml_api_time_new;
+    m->api.time_restart = ml_api_time_restart;
+    m->api.time_free = ml_api_time_free;
+    m->api.time_set_destroy = ml_api_time_set_destroy;
+    m->api.defer_new = ml_api_defer_new;
+    m->api.defer_enable = ml_api_defer_enable;
+    m->api.defer_free = ml_api_defer_free;
     m->api.defer_set_destroy = ml_api_defer_set_destroy;
-    m->api.quit              = ml_api_quit;
+    m->api.quit = ml_api_quit;
 
     m->deferred_events_queue = g_queue_new();
     m->timed_events_queue = g_queue_new();
@@ -474,7 +468,8 @@ pa_mainloop_poll(pa_mainloop *m)
     pa_time_event *te = g_queue_peek_head(m->timed_events_queue);
     if (te) {
         pa_usec_t now = pa_rtclock_now();
-        long int msecs_till_next_event = microseconds_till_event(now, &te->when) / PA_USEC_PER_MSEC;
+        long int msecs_till_next_event =
+            microseconds_till_event(now, &te->when) / PA_USEC_PER_MSEC;
 
         // Ensure delay is non-negative, even if event is already expired.
         msecs_till_next_event = MAX(msecs_till_next_event, 0);
@@ -534,8 +529,8 @@ pa_mainloop_prepare(pa_mainloop *m, int timeout)
                 m->fds[k].events = ioe->events & (~0x80000000u);
                 m->fds[k].revents = 0;
                 ioe->pollfd = &m->fds[k];
-                k ++;
-                m->alsa_special_cnt ++;
+                k++;
+                m->alsa_special_cnt++;
             }
             it = g_list_next(it);
         }
@@ -549,7 +544,7 @@ pa_mainloop_prepare(pa_mainloop *m, int timeout)
                 m->fds[k].events = from_pa_io_event_flags(ioe->events);
                 m->fds[k].revents = 0;
                 ioe->pollfd = &m->fds[k];
-                k ++;
+                k++;
             }
             it = g_list_next(it);
         }
@@ -595,9 +590,11 @@ pa_mainloop_run(pa_mainloop *m, int *retval)
 
 APULSE_EXPORT
 void
-pa_mainloop_set_poll_func(pa_mainloop *m, pa_poll_func poll_func, void *userdata)
+pa_mainloop_set_poll_func(pa_mainloop *m, pa_poll_func poll_func,
+                          void *userdata)
 {
-    trace_info_f("F %s m=%p, poll_func=%p, userdata=%p\n", __func__, m, poll_func, userdata);
+    trace_info_f("F %s m=%p, poll_func=%p, userdata=%p\n", __func__, m,
+                 poll_func, userdata);
 
     m->poll_func = poll_func;
     m->poll_func_userdata = userdata;

@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,57 +26,57 @@
 #include "trace.h"
 
 static const char *channel_name[PA_CHANNEL_POSITION_MAX] = {
-    [PA_CHANNEL_POSITION_MONO] = "mono",
-    [PA_CHANNEL_POSITION_FRONT_CENTER] = "front-center",
-    [PA_CHANNEL_POSITION_FRONT_LEFT] = "front-left",
-    [PA_CHANNEL_POSITION_FRONT_RIGHT] = "front-right",
-    [PA_CHANNEL_POSITION_REAR_CENTER] = "rear-center",
-    [PA_CHANNEL_POSITION_REAR_LEFT] = "rear-left",
-    [PA_CHANNEL_POSITION_REAR_RIGHT] = "rear-right",
-    [PA_CHANNEL_POSITION_LFE] = "lfe",
-    [PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER] = "front-left-of-center",
-    [PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER] = "front-right-of-center",
-    [PA_CHANNEL_POSITION_SIDE_LEFT] = "side-left",
-    [PA_CHANNEL_POSITION_SIDE_RIGHT] = "side-right",
-    [PA_CHANNEL_POSITION_AUX0] = "aux0",
-    [PA_CHANNEL_POSITION_AUX1] = "aux1",
-    [PA_CHANNEL_POSITION_AUX2] = "aux2",
-    [PA_CHANNEL_POSITION_AUX3] = "aux3",
-    [PA_CHANNEL_POSITION_AUX4] = "aux4",
-    [PA_CHANNEL_POSITION_AUX5] = "aux5",
-    [PA_CHANNEL_POSITION_AUX6] = "aux6",
-    [PA_CHANNEL_POSITION_AUX7] = "aux7",
-    [PA_CHANNEL_POSITION_AUX8] = "aux8",
-    [PA_CHANNEL_POSITION_AUX9] = "aux9",
-    [PA_CHANNEL_POSITION_AUX10] = "aux10",
-    [PA_CHANNEL_POSITION_AUX11] = "aux11",
-    [PA_CHANNEL_POSITION_AUX12] = "aux12",
-    [PA_CHANNEL_POSITION_AUX13] = "aux13",
-    [PA_CHANNEL_POSITION_AUX14] = "aux14",
-    [PA_CHANNEL_POSITION_AUX15] = "aux15",
-    [PA_CHANNEL_POSITION_AUX16] = "aux16",
-    [PA_CHANNEL_POSITION_AUX17] = "aux17",
-    [PA_CHANNEL_POSITION_AUX18] = "aux18",
-    [PA_CHANNEL_POSITION_AUX19] = "aux19",
-    [PA_CHANNEL_POSITION_AUX20] = "aux20",
-    [PA_CHANNEL_POSITION_AUX21] = "aux21",
-    [PA_CHANNEL_POSITION_AUX22] = "aux22",
-    [PA_CHANNEL_POSITION_AUX23] = "aux23",
-    [PA_CHANNEL_POSITION_AUX24] = "aux24",
-    [PA_CHANNEL_POSITION_AUX25] = "aux25",
-    [PA_CHANNEL_POSITION_AUX26] = "aux26",
-    [PA_CHANNEL_POSITION_AUX27] = "aux27",
-    [PA_CHANNEL_POSITION_AUX28] = "aux28",
-    [PA_CHANNEL_POSITION_AUX29] = "aux29",
-    [PA_CHANNEL_POSITION_AUX30] = "aux30",
-    [PA_CHANNEL_POSITION_AUX31] = "aux31",
-    [PA_CHANNEL_POSITION_TOP_CENTER] = "top-center",
-    [PA_CHANNEL_POSITION_TOP_FRONT_CENTER] = "top-front-center",
-    [PA_CHANNEL_POSITION_TOP_FRONT_LEFT] = "top-front-left",
-    [PA_CHANNEL_POSITION_TOP_FRONT_RIGHT] = "top-front-right",
-    [PA_CHANNEL_POSITION_TOP_REAR_CENTER] = "top-rear-center",
-    [PA_CHANNEL_POSITION_TOP_REAR_LEFT] = "top-rear-left",
-    [PA_CHANNEL_POSITION_TOP_REAR_RIGHT] = "top-rear-right",
+        [PA_CHANNEL_POSITION_MONO] = "mono",
+        [PA_CHANNEL_POSITION_FRONT_CENTER] = "front-center",
+        [PA_CHANNEL_POSITION_FRONT_LEFT] = "front-left",
+        [PA_CHANNEL_POSITION_FRONT_RIGHT] = "front-right",
+        [PA_CHANNEL_POSITION_REAR_CENTER] = "rear-center",
+        [PA_CHANNEL_POSITION_REAR_LEFT] = "rear-left",
+        [PA_CHANNEL_POSITION_REAR_RIGHT] = "rear-right",
+        [PA_CHANNEL_POSITION_LFE] = "lfe",
+        [PA_CHANNEL_POSITION_FRONT_LEFT_OF_CENTER] = "front-left-of-center",
+        [PA_CHANNEL_POSITION_FRONT_RIGHT_OF_CENTER] = "front-right-of-center",
+        [PA_CHANNEL_POSITION_SIDE_LEFT] = "side-left",
+        [PA_CHANNEL_POSITION_SIDE_RIGHT] = "side-right",
+        [PA_CHANNEL_POSITION_AUX0] = "aux0",
+        [PA_CHANNEL_POSITION_AUX1] = "aux1",
+        [PA_CHANNEL_POSITION_AUX2] = "aux2",
+        [PA_CHANNEL_POSITION_AUX3] = "aux3",
+        [PA_CHANNEL_POSITION_AUX4] = "aux4",
+        [PA_CHANNEL_POSITION_AUX5] = "aux5",
+        [PA_CHANNEL_POSITION_AUX6] = "aux6",
+        [PA_CHANNEL_POSITION_AUX7] = "aux7",
+        [PA_CHANNEL_POSITION_AUX8] = "aux8",
+        [PA_CHANNEL_POSITION_AUX9] = "aux9",
+        [PA_CHANNEL_POSITION_AUX10] = "aux10",
+        [PA_CHANNEL_POSITION_AUX11] = "aux11",
+        [PA_CHANNEL_POSITION_AUX12] = "aux12",
+        [PA_CHANNEL_POSITION_AUX13] = "aux13",
+        [PA_CHANNEL_POSITION_AUX14] = "aux14",
+        [PA_CHANNEL_POSITION_AUX15] = "aux15",
+        [PA_CHANNEL_POSITION_AUX16] = "aux16",
+        [PA_CHANNEL_POSITION_AUX17] = "aux17",
+        [PA_CHANNEL_POSITION_AUX18] = "aux18",
+        [PA_CHANNEL_POSITION_AUX19] = "aux19",
+        [PA_CHANNEL_POSITION_AUX20] = "aux20",
+        [PA_CHANNEL_POSITION_AUX21] = "aux21",
+        [PA_CHANNEL_POSITION_AUX22] = "aux22",
+        [PA_CHANNEL_POSITION_AUX23] = "aux23",
+        [PA_CHANNEL_POSITION_AUX24] = "aux24",
+        [PA_CHANNEL_POSITION_AUX25] = "aux25",
+        [PA_CHANNEL_POSITION_AUX26] = "aux26",
+        [PA_CHANNEL_POSITION_AUX27] = "aux27",
+        [PA_CHANNEL_POSITION_AUX28] = "aux28",
+        [PA_CHANNEL_POSITION_AUX29] = "aux29",
+        [PA_CHANNEL_POSITION_AUX30] = "aux30",
+        [PA_CHANNEL_POSITION_AUX31] = "aux31",
+        [PA_CHANNEL_POSITION_TOP_CENTER] = "top-center",
+        [PA_CHANNEL_POSITION_TOP_FRONT_CENTER] = "top-front-center",
+        [PA_CHANNEL_POSITION_TOP_FRONT_LEFT] = "top-front-left",
+        [PA_CHANNEL_POSITION_TOP_FRONT_RIGHT] = "top-front-right",
+        [PA_CHANNEL_POSITION_TOP_REAR_CENTER] = "top-rear-center",
+        [PA_CHANNEL_POSITION_TOP_REAR_LEFT] = "top-rear-left",
+        [PA_CHANNEL_POSITION_TOP_REAR_RIGHT] = "top-rear-right",
 };
 
 APULSE_EXPORT
@@ -91,9 +91,11 @@ pa_channel_map_init(pa_channel_map *m)
 
 APULSE_EXPORT
 pa_channel_map *
-pa_channel_map_init_auto(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def)
+pa_channel_map_init_auto(pa_channel_map *m, unsigned channels,
+                         pa_channel_map_def_t def)
 {
-    trace_info_f("F %s m=%p, channels=%u, def=%u\n", __func__, m, channels, def);
+    trace_info_f("F %s m=%p, channels=%u, def=%u\n", __func__, m, channels,
+                 def);
 
     if (!m)
         return NULL;
@@ -314,9 +316,11 @@ pa_channel_map_init_stereo(pa_channel_map *m)
 
 APULSE_EXPORT
 pa_channel_map *
-pa_channel_map_init_extend(pa_channel_map *m, unsigned channels, pa_channel_map_def_t def)
+pa_channel_map_init_extend(pa_channel_map *m, unsigned channels,
+                           pa_channel_map_def_t def)
 {
-    trace_info_f("F %s m=%p, channels=%u, def=(%u)\n", __func__, m, channels, def);
+    trace_info_f("F %s m=%p, channels=%u, def=(%u)\n", __func__, m, channels,
+                 def);
 
     channels = MIN(channels, PA_CHANNELS_MAX);
 
@@ -418,7 +422,7 @@ pa_channel_map_parse(pa_channel_map *map, const char *s)
     while (k < PA_CHANNELS_MAX && p[k]) {
         m.channels = k + 1;
         m.map[k] = pa_channel_position_from_string(p[k]);
-        k ++;
+        k++;
     }
 
     g_strfreev(p);
@@ -441,7 +445,7 @@ pa_channel_map_snprint(char *s, size_t l, const pa_channel_map *map)
         return s;
     }
 
-    for (int c = 0; c < map->channels && l > 1; c ++) {
+    for (int c = 0; c < map->channels && l > 1; c++) {
         int adv = snprintf(ptr, l, "%s%s", (c == 0) ? "" : ",",
                            pa_channel_position_to_string(map->map[c]));
         ptr += adv;
@@ -462,12 +466,14 @@ pa_channel_map_valid(const pa_channel_map *map)
     if (!map)
         return 0;
 
-    const int channel_count_valid = (0 < map->channels && map->channels <= PA_CHANNELS_MAX);
+    const int channel_count_valid =
+        (0 < map->channels && map->channels <= PA_CHANNELS_MAX);
     if (!channel_count_valid)
         return 0;
 
-    for (int k = 0; k < map->channels; k ++) {
-        const int channel_valid = (0 < map->map[k] && map->map[k] <= PA_CHANNEL_POSITION_MAX);
+    for (int k = 0; k < map->channels; k++) {
+        const int channel_valid =
+            (0 < map->map[k] && map->map[k] <= PA_CHANNEL_POSITION_MAX);
         if (!channel_valid)
             return 0;
     }
@@ -484,7 +490,7 @@ pa_channel_position_from_string(const char *s)
     if (!s)
         return PA_CHANNEL_POSITION_INVALID;
 
-    for (unsigned int k = 0; k < PA_CHANNEL_POSITION_MAX; k ++) {
+    for (unsigned int k = 0; k < PA_CHANNEL_POSITION_MAX; k++) {
         if (!channel_name[k])
             continue;
         if (strcmp(channel_name[k], s) == 0)

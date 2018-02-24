@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -25,7 +25,6 @@
 #include "apulse.h"
 #include "trace.h"
 #include "util.h"
-
 
 APULSE_EXPORT
 const char *
@@ -61,9 +60,9 @@ APULSE_EXPORT
 int
 pa_sample_spec_valid(const pa_sample_spec *spec)
 {
-    return spec && pa_sample_format_valid(spec->format)
-                && pa_sample_rate_valid(spec->rate)
-                && pa_channels_valid(spec->channels);
+    return spec && pa_sample_format_valid(spec->format) &&
+           pa_sample_rate_valid(spec->rate) &&
+           pa_channels_valid(spec->channels);
 }
 
 APULSE_EXPORT
@@ -147,7 +146,7 @@ pa_cvolume_set(pa_cvolume *a, unsigned channels, pa_volume_t v)
     trace_info_f("F %s a=%p, channels=%u, v=%u\n", __func__, a, channels, v);
 
     a->channels = MIN(channels, PA_CHANNELS_MAX);
-    for (unsigned int k = 0; k < a->channels; k ++)
+    for (unsigned int k = 0; k < a->channels; k++)
         a->values[k] = CLAMP(v, PA_VOLUME_MUTED, PA_VOLUME_MAX);
 
     return a;
@@ -167,20 +166,34 @@ const char *
 pa_sample_format_to_string(pa_sample_format_t format)
 {
     switch (format) {
-    case PA_SAMPLE_U8:        return "u8";
-    case PA_SAMPLE_ALAW:      return "aLaw";
-    case PA_SAMPLE_ULAW:      return "uLaw";
-    case PA_SAMPLE_S16LE:     return "s16le";
-    case PA_SAMPLE_S16BE:     return "s16be";
-    case PA_SAMPLE_FLOAT32LE: return "float32le";
-    case PA_SAMPLE_FLOAT32BE: return "float32be";
-    case PA_SAMPLE_S32LE:     return "s32le";
-    case PA_SAMPLE_S32BE:     return "s32be";
-    case PA_SAMPLE_S24LE:     return "s24le";
-    case PA_SAMPLE_S24BE:     return "s24be";
-    case PA_SAMPLE_S24_32LE:  return "s24-32le";
-    case PA_SAMPLE_S24_32BE:  return "s24-32be";
-    default:                  return NULL;
+    case PA_SAMPLE_U8:
+        return "u8";
+    case PA_SAMPLE_ALAW:
+        return "aLaw";
+    case PA_SAMPLE_ULAW:
+        return "uLaw";
+    case PA_SAMPLE_S16LE:
+        return "s16le";
+    case PA_SAMPLE_S16BE:
+        return "s16be";
+    case PA_SAMPLE_FLOAT32LE:
+        return "float32le";
+    case PA_SAMPLE_FLOAT32BE:
+        return "float32be";
+    case PA_SAMPLE_S32LE:
+        return "s32le";
+    case PA_SAMPLE_S32BE:
+        return "s32be";
+    case PA_SAMPLE_S24LE:
+        return "s24le";
+    case PA_SAMPLE_S24BE:
+        return "s24be";
+    case PA_SAMPLE_S24_32LE:
+        return "s24-32le";
+    case PA_SAMPLE_S24_32BE:
+        return "s24-32be";
+    default:
+        return NULL;
     }
 }
 
@@ -189,12 +202,13 @@ char *
 pa_sample_spec_snprint(char *s, size_t l, const pa_sample_spec *spec)
 {
     gchar *s_spec = trace_pa_sample_spec_as_string(spec);
-    trace_info_f("F %s s=%p, l=%u, spec=%s\n", __func__, s, (unsigned)l, s_spec);
+    trace_info_f("F %s s=%p, l=%u, spec=%s\n", __func__, s, (unsigned)l,
+                 s_spec);
     g_free(s_spec);
 
     if (spec && pa_sample_spec_valid(spec)) {
-        snprintf(s, l, "%s %uch %uHz", pa_sample_format_to_string(spec->format), spec->channels,
-                 spec->rate);
+        snprintf(s, l, "%s %uch %uHz", pa_sample_format_to_string(spec->format),
+                 spec->channels, spec->rate);
     } else {
         snprintf(s, l, "invalid");
     }

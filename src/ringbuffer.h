@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -28,14 +28,13 @@
 #include <pthread.h>
 
 typedef struct {
-    char               *start;
-    char               *end;
-    char               *rpos;
-    char               *wpos;
-    pthread_mutex_t     lock;
-    int                 empty;
+    char *start;
+    char *end;
+    char *rpos;
+    char *wpos;
+    pthread_mutex_t lock;
+    int empty;
 } ringbuffer_t;
-
 
 ringbuffer_t *
 ringbuffer_new(size_t sz);
@@ -62,4 +61,4 @@ ringbuffer_peek(ringbuffer_t *rb, void *data, size_t len);
 size_t
 ringbuffer_drop(ringbuffer_t *rb, size_t len);
 
-#endif // APULSE__RINGBUFFER_H
+#endif  // APULSE__RINGBUFFER_H

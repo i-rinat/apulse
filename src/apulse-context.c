@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -99,25 +99,23 @@ static void
 pa_context_get_server_info_impl(pa_operation *op)
 {
     pa_server_info info = {
-        .user_name = "apulse_user_name",    // TODO: actual user name
-        .host_name = "apulse_host_name",    // TODO: actual host name
+        .user_name = "apulse_user_name",  // TODO: actual user name
+        .host_name = "apulse_host_name",  // TODO: actual host name
         .server_version = "5.0",
         .server_name = "pulseaudio",
-        .sample_spec = {
-            .format = PA_SAMPLE_S16LE,
-            .rate = 44100,
-            .channels = 2,
-        },
+        .sample_spec =
+            {
+                .format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2,
+            },
         .default_sink_name = "default_sink_name",
         .default_source_name = "default_source_name",
         .cookie = 1,
-        .channel_map = {
-            .channels = 2,
-            .map = {
-                PA_CHANNEL_POSITION_FRONT_LEFT,
-                PA_CHANNEL_POSITION_FRONT_RIGHT
+        .channel_map =
+            {
+                .channels = 2,
+                .map = {PA_CHANNEL_POSITION_FRONT_LEFT,
+                        PA_CHANNEL_POSITION_FRONT_RIGHT},
             },
-        },
     };
 
     if (op->server_info_cb)
@@ -128,11 +126,13 @@ pa_context_get_server_info_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_server_info(pa_context *c, pa_server_info_cb_t cb, void *userdata)
+pa_context_get_server_info(pa_context *c, pa_server_info_cb_t cb,
+                           void *userdata)
 {
     trace_info_f("F %s c=%p, cb=%p, userdata=%p\n", __func__, c, &cb, userdata);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_server_info_impl);
+    pa_operation *op =
+        pa_operation_new(c->mainloop_api, pa_context_get_server_info_impl);
     op->c = c;
     op->server_info_cb = cb;
     op->cb_userdata = userdata;
@@ -146,7 +146,8 @@ uint32_t
 pa_context_get_server_protocol_version(pa_context *c)
 {
     trace_info_f("F %s c=%p\n", __func__, c);
-    return 8;   // PA headers say "8" is the protocol version used in PulseAudio 0.9
+    return 8;  // PA headers say "8" is the protocol version used in PulseAudio
+               // 0.9
 }
 
 static pa_sink_info
@@ -175,26 +176,25 @@ pai_fill_default_sink_info(void)
         .name = "default_sink_name",
         .index = 0,
         .description = "default and only sink",
-        .sample_spec = {
-            .format = PA_SAMPLE_S16LE,
-            .rate = 44100,
-            .channels = 2,
-        },
-        .channel_map = {
-            .channels = 2,
-            .map = {
-                PA_CHANNEL_POSITION_FRONT_LEFT,
-                PA_CHANNEL_POSITION_FRONT_RIGHT
+        .sample_spec =
+            {
+                .format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2,
             },
-        },
+        .channel_map =
+            {
+                .channels = 2,
+                .map = {PA_CHANNEL_POSITION_FRONT_LEFT,
+                        PA_CHANNEL_POSITION_FRONT_RIGHT},
+            },
         .owner_module = PA_INVALID_INDEX,
-        .volume = {
-            .channels = 2,
-            .values = {
-                PA_VOLUME_NORM,
-                PA_VOLUME_NORM,
+        .volume =
+            {
+                .channels = 2,
+                .values =
+                    {
+                        PA_VOLUME_NORM, PA_VOLUME_NORM,
+                    },
             },
-        },
         .mute = 0,
         .monitor_source = 0,
         .monitor_source_name = NULL,
@@ -233,12 +233,14 @@ pa_context_get_sink_info_by_name_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_sink_info_by_name(pa_context *c, const char *name, pa_sink_info_cb_t cb,
-                                 void *userdata)
+pa_context_get_sink_info_by_name(pa_context *c, const char *name,
+                                 pa_sink_info_cb_t cb, void *userdata)
 {
-    trace_info_f("F %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name, cb, userdata);
+    trace_info_f("F %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name,
+                 cb, userdata);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_info_by_name_impl);
+    pa_operation *op = pa_operation_new(c->mainloop_api,
+                                        pa_context_get_sink_info_by_name_impl);
     op->c = c;
     op->char_ptr_arg_1 = strdup(name ? name : "");
     op->sink_info_cb = cb;
@@ -263,11 +265,13 @@ pa_context_get_sink_info_list_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_sink_info_list(pa_context *c, pa_sink_info_cb_t cb, void *userdata)
+pa_context_get_sink_info_list(pa_context *c, pa_sink_info_cb_t cb,
+                              void *userdata)
 {
     trace_info_f("F %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_info_list_impl);
+    pa_operation *op =
+        pa_operation_new(c->mainloop_api, pa_context_get_sink_info_list_impl);
     op->c = c;
     op->sink_info_cb = cb;
     op->cb_userdata = userdata;
@@ -302,30 +306,32 @@ pai_fill_default_source_info(void)
         .name = "default_source_name",
         .index = 0,
         .description = "default_source_name",
-        .sample_spec = {
-            .format = PA_SAMPLE_S16LE,
-            .rate = 44100,
-            .channels = 2,
-        },
-        .channel_map = {
-            .channels = 2,
-            .map = {
-                PA_CHANNEL_POSITION_FRONT_LEFT,
-                PA_CHANNEL_POSITION_FRONT_RIGHT,
+        .sample_spec =
+            {
+                .format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2,
             },
-        },
+        .channel_map =
+            {
+                .channels = 2,
+                .map =
+                    {
+                        PA_CHANNEL_POSITION_FRONT_LEFT,
+                        PA_CHANNEL_POSITION_FRONT_RIGHT,
+                    },
+            },
         .owner_module = PA_INVALID_INDEX,
-        .volume = {
-            .channels = 2,
-            .values = {
-                PA_VOLUME_NORM,
-                PA_VOLUME_NORM,
+        .volume =
+            {
+                .channels = 2,
+                .values =
+                    {
+                        PA_VOLUME_NORM, PA_VOLUME_NORM,
+                    },
             },
-        },
         .mute = 0,
         .monitor_of_sink = 0,
         .monitor_of_sink_name = NULL,
-        .latency = 100000, // TODO: where to get latency figures?
+        .latency = 100000,  // TODO: where to get latency figures?
         .driver = "apulse",
         .flags = 0,
         .proplist = proplist,
@@ -359,11 +365,13 @@ pa_context_get_source_info_list_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_source_info_list(pa_context *c, pa_source_info_cb_t cb, void *userdata)
+pa_context_get_source_info_list(pa_context *c, pa_source_info_cb_t cb,
+                                void *userdata)
 {
     trace_info_f("F %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_source_info_list_impl);
+    pa_operation *op =
+        pa_operation_new(c->mainloop_api, pa_context_get_source_info_list_impl);
     op->c = c;
     op->source_info_cb = cb;
     op->cb_userdata = userdata;
@@ -389,12 +397,14 @@ pa_context_get_source_info_by_name_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_source_info_by_name(pa_context *c, const char *name, pa_source_info_cb_t cb,
-                                   void *userdata)
+pa_context_get_source_info_by_name(pa_context *c, const char *name,
+                                   pa_source_info_cb_t cb, void *userdata)
 {
-    trace_info_f("F %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name, cb, userdata);
+    trace_info_f("F %s c=%p, name=%s, cb=%p, userdata=%p\n", __func__, c, name,
+                 cb, userdata);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_source_info_by_name_impl);
+    pa_operation *op = pa_operation_new(
+        c->mainloop_api, pa_context_get_source_info_by_name_impl);
     op->c = c;
     op->char_ptr_arg_1 = strdup(name ? name : "");
     op->source_info_cb = cb;
@@ -420,11 +430,14 @@ pa_context_get_sink_info_by_index_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_sink_info_by_index(pa_context *c, uint32_t idx, pa_sink_info_cb_t cb, void *userdata)
+pa_context_get_sink_info_by_index(pa_context *c, uint32_t idx,
+                                  pa_sink_info_cb_t cb, void *userdata)
 {
-    trace_info_f("F %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx, cb, userdata);
+    trace_info_f("F %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx,
+                 cb, userdata);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_info_by_index_impl);
+    pa_operation *op = pa_operation_new(c->mainloop_api,
+                                        pa_context_get_sink_info_by_index_impl);
     op->c = c;
     op->int_arg_1 = idx;
     op->sink_info_cb = cb;
@@ -451,7 +464,9 @@ pa_context_get_sink_input_info_impl(pa_operation *op)
         .owner_module = PA_INVALID_INDEX,
         .client = PA_INVALID_INDEX,
         .sink = 0,
-        .sample_spec = (pa_sample_spec){.format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2},
+        .sample_spec = (pa_sample_spec){.format = PA_SAMPLE_S16LE,
+                                        .rate = 44100,
+                                        .channels = 2},
         .channel_map.channels = 2,
         .channel_map.map[0] = PA_CHANNEL_POSITION_LEFT,
         .channel_map.map[1] = PA_CHANNEL_POSITION_RIGHT,
@@ -480,12 +495,14 @@ pa_context_get_sink_input_info_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_sink_input_info(pa_context *c, uint32_t idx, pa_sink_input_info_cb_t cb,
-                               void *userdata)
+pa_context_get_sink_input_info(pa_context *c, uint32_t idx,
+                               pa_sink_input_info_cb_t cb, void *userdata)
 {
-    trace_info_f("F %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx, cb, userdata);
+    trace_info_f("F %s c=%p, idx=%u, cb=%p, userdata=%p\n", __func__, c, idx,
+                 cb, userdata);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_get_sink_input_info_impl);
+    pa_operation *op =
+        pa_operation_new(c->mainloop_api, pa_context_get_sink_input_info_impl);
     op->c = c;
     op->int_arg_1 = idx;
     op->sink_input_info_cb = cb;
@@ -508,7 +525,8 @@ APULSE_EXPORT
 pa_context *
 pa_context_new(pa_mainloop_api *mainloop_api, const char *name)
 {
-    trace_info_f("F %s mainloop_api=%p, name=%s\n", __func__, mainloop_api, name);
+    trace_info_f("F %s mainloop_api=%p, name=%s\n", __func__, mainloop_api,
+                 name);
     pa_proplist *p = pa_proplist_new();
     pa_context *c = pa_context_new_with_proplist(mainloop_api, name, p);
     pa_proplist_free(p);
@@ -517,10 +535,11 @@ pa_context_new(pa_mainloop_api *mainloop_api, const char *name)
 
 APULSE_EXPORT
 pa_context *
-pa_context_new_with_proplist(pa_mainloop_api *mainloop_api, const char *name, pa_proplist *proplist)
+pa_context_new_with_proplist(pa_mainloop_api *mainloop_api, const char *name,
+                             pa_proplist *proplist)
 {
-    trace_info_f("F %s mainloop_api=%p, name=%s, proplist=%p\n", __func__, mainloop_api, name,
-               proplist);
+    trace_info_f("F %s mainloop_api=%p, name=%s, proplist=%p\n", __func__,
+                 mainloop_api, name, proplist);
 
     pa_context *c = calloc(1, sizeof(pa_context));
     c->state = PA_CONTEXT_UNCONNECTED;
@@ -544,20 +563,20 @@ pa_context_ref(pa_context *c)
 
     if (!c)
         return NULL;
-    c->ref_cnt ++;
+    c->ref_cnt++;
     return c;
 }
 
 APULSE_EXPORT
 pa_time_event *
-pa_context_rttime_new(pa_context *c, pa_usec_t usec, pa_time_event_cb_t cb, void *userdata)
+pa_context_rttime_new(pa_context *c, pa_usec_t usec, pa_time_event_cb_t cb,
+                      void *userdata)
 {
-    trace_info_f("F %s c=%p, usec=%" PRIu64 " cb=%p, userdata=%p\n", __func__, c, (uint64_t)usec,
-                 cb, userdata);
+    trace_info_f("F %s c=%p, usec=%" PRIu64 " cb=%p, userdata=%p\n", __func__,
+                 c, (uint64_t)usec, cb, userdata);
 
     struct timeval when = {
-        .tv_sec = usec / PA_USEC_PER_SEC,
-        .tv_usec = usec % PA_USEC_PER_SEC,
+        .tv_sec = usec / PA_USEC_PER_SEC, .tv_usec = usec % PA_USEC_PER_SEC,
     };
 
     return c->mainloop_api->time_new(c->mainloop_api, &when, cb, userdata);
@@ -565,11 +584,11 @@ pa_context_rttime_new(pa_context *c, pa_usec_t usec, pa_time_event_cb_t cb, void
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_sink_input_mute(pa_context *c, uint32_t idx, int mute, pa_context_success_cb_t cb,
-                               void *userdata)
+pa_context_set_sink_input_mute(pa_context *c, uint32_t idx, int mute,
+                               pa_context_success_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s c=%p, idx=%u, mute=%d, cb=%p, userdata=%p\n", __func__, c, idx, mute, cb,
-               userdata);
+    trace_info_z("Z %s c=%p, idx=%u, mute=%d, cb=%p, userdata=%p\n", __func__,
+                 c, idx, mute, cb, userdata);
 
     return NULL;
 }
@@ -590,7 +609,8 @@ pa_context_set_sink_input_volume_impl(pa_operation *op)
 
     memset(s->volume, 0, sizeof(s->volume));
 
-    const uint32_t channels = MIN(op->pa_cvolume_arg_1.channels, PA_CHANNELS_MAX);
+    const uint32_t channels =
+        MIN(op->pa_cvolume_arg_1.channels, PA_CHANNELS_MAX);
 
     for (uint32_t k = 0; k < channels; k++)
         s->volume[k] = op->pa_cvolume_arg_1.values[k];
@@ -603,15 +623,17 @@ pa_context_set_sink_input_volume_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_sink_input_volume(pa_context *c, uint32_t idx, const pa_cvolume *volume,
+pa_context_set_sink_input_volume(pa_context *c, uint32_t idx,
+                                 const pa_cvolume *volume,
                                  pa_context_success_cb_t cb, void *userdata)
 {
     gchar *s_volume = trace_pa_volume_as_string(volume);
-    trace_info_f("F %s c=%p, idx=%u, volume=%s, cb=%p, userdata=%p\n", __func__, c, idx, s_volume,
-                 cb, userdata);
+    trace_info_f("F %s c=%p, idx=%u, volume=%s, cb=%p, userdata=%p\n", __func__,
+                 c, idx, s_volume, cb, userdata);
     g_free(s_volume);
 
-    pa_operation *op = pa_operation_new(c->mainloop_api, pa_context_set_sink_input_volume_impl);
+    pa_operation *op = pa_operation_new(c->mainloop_api,
+                                        pa_context_set_sink_input_volume_impl);
     op->c = c;
     op->int_arg_1 = idx;
     op->context_success_cb = cb;
@@ -626,7 +648,8 @@ pa_context_set_sink_input_volume(pa_context *c, uint32_t idx, const pa_cvolume *
 
 APULSE_EXPORT
 void
-pa_context_set_state_callback(pa_context *c, pa_context_notify_cb_t cb, void *userdata)
+pa_context_set_state_callback(pa_context *c, pa_context_notify_cb_t cb,
+                              void *userdata)
 {
     trace_info_f("F %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
 
@@ -642,7 +665,7 @@ pa_context_unref(pa_context *c)
 
     if (!c)
         return;
-    c->ref_cnt --;
+    c->ref_cnt--;
     if (c->ref_cnt == 0) {
         g_hash_table_unref(c->streams_ht);
         free(c->name);
@@ -661,8 +684,8 @@ pa_context_drain(pa_context *c, pa_context_notify_cb_t cb, void *userdata)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_source_info_by_index(pa_context *c, uint32_t idx, pa_source_info_cb_t cb,
-                                    void *userdata)
+pa_context_get_source_info_by_index(pa_context *c, uint32_t idx,
+                                    pa_source_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 
@@ -671,8 +694,8 @@ pa_context_get_source_info_by_index(pa_context *c, uint32_t idx, pa_source_info_
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_source_output_info(pa_context *c, uint32_t idx, pa_source_output_info_cb_t cb,
-                                  void *userdata)
+pa_context_get_source_output_info(pa_context *c, uint32_t idx,
+                                  pa_source_output_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 
@@ -692,16 +715,18 @@ pa_context_set_source_volume_by_index_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx, const pa_cvolume *volume,
-                                      pa_context_success_cb_t cb, void *userdata)
+pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx,
+                                      const pa_cvolume *volume,
+                                      pa_context_success_cb_t cb,
+                                      void *userdata)
 {
     gchar *s_volume = trace_pa_volume_as_string(volume);
-    trace_info_f("Z %s c=%p, idx=%u, volume=%s, cb=%p, userdata=%p\n", __func__, c, idx, s_volume,
-                 cb, userdata);
+    trace_info_f("Z %s c=%p, idx=%u, volume=%s, cb=%p, userdata=%p\n", __func__,
+                 c, idx, s_volume, cb, userdata);
     g_free(s_volume);
 
-    pa_operation *op =
-        pa_operation_new(c->mainloop_api, pa_context_set_source_volume_by_index_impl);
+    pa_operation *op = pa_operation_new(
+        c->mainloop_api, pa_context_set_source_volume_by_index_impl);
     op->c = c;
     op->context_success_cb = cb;
     op->cb_userdata = userdata;
@@ -715,25 +740,28 @@ pa_context_set_source_volume_by_index(pa_context *c, uint32_t idx, const pa_cvol
 
 APULSE_EXPORT
 void
-pa_context_set_subscribe_callback(pa_context *c, pa_context_subscribe_cb_t cb, void *userdata)
+pa_context_set_subscribe_callback(pa_context *c, pa_context_subscribe_cb_t cb,
+                                  void *userdata)
 {
     trace_info_z("Z %s c=%p, cb=%p, userdata=%p\n", __func__, c, cb, userdata);
 }
 
 APULSE_EXPORT
 pa_operation *
-pa_context_subscribe(pa_context *c, pa_subscription_mask_t m, pa_context_success_cb_t cb,
-                     void *userdata)
+pa_context_subscribe(pa_context *c, pa_subscription_mask_t m,
+                     pa_context_success_cb_t cb, void *userdata)
 {
-    trace_info_z("Z %s c=%p, m=0x%04x, cb=%p, userdata=%p\n", __func__, c, m, cb, userdata);
+    trace_info_z("Z %s c=%p, m=0x%04x, cb=%p, userdata=%p\n", __func__, c, m,
+                 cb, userdata);
 
     return NULL;
 }
 
 APULSE_EXPORT
 pa_operation *
-pa_context_add_autoload(pa_context *c, const char *name, pa_autoload_type_t type,
-                        const char *module, const char *argument, pa_context_index_cb_t cb,
+pa_context_add_autoload(pa_context *c, const char *name,
+                        pa_autoload_type_t type, const char *module,
+                        const char *argument, pa_context_index_cb_t cb,
                         void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -742,7 +770,8 @@ pa_context_add_autoload(pa_context *c, const char *name, pa_autoload_type_t type
 
 APULSE_EXPORT
 pa_operation *
-pa_context_remove_autoload_by_name(pa_context *c, const char *name, pa_autoload_type_t type,
+pa_context_remove_autoload_by_name(pa_context *c, const char *name,
+                                   pa_autoload_type_t type,
                                    pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -751,16 +780,7 @@ pa_context_remove_autoload_by_name(pa_context *c, const char *name, pa_autoload_
 
 APULSE_EXPORT
 pa_operation *
-pa_context_remove_autoload_by_index(pa_context *c, uint32_t idx, pa_context_success_cb_t cb,
-                                    void *userdata)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
-pa_operation *
-pa_context_set_sink_volume_by_index(pa_context *c, uint32_t idx, const pa_cvolume *volume,
+pa_context_remove_autoload_by_index(pa_context *c, uint32_t idx,
                                     pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -769,7 +789,18 @@ pa_context_set_sink_volume_by_index(pa_context *c, uint32_t idx, const pa_cvolum
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_sink_volume_by_name(pa_context *c, const char *name, const pa_cvolume *volume,
+pa_context_set_sink_volume_by_index(pa_context *c, uint32_t idx,
+                                    const pa_cvolume *volume,
+                                    pa_context_success_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_set_sink_volume_by_name(pa_context *c, const char *name,
+                                   const pa_cvolume *volume,
                                    pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -778,8 +809,8 @@ pa_context_set_sink_volume_by_name(pa_context *c, const char *name, const pa_cvo
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_sink_mute_by_index(pa_context *c, uint32_t idx, int mute, pa_context_success_cb_t cb,
-                                  void *userdata)
+pa_context_set_sink_mute_by_index(pa_context *c, uint32_t idx, int mute,
+                                  pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -796,8 +827,9 @@ pa_context_set_sink_mute_by_name(pa_context *c, const char *name, int mute,
 
 APULSE_EXPORT
 pa_operation *
-pa_context_suspend_sink_by_name(pa_context *c, const char *sink_name, int suspend,
-                                pa_context_success_cb_t cb, void *userdata)
+pa_context_suspend_sink_by_name(pa_context *c, const char *sink_name,
+                                int suspend, pa_context_success_cb_t cb,
+                                void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -823,8 +855,9 @@ pa_context_set_sink_port_by_index(pa_context *c, uint32_t idx, const char *port,
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_sink_port_by_name(pa_context *c, const char *name, const char *port,
-                                 pa_context_success_cb_t cb, void *userdata)
+pa_context_set_sink_port_by_name(pa_context *c, const char *name,
+                                 const char *port, pa_context_success_cb_t cb,
+                                 void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -832,7 +865,8 @@ pa_context_set_sink_port_by_name(pa_context *c, const char *name, const char *po
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_source_volume_by_name(pa_context *c, const char *name, const pa_cvolume *volume,
+pa_context_set_source_volume_by_name(pa_context *c, const char *name,
+                                     const pa_cvolume *volume,
                                      pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -859,8 +893,9 @@ pa_context_set_source_mute_by_name(pa_context *c, const char *name, int mute,
 
 APULSE_EXPORT
 pa_operation *
-pa_context_suspend_source_by_name(pa_context *c, const char *source_name, int suspend,
-                                  pa_context_success_cb_t cb, void *userdata)
+pa_context_suspend_source_by_name(pa_context *c, const char *source_name,
+                                  int suspend, pa_context_success_cb_t cb,
+                                  void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -877,7 +912,8 @@ pa_context_suspend_source_by_index(pa_context *c, uint32_t idx, int suspend,
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_source_port_by_index(pa_context *c, uint32_t idx, const char *port,
+pa_context_set_source_port_by_index(pa_context *c, uint32_t idx,
+                                    const char *port,
                                     pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -886,8 +922,9 @@ pa_context_set_source_port_by_index(pa_context *c, uint32_t idx, const char *por
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_source_port_by_name(pa_context *c, const char *name, const char *port,
-                                   pa_context_success_cb_t cb, void *userdata)
+pa_context_set_source_port_by_name(pa_context *c, const char *name,
+                                   const char *port, pa_context_success_cb_t cb,
+                                   void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -895,7 +932,8 @@ pa_context_set_source_port_by_name(pa_context *c, const char *name, const char *
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_module_info(pa_context *c, uint32_t idx, pa_module_info_cb_t cb, void *userdata)
+pa_context_get_module_info(pa_context *c, uint32_t idx, pa_module_info_cb_t cb,
+                           void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -903,7 +941,8 @@ pa_context_get_module_info(pa_context *c, uint32_t idx, pa_module_info_cb_t cb, 
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_module_info_list(pa_context *c, pa_module_info_cb_t cb, void *userdata)
+pa_context_get_module_info_list(pa_context *c, pa_module_info_cb_t cb,
+                                void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -920,7 +959,8 @@ pa_context_load_module(pa_context *c, const char *name, const char *argument,
 
 APULSE_EXPORT
 pa_operation *
-pa_context_unload_module(pa_context *c, uint32_t idx, pa_context_success_cb_t cb, void *userdata)
+pa_context_unload_module(pa_context *c, uint32_t idx,
+                         pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -928,7 +968,8 @@ pa_context_unload_module(pa_context *c, uint32_t idx, pa_context_success_cb_t cb
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_client_info(pa_context *c, uint32_t idx, pa_client_info_cb_t cb, void *userdata)
+pa_context_get_client_info(pa_context *c, uint32_t idx, pa_client_info_cb_t cb,
+                           void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -936,7 +977,8 @@ pa_context_get_client_info(pa_context *c, uint32_t idx, pa_client_info_cb_t cb, 
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_client_info_list(pa_context *c, pa_client_info_cb_t cb, void *userdata)
+pa_context_get_client_info_list(pa_context *c, pa_client_info_cb_t cb,
+                                void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -944,7 +986,8 @@ pa_context_get_client_info_list(pa_context *c, pa_client_info_cb_t cb, void *use
 
 APULSE_EXPORT
 pa_operation *
-pa_context_kill_client(pa_context *c, uint32_t idx, pa_context_success_cb_t cb, void *userdata)
+pa_context_kill_client(pa_context *c, uint32_t idx, pa_context_success_cb_t cb,
+                       void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -952,7 +995,8 @@ pa_context_kill_client(pa_context *c, uint32_t idx, pa_context_success_cb_t cb, 
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_card_info_by_index(pa_context *c, uint32_t idx, pa_card_info_cb_t cb, void *userdata)
+pa_context_get_card_info_by_index(pa_context *c, uint32_t idx,
+                                  pa_card_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -960,8 +1004,8 @@ pa_context_get_card_info_by_index(pa_context *c, uint32_t idx, pa_card_info_cb_t
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_card_info_by_name(pa_context *c, const char *name, pa_card_info_cb_t cb,
-                                 void *userdata)
+pa_context_get_card_info_by_name(pa_context *c, const char *name,
+                                 pa_card_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -969,7 +1013,8 @@ pa_context_get_card_info_by_name(pa_context *c, const char *name, pa_card_info_c
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_card_info_list(pa_context *c, pa_card_info_cb_t cb, void *userdata)
+pa_context_get_card_info_list(pa_context *c, pa_card_info_cb_t cb,
+                              void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -977,7 +1022,8 @@ pa_context_get_card_info_list(pa_context *c, pa_card_info_cb_t cb, void *userdat
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_card_profile_by_index(pa_context *c, uint32_t idx, const char *profile,
+pa_context_set_card_profile_by_index(pa_context *c, uint32_t idx,
+                                     const char *profile,
                                      pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -986,7 +1032,8 @@ pa_context_set_card_profile_by_index(pa_context *c, uint32_t idx, const char *pr
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_card_profile_by_name(pa_context *c, const char *name, const char *profile,
+pa_context_set_card_profile_by_name(pa_context *c, const char *name,
+                                    const char *profile,
                                     pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -995,24 +1042,8 @@ pa_context_set_card_profile_by_name(pa_context *c, const char *name, const char 
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_port_latency_offset(pa_context *c, const char *card_name, const char *port_name,
-                                   int64_t offset, pa_context_success_cb_t cb, void *userdata)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
-pa_operation *
-pa_context_get_sink_input_info_list(pa_context *c, pa_sink_input_info_cb_t cb, void *userdata)
-{
-    trace_info_z("Z %s\n", __func__);
-    return NULL;
-}
-
-APULSE_EXPORT
-pa_operation *
-pa_context_move_sink_input_by_name(pa_context *c, uint32_t idx, const char *sink_name,
+pa_context_set_port_latency_offset(pa_context *c, const char *card_name,
+                                   const char *port_name, int64_t offset,
                                    pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -1021,7 +1052,27 @@ pa_context_move_sink_input_by_name(pa_context *c, uint32_t idx, const char *sink
 
 APULSE_EXPORT
 pa_operation *
-pa_context_move_sink_input_by_index(pa_context *c, uint32_t idx, uint32_t sink_idx,
+pa_context_get_sink_input_info_list(pa_context *c, pa_sink_input_info_cb_t cb,
+                                    void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_move_sink_input_by_name(pa_context *c, uint32_t idx,
+                                   const char *sink_name,
+                                   pa_context_success_cb_t cb, void *userdata)
+{
+    trace_info_z("Z %s\n", __func__);
+    return NULL;
+}
+
+APULSE_EXPORT
+pa_operation *
+pa_context_move_sink_input_by_index(pa_context *c, uint32_t idx,
+                                    uint32_t sink_idx,
                                     pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -1030,7 +1081,8 @@ pa_context_move_sink_input_by_index(pa_context *c, uint32_t idx, uint32_t sink_i
 
 APULSE_EXPORT
 pa_operation *
-pa_context_kill_sink_input(pa_context *c, uint32_t idx, pa_context_success_cb_t cb, void *userdata)
+pa_context_kill_sink_input(pa_context *c, uint32_t idx,
+                           pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1038,7 +1090,9 @@ pa_context_kill_sink_input(pa_context *c, uint32_t idx, pa_context_success_cb_t 
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_source_output_info_list(pa_context *c, pa_source_output_info_cb_t cb, void *userdata)
+pa_context_get_source_output_info_list(pa_context *c,
+                                       pa_source_output_info_cb_t cb,
+                                       void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1046,8 +1100,10 @@ pa_context_get_source_output_info_list(pa_context *c, pa_source_output_info_cb_t
 
 APULSE_EXPORT
 pa_operation *
-pa_context_move_source_output_by_name(pa_context *c, uint32_t idx, const char *source_name,
-                                      pa_context_success_cb_t cb, void *userdata)
+pa_context_move_source_output_by_name(pa_context *c, uint32_t idx,
+                                      const char *source_name,
+                                      pa_context_success_cb_t cb,
+                                      void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1055,8 +1111,10 @@ pa_context_move_source_output_by_name(pa_context *c, uint32_t idx, const char *s
 
 APULSE_EXPORT
 pa_operation *
-pa_context_move_source_output_by_index(pa_context *c, uint32_t idx, uint32_t source_idx,
-                                       pa_context_success_cb_t cb, void *userdata)
+pa_context_move_source_output_by_index(pa_context *c, uint32_t idx,
+                                       uint32_t source_idx,
+                                       pa_context_success_cb_t cb,
+                                       void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1064,7 +1122,8 @@ pa_context_move_source_output_by_index(pa_context *c, uint32_t idx, uint32_t sou
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_source_output_volume(pa_context *c, uint32_t idx, const pa_cvolume *volume,
+pa_context_set_source_output_volume(pa_context *c, uint32_t idx,
+                                    const pa_cvolume *volume,
                                     pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -1073,8 +1132,8 @@ pa_context_set_source_output_volume(pa_context *c, uint32_t idx, const pa_cvolum
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_source_output_mute(pa_context *c, uint32_t idx, int mute, pa_context_success_cb_t cb,
-                                  void *userdata)
+pa_context_set_source_output_mute(pa_context *c, uint32_t idx, int mute,
+                                  pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1082,8 +1141,8 @@ pa_context_set_source_output_mute(pa_context *c, uint32_t idx, int mute, pa_cont
 
 APULSE_EXPORT
 pa_operation *
-pa_context_kill_source_output(pa_context *c, uint32_t idx, pa_context_success_cb_t cb,
-                              void *userdata)
+pa_context_kill_source_output(pa_context *c, uint32_t idx,
+                              pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1099,8 +1158,8 @@ pa_context_stat(pa_context *c, pa_stat_info_cb_t cb, void *userdata)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_sample_info_by_name(pa_context *c, const char *name, pa_sample_info_cb_t cb,
-                                   void *userdata)
+pa_context_get_sample_info_by_name(pa_context *c, const char *name,
+                                   pa_sample_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1108,8 +1167,8 @@ pa_context_get_sample_info_by_name(pa_context *c, const char *name, pa_sample_in
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_sample_info_by_index(pa_context *c, uint32_t idx, pa_sample_info_cb_t cb,
-                                    void *userdata)
+pa_context_get_sample_info_by_index(pa_context *c, uint32_t idx,
+                                    pa_sample_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1117,7 +1176,8 @@ pa_context_get_sample_info_by_index(pa_context *c, uint32_t idx, pa_sample_info_
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_sample_info_list(pa_context *c, pa_sample_info_cb_t cb, void *userdata)
+pa_context_get_sample_info_list(pa_context *c, pa_sample_info_cb_t cb,
+                                void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1125,7 +1185,8 @@ pa_context_get_sample_info_list(pa_context *c, pa_sample_info_cb_t cb, void *use
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_autoload_info_by_name(pa_context *c, const char *name, pa_autoload_type_t type,
+pa_context_get_autoload_info_by_name(pa_context *c, const char *name,
+                                     pa_autoload_type_t type,
                                      pa_autoload_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
@@ -1134,8 +1195,8 @@ pa_context_get_autoload_info_by_name(pa_context *c, const char *name, pa_autoloa
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_autoload_info_by_index(pa_context *c, uint32_t idx, pa_autoload_info_cb_t cb,
-                                      void *userdata)
+pa_context_get_autoload_info_by_index(pa_context *c, uint32_t idx,
+                                      pa_autoload_info_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1143,7 +1204,8 @@ pa_context_get_autoload_info_by_index(pa_context *c, uint32_t idx, pa_autoload_i
 
 APULSE_EXPORT
 pa_operation *
-pa_context_get_autoload_info_list(pa_context *c, pa_autoload_info_cb_t cb, void *userdata)
+pa_context_get_autoload_info_list(pa_context *c, pa_autoload_info_cb_t cb,
+                                  void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1151,7 +1213,8 @@ pa_context_get_autoload_info_list(pa_context *c, pa_autoload_info_cb_t cb, void 
 
 APULSE_EXPORT
 pa_operation *
-pa_context_exit_daemon(pa_context *c, pa_context_success_cb_t cb, void *userdata)
+pa_context_exit_daemon(pa_context *c, pa_context_success_cb_t cb,
+                       void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1159,8 +1222,8 @@ pa_context_exit_daemon(pa_context *c, pa_context_success_cb_t cb, void *userdata
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_default_sink(pa_context *c, const char *name, pa_context_success_cb_t cb,
-                            void *userdata)
+pa_context_set_default_sink(pa_context *c, const char *name,
+                            pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1168,8 +1231,8 @@ pa_context_set_default_sink(pa_context *c, const char *name, pa_context_success_
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_default_source(pa_context *c, const char *name, pa_context_success_cb_t cb,
-                              void *userdata)
+pa_context_set_default_source(pa_context *c, const char *name,
+                              pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1185,7 +1248,8 @@ pa_context_is_local(pa_context *c)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_set_name(pa_context *c, const char *name, pa_context_success_cb_t cb, void *userdata)
+pa_context_set_name(pa_context *c, const char *name, pa_context_success_cb_t cb,
+                    void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1210,8 +1274,8 @@ pa_context_proplist_update(pa_context *c, pa_update_mode_t mode, pa_proplist *p,
 
 APULSE_EXPORT
 pa_operation *
-pa_context_proplist_remove(pa_context *c, const char *const keys[], pa_context_success_cb_t cb,
-                           void *userdata)
+pa_context_proplist_remove(pa_context *c, const char *const keys[],
+                           pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1253,7 +1317,8 @@ pa_context_load_cookie_from_file(pa_context *c, const char *cookie_file_path)
 
 APULSE_EXPORT
 void
-pa_context_set_event_callback(pa_context *p, pa_context_event_cb_t cb, void *userdata)
+pa_context_set_event_callback(pa_context *p, pa_context_event_cb_t cb,
+                              void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
@@ -1268,8 +1333,9 @@ pa_context_is_pending(pa_context *c)
 
 APULSE_EXPORT
 pa_operation *
-pa_context_play_sample(pa_context *c, const char *name, const char *dev, pa_volume_t volume,
-                       pa_context_success_cb_t cb, void *userdata)
+pa_context_play_sample(pa_context *c, const char *name, const char *dev,
+                       pa_volume_t volume, pa_context_success_cb_t cb,
+                       void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1277,9 +1343,11 @@ pa_context_play_sample(pa_context *c, const char *name, const char *dev, pa_volu
 
 APULSE_EXPORT
 pa_operation *
-pa_context_play_sample_with_proplist(pa_context *c, const char *name, const char *dev,
-                                     pa_volume_t volume, pa_proplist *proplist,
-                                     pa_context_play_sample_cb_t cb, void *userdata)
+pa_context_play_sample_with_proplist(pa_context *c, const char *name,
+                                     const char *dev, pa_volume_t volume,
+                                     pa_proplist *proplist,
+                                     pa_context_play_sample_cb_t cb,
+                                     void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1287,8 +1355,8 @@ pa_context_play_sample_with_proplist(pa_context *c, const char *name, const char
 
 APULSE_EXPORT
 pa_operation *
-pa_context_remove_sample(pa_context *c, const char *name, pa_context_success_cb_t cb,
-                         void *userdata)
+pa_context_remove_sample(pa_context *c, const char *name,
+                         pa_context_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;

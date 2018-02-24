@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,13 +26,13 @@
 #include "trace.h"
 #include "util.h"
 
-#define MAKE_SND_LIB_VERSION(a,b,c)  (((a)<<16)|((b)<<8)|(c))
+#define MAKE_SND_LIB_VERSION(a, b, c) (((a) << 16) | ((b) << 8) | (c))
 
-#define HAVE_SND_PCM_AVAIL  SND_LIB_VERSION >= MAKE_SND_LIB_VERSION(1, 0, 18)
+#define HAVE_SND_PCM_AVAIL SND_LIB_VERSION >= MAKE_SND_LIB_VERSION(1, 0, 18)
 
-static
-void
-deh_stream_state_changed(pa_mainloop_api *api, pa_defer_event *de, void *userdata)
+static void
+deh_stream_state_changed(pa_mainloop_api *api, pa_defer_event *de,
+                         void *userdata)
 {
     pa_stream *s = userdata;
     if (s->state_cb)
@@ -40,9 +40,9 @@ deh_stream_state_changed(pa_mainloop_api *api, pa_defer_event *de, void *userdat
     pa_stream_unref(s);
 }
 
-static
-void
-deh_stream_first_readwrite_callback(pa_mainloop_api *api, pa_defer_event *de, void *userdata)
+static void
+deh_stream_first_readwrite_callback(pa_mainloop_api *api, pa_defer_event *de,
+                                    void *userdata)
 {
     pa_stream *s = userdata;
 
@@ -58,17 +58,16 @@ deh_stream_first_readwrite_callback(pa_mainloop_api *api, pa_defer_event *de, vo
     pa_stream_unref(s);
 }
 
-static
-void
-data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_event_flags_t events,
-                          void *userdata)
+static void
+data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd,
+                          pa_io_event_flags_t events, void *userdata)
 {
-    pa_stream          *s = userdata;
-    snd_pcm_sframes_t   frame_count;
-    size_t              frame_size = pa_frame_size(&s->ss);
-    char                buf[16 * 1024];
-    const size_t        buf_size = pa_find_multiple_of(sizeof(buf), frame_size, 0);
-    int                 paused = g_atomic_int_get(&s->paused);
+    pa_stream *s = userdata;
+    snd_pcm_sframes_t frame_count;
+    size_t frame_size = pa_frame_size(&s->ss);
+    char buf[16 * 1024];
+    const size_t buf_size = pa_find_multiple_of(sizeof(buf), frame_size, 0);
+    int paused = g_atomic_int_get(&s->paused);
 
     if (events & (PA_IO_EVENT_INPUT | PA_IO_EVENT_OUTPUT)) {
 
@@ -87,23 +86,24 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
 
             int cnt = 0, ret;
             do {
-                cnt ++;
+                cnt++;
                 ret = snd_pcm_recover(s->ph, frame_count, 1);
             } while (ret == -1 && errno == EINTR && cnt < 5);
 
             switch (snd_pcm_state(s->ph)) {
             case SND_PCM_STATE_OPEN:
-                // Highly unlikely device will be here in this state. But if it is, there is nothing
-                // can be done.
+                // Highly unlikely device will be here in this state. But if it
+                // is, there is nothing can be done.
                 trace_error(
-                    "Stream '%s' of context '%s' have its associated PCM device in "
-                    "SND_PCM_STATE_OPEN state. Reconfiguration is required, but is not possible at "
-                    "the moment. Giving up.",
+                    "Stream '%s' of context '%s' have its associated PCM "
+                    "device in SND_PCM_STATE_OPEN state. Reconfiguration is "
+                    "required, but is not possible at the moment. Giving up.",
                     s->name ? s->name : "", s->c->name ? s->c->name : "");
                 break;
 
             case SND_PCM_STATE_SETUP:
-                // There is configuration, but device is not prepared and not started.
+                // There is configuration, but device is not prepared and not
+                // started.
                 snd_pcm_prepare(s->ph);
                 snd_pcm_start(s->ph);
                 break;
@@ -119,8 +119,8 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
 
             case SND_PCM_STATE_XRUN:
                 trace_error(
-                    "Stream '%s' of context '%s' have its associated device in SND_PCM_STATE_XRUN "
-                    "state even after xrun recovery.",
+                    "Stream '%s' of context '%s' have its associated device in "
+                    "SND_PCM_STATE_XRUN state even after xrun recovery.",
                     s->name ? s->name : "", s->c->name ? s->c->name : "");
                 break;
 
@@ -157,8 +157,9 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
 #endif
 
             if (frame_count < 0) {
-                trace_error("%s, can't recover after failed snd_pcm_avail (%d)\n", __func__,
-                            (int)frame_count);
+                trace_error(
+                    "%s, can't recover after failed snd_pcm_avail (%d)\n",
+                    __func__, (int)frame_count);
                 return;
             }
         }
@@ -175,7 +176,8 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
         } else {
             size_t writable_size = pa_stream_writable_size(s);
 
-            // Ask client for data, but only if we are ready for at least |minreq| bytes.
+            // Ask client for data, but only if we are ready for at least
+            // |minreq| bytes.
             if (s->write_cb && writable_size >= s->buffer_attr.minreq)
                 s->write_cb(s, s->buffer_attr.minreq, s->write_cb_userdata);
 
@@ -213,7 +215,8 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
 
             if (bytecnt > 0) {
                 snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
-                pa_apply_volume_multiplier(buf, bytecnt, s->c->source_volume, &s->ss);
+                pa_apply_volume_multiplier(buf, bytecnt, s->c->source_volume,
+                                           &s->ss);
                 ringbuffer_write(s->rb, buf, bytecnt);
             }
 
@@ -224,8 +227,7 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd, pa_io_ev
     }
 }
 
-static
-int
+static int
 do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 {
     snd_pcm_hw_params_t *hw_params;
@@ -249,56 +251,67 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     if (device_name == NULL)
         device_name = "default";
 
-    char *device_description = g_strdup_printf("%s device \"%s\"", direction_name, device_name);
+    char *device_description =
+        g_strdup_printf("%s device \"%s\"", direction_name, device_name);
     if (!device_description) {
-        trace_error("%s: can't allocate memory for device description string\n", __func__);
+        trace_error("%s: can't allocate memory for device description string\n",
+                    __func__);
         goto fatal_error;
     }
 
     errcode = snd_pcm_open(&s->ph, device_name, stream_direction, 0);
     if (errcode != 0) {
-        trace_error("%s: can't open %s. Error code %d (%s)\n", __func__, device_description,
-                    errcode, snd_strerror(errcode));
+        trace_error("%s: can't open %s. Error code %d (%s)\n", __func__,
+                    device_description, errcode, snd_strerror(errcode));
         goto fatal_error;
     }
 
     errcode = snd_pcm_hw_params_malloc(&hw_params);
     if (errcode != 0) {
-        trace_error("%s: can't allocate memory for hw parameters for %s. Error code %d (%s)\n",
-                    __func__, device_description, errcode, snd_strerror(errcode));
+        trace_error(
+            "%s: can't allocate memory for hw parameters for %s. Error code %d "
+            "(%s)\n",
+            __func__, device_description, errcode, snd_strerror(errcode));
         goto fatal_error;
     }
 
     errcode = snd_pcm_hw_params_any(s->ph, hw_params);
     if (errcode != 0) {
-        trace_error("%s: can't get initial hw parameters for %s. Error code %d (%s)\n", __func__,
-                    device_description, errcode, snd_strerror(errcode));
+        trace_error(
+            "%s: can't get initial hw parameters for %s. Error code %d (%s)\n",
+            __func__, device_description, errcode, snd_strerror(errcode));
         goto fatal_error;
     }
 
-    errcode = snd_pcm_hw_params_set_access(s->ph, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
+    errcode = snd_pcm_hw_params_set_access(s->ph, hw_params,
+                                           SND_PCM_ACCESS_RW_INTERLEAVED);
     if (errcode != 0) {
-        trace_error("%s: can't select interleaved mode for %s. Error code %d (%s)\n", __func__,
-                    device_description, errcode, snd_strerror(errcode));
+        trace_error(
+            "%s: can't select interleaved mode for %s. Error code %d (%s)\n",
+            __func__, device_description, errcode, snd_strerror(errcode));
         // TODO: is it worth to support non-interleaved mode?
         goto fatal_error;
     }
 
-    errcode = snd_pcm_hw_params_set_format(s->ph, hw_params, pa_format_to_alsa(s->ss.format));
+    errcode = snd_pcm_hw_params_set_format(s->ph, hw_params,
+                                           pa_format_to_alsa(s->ss.format));
     if (errcode != 0) {
         snd_pcm_format_t alsa_format = pa_format_to_alsa(s->ss.format);
-        trace_error("%s: can't set sample format %d (\"%s\") for %s. Error code %d (%s)\n",
-                    __func__, alsa_format, snd_pcm_format_name(alsa_format), device_description,
-                    errcode, snd_strerror(errcode));
+        trace_error(
+            "%s: can't set sample format %d (\"%s\") for %s. Error code %d "
+            "(%s)\n",
+            __func__, alsa_format, snd_pcm_format_name(alsa_format),
+            device_description, errcode, snd_strerror(errcode));
         goto fatal_error;
     }
 
     errcode = snd_pcm_hw_params_set_rate_resample(s->ph, hw_params, 1);
     if (errcode != 0) {
-        trace_error("%s: can't enable rate resample for %s. Error code %d (%s)\n", __func__,
-                    device_description, errcode, snd_strerror(errcode));
-        // This is not a fatal error. Audio speed will be wrong, but there will be something.
-        // And it sounds funny.
+        trace_error(
+            "%s: can't enable rate resample for %s. Error code %d (%s)\n",
+            __func__, device_description, errcode, snd_strerror(errcode));
+        // This is not a fatal error. Audio speed will be wrong, but there will
+        // be something.
     }
 
     unsigned int rate = s->ss.rate;
@@ -306,58 +319,76 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     errcode = snd_pcm_hw_params_set_rate_near(s->ph, hw_params, &rate, &dir);
     if (errcode != 0) {
-        trace_error("%s: can't set sample rate for %s. Error code %d (%s)\n", __func__,
-                    device_description, errcode, snd_strerror(errcode));
+        trace_error("%s: can't set sample rate for %s. Error code %d (%s)\n",
+                    __func__, device_description, errcode,
+                    snd_strerror(errcode));
         goto fatal_error;
     }
 
-    trace_info_f("%s: demanded %d Hz sample rate, got %d Hz for %s, dir = %d\n", __func__,
-                 (int)s->ss.rate, (int)rate, device_description, dir);
+    trace_info_f("%s: demanded %d Hz sample rate, got %d Hz for %s, dir = %d\n",
+                 __func__, (int)s->ss.rate, (int)rate, device_description, dir);
 
     if (rate != s->ss.rate)
-        trace_error("%s: actual sample rate, %d Hz, differs from required %d Hz\n", __func__,
-                    (int)rate, (int)s->ss.rate);
+        trace_error(
+            "%s: actual sample rate, %d Hz, differs from required %d Hz\n",
+            __func__, (int)rate, (int)s->ss.rate);
 
     errcode = snd_pcm_hw_params_set_channels(s->ph, hw_params, s->ss.channels);
     if (errcode != 0) {
-        trace_error("%s: can't set channel count to %d for %s. Error code %d (%s)\n", __func__,
-                    (int)s->ss.channels, device_description, errcode, snd_strerror(errcode));
+        trace_error(
+            "%s: can't set channel count to %d for %s. Error code %d (%s)\n",
+            __func__, (int)s->ss.channels, device_description, errcode,
+            snd_strerror(errcode));
         // TODO: channel count handling?
         goto fatal_error;
     }
 
     const size_t frame_size = pa_frame_size(&s->ss);
-    snd_pcm_uframes_t requested_period_size = s->buffer_attr.minreq / frame_size;
+    snd_pcm_uframes_t requested_period_size =
+        s->buffer_attr.minreq / frame_size;
     snd_pcm_uframes_t period_size = requested_period_size;
     dir = 1;  // Prefer larger period sizes, if exact is not possible.
-    errcode = snd_pcm_hw_params_set_period_size_near(s->ph, hw_params, &period_size, &dir);
-    if (errcode != 0) {
-        trace_error("%s: can't set period size to %d frames for %s. Error code %d (%s)\n", __func__,
-                    (int)requested_period_size, device_description, errcode, snd_strerror(errcode));
-        goto fatal_error;
-    }
-
-    trace_info_f("%s: requested period size of %d frames, got %d frames for %s\n", __func__,
-                 (int)requested_period_size, (int)period_size, device_description);
-
-    // Set up buffer size. Ensure it's at least four times larger than a period size.
-    snd_pcm_uframes_t requested_buffer_size = s->buffer_attr.tlength / frame_size;
-    snd_pcm_uframes_t buffer_size = MAX(requested_buffer_size, 4 * period_size);
-    errcode = snd_pcm_hw_params_set_buffer_size_near(s->ph, hw_params, &buffer_size);
+    errcode = snd_pcm_hw_params_set_period_size_near(s->ph, hw_params,
+                                                     &period_size, &dir);
     if (errcode != 0) {
         trace_error(
-            "%s: can't set buffer size to %d frames for %s. Error code %d (%s)\n",
-            __func__, (int)buffer_size, device_description, errcode, snd_strerror(errcode));
+            "%s: can't set period size to %d frames for %s. Error code %d "
+            "(%s)\n",
+            __func__, (int)requested_period_size, device_description, errcode,
+            snd_strerror(errcode));
         goto fatal_error;
     }
 
-    trace_info_f("%s: requested buffer size of %d frames, got %d frames for %s\n", __func__,
-                 (int)requested_buffer_size, (int)buffer_size, device_description);
+    trace_info_f(
+        "%s: requested period size of %d frames, got %d frames for %s\n",
+        __func__, (int)requested_period_size, (int)period_size,
+        device_description);
+
+    // Set up buffer size. Ensure it's at least four times larger than a period
+    // size.
+    snd_pcm_uframes_t requested_buffer_size =
+        s->buffer_attr.tlength / frame_size;
+    snd_pcm_uframes_t buffer_size = MAX(requested_buffer_size, 4 * period_size);
+    errcode =
+        snd_pcm_hw_params_set_buffer_size_near(s->ph, hw_params, &buffer_size);
+    if (errcode != 0) {
+        trace_error(
+            "%s: can't set buffer size to %d frames for %s. Error code %d "
+            "(%s)\n",
+            __func__, (int)buffer_size, device_description, errcode,
+            snd_strerror(errcode));
+        goto fatal_error;
+    }
+
+    trace_info_f(
+        "%s: requested buffer size of %d frames, got %d frames for %s\n",
+        __func__, (int)requested_buffer_size, (int)buffer_size,
+        device_description);
 
     errcode = snd_pcm_hw_params(s->ph, hw_params);
     if (errcode != 0) {
-        trace_error("%s: can't apply configured hw parameter block for %s\n", __func__,
-                    device_description);
+        trace_error("%s: can't apply configured hw parameter block for %s\n",
+                    __func__, device_description);
         goto fatal_error;
     }
 
@@ -365,21 +396,22 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     errcode = snd_pcm_sw_params_malloc(&sw_params);
     if (errcode != 0) {
-        trace_error("%s: can't allocate memory for sw parameters for %s\n", __func__,
-                    device_description);
+        trace_error("%s: can't allocate memory for sw parameters for %s\n",
+                    __func__, device_description);
         goto fatal_error;
     }
 
     errcode = snd_pcm_sw_params_current(s->ph, sw_params);
     if (errcode != 0) {
-        trace_error("%s: can't acquire current sw parameters for %s\n", __func__,
-                    device_description);
+        trace_error("%s: can't acquire current sw parameters for %s\n",
+                    __func__, device_description);
         goto fatal_error;
     }
 
     errcode = snd_pcm_sw_params_set_avail_min(s->ph, sw_params, period_size);
     if (errcode != 0) {
-        trace_error("%s: can't set avail min for %s\n", __func__, device_description);
+        trace_error("%s: can't set avail min for %s\n", __func__,
+                    device_description);
         goto fatal_error;
     }
 
@@ -387,7 +419,8 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     errcode = snd_pcm_sw_params(s->ph, sw_params);
     if (errcode != 0) {
-        trace_error("%s: can't apply sw parameters for %s\n", __func__, device_description);
+        trace_error("%s: can't apply sw parameters for %s\n", __func__,
+                    device_description);
         goto fatal_error;
     }
 
@@ -395,7 +428,8 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     errcode = snd_pcm_prepare(s->ph);
     if (errcode != 0) {
-        trace_error("%s: can't prepare PCM device to use for %s\n", __func__, device_description);
+        trace_error("%s: can't prepare PCM device to use for %s\n", __func__,
+                    device_description);
         goto fatal_error;
     }
 
@@ -404,7 +438,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     s->ioe = calloc(nfds, sizeof(pa_io_event *));
     s->nioe = nfds;
     snd_pcm_poll_descriptors(s->ph, fds, nfds);
-    for (int k = 0; k < nfds; k ++) {
+    for (int k = 0; k < nfds; k++) {
         pa_mainloop_api *api = s->c->mainloop_api;
         s->ioe[k] = api->io_new(api, fds[k].fd, 0x80000000 | fds[k].events,
                                 data_available_for_stream, s);
@@ -414,28 +448,32 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     s->state = PA_STREAM_READY;
     pa_stream_ref(s);
-    s->c->mainloop_api->defer_new(s->c->mainloop_api, deh_stream_state_changed, s);
+    s->c->mainloop_api->defer_new(s->c->mainloop_api, deh_stream_state_changed,
+                                  s);
     pa_stream_ref(s);
-    s->c->mainloop_api->defer_new(s->c->mainloop_api, deh_stream_first_readwrite_callback, s);
+    s->c->mainloop_api->defer_new(s->c->mainloop_api,
+                                  deh_stream_first_readwrite_callback, s);
 
     g_free(device_description);
     return 0;
 
 fatal_error:
     trace_error(
-        "%s: failed to open ALSA device. Apulse does no resampling or format conversion, leaving "
-        "that task to ALSA plugins. Ensure that selected device is capable of playing a particular "
-        "sample format at a particular rate. They have to be supported by either hardware "
-        "directly, or by \"plug\" and \"dmix\" ALSA plugins which will perform required "
-        "conversions on CPU.\n",
+        "%s: failed to open ALSA device. Apulse does no resampling or format "
+        "conversion, leaving that task to ALSA plugins. Ensure that selected "
+        "device is capable of playing a particular sample format at a "
+        "particular rate. They have to be supported by either hardware "
+        "directly, or by \"plug\" and \"dmix\" ALSA plugins which will perform "
+        "required conversions on CPU.\n",
         __func__);
 
     if (errcode == -EACCES) {
         trace_error(
-            "%s: additionally, the error code is %d, which means access was denied. That looks "
-            "like access restriction in a sandbox. If the app you are running uses sandboxing "
-            "techniques, make sure /dev/snd/ directory is added into the allowed list. Both "
-            "reading and writing access to the files in that directory are required.\n",
+            "%s: additionally, the error code is %d, which means access was "
+            "denied. That looks like access restriction in a sandbox. If the "
+            "app you are running uses sandboxing techniques, make sure "
+            "/dev/snd/ directory is added into the allowed list. Both reading "
+            "and writing access to the files in that directory are required.\n",
             __func__, -EACCES);
     }
 
@@ -547,13 +585,14 @@ stream_adjust_buffer_attrs(pa_stream *s, const pa_buffer_attr *attr)
 
 APULSE_EXPORT
 int
-pa_stream_connect_playback(pa_stream *s, const char *dev, const pa_buffer_attr *attr,
-                           pa_stream_flags_t flags, const pa_cvolume *volume,
-                           pa_stream *sync_stream)
+pa_stream_connect_playback(pa_stream *s, const char *dev,
+                           const pa_buffer_attr *attr, pa_stream_flags_t flags,
+                           const pa_cvolume *volume, pa_stream *sync_stream)
 {
     gchar *s_attr = trace_pa_buffer_attr_as_string(attr);
-    trace_info_f("P %s s=%p, dev=%s, attr=%s, flags=0x%x, volume=%p, sync_stream=%p\n", __func__,
-               s, dev, s_attr, flags, volume, sync_stream);
+    trace_info_f(
+        "P %s s=%p, dev=%s, attr=%s, flags=0x%x, volume=%p, sync_stream=%p\n",
+        __func__, s, dev, s_attr, flags, volume, sync_stream);
     g_free(s_attr);
 
     s->direction = PA_STREAM_PLAYBACK;
@@ -584,9 +623,11 @@ APULSE_EXPORT
 pa_operation *
 pa_stream_cork(pa_stream *s, int b, pa_stream_success_cb_t cb, void *userdata)
 {
-    trace_info_f("F %s s=%p, b=%d, cb=%p, userdata=%p\n", __func__, s, b, cb, userdata);
+    trace_info_f("F %s s=%p, b=%d, cb=%p, userdata=%p\n", __func__, s, b, cb,
+                 userdata);
 
-    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_cork_impl);
+    pa_operation *op =
+        pa_operation_new(s->c->mainloop_api, pa_stream_cork_impl);
     op->s = s;
     op->int_arg_1 = b;
     op->stream_success_cb = cb;
@@ -605,7 +646,7 @@ pa_stream_disconnect(pa_stream *s)
     if (s->state != PA_STREAM_READY)
         return PA_ERR_BADSTATE;
 
-    for (int k = 0; k < s->nioe; k ++) {
+    for (int k = 0; k < s->nioe; k++) {
         pa_mainloop_api *api = s->c->mainloop_api;
         api->io_free(s->ioe[k]);
     }
@@ -634,7 +675,8 @@ pa_stream_drain(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_drain_impl);
+    pa_operation *op =
+        pa_operation_new(s->c->mainloop_api, pa_stream_drain_impl);
     op->s = s;
     op->stream_success_cb = cb;
     op->cb_userdata = userdata;
@@ -660,7 +702,8 @@ pa_stream_flush(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_flush_impl);
+    pa_operation *op =
+        pa_operation_new(s->c->mainloop_api, pa_stream_flush_impl);
     op->s = s;
     op->stream_success_cb = cb;
     op->cb_userdata = userdata;
@@ -739,7 +782,8 @@ pa_stream_get_timing_info(pa_stream *s)
 
     if (snd_pcm_delay(s->ph, &delay) != 0)
         delay = 0;
-    s->timing_info.read_index = s->timing_info.write_index - delay * pa_frame_size(&s->ss);
+    s->timing_info.read_index =
+        s->timing_info.write_index - delay * pa_frame_size(&s->ss);
 
     return &s->timing_info;
 }
@@ -763,11 +807,13 @@ pa_stream_is_suspended(pa_stream *s)
 
 APULSE_EXPORT
 pa_stream *
-pa_stream_new(pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map)
+pa_stream_new(pa_context *c, const char *name, const pa_sample_spec *ss,
+              const pa_channel_map *map)
 {
     gchar *s_map = trace_pa_channel_map_as_string(map);
     gchar *s_ss = trace_pa_sample_spec_as_string(ss);
-    trace_info_f("F %s c=%p, name=%s, ss=%s, map=%s\n", __func__, c, name, s_ss, s_map);
+    trace_info_f("F %s c=%p, name=%s, ss=%s, map=%s\n", __func__, c, name, s_ss,
+                 s_map);
     g_free(s_ss);
     g_free(s_map);
 
@@ -779,11 +825,12 @@ pa_stream_new(pa_context *c, const char *name, const pa_sample_spec *ss, const p
 
 APULSE_EXPORT
 pa_stream *
-pa_stream_new_extended(pa_context *c, const char *name, pa_format_info *const *formats,
-                       unsigned int n_formats, pa_proplist *p)
+pa_stream_new_extended(pa_context *c, const char *name,
+                       pa_format_info *const *formats, unsigned int n_formats,
+                       pa_proplist *p)
 {
-    trace_info_f("P %s c=%p, name=%s, formats=%p, n_formats=%u, p=%p\n", __func__, c, name,
-               formats, n_formats, p);
+    trace_info_f("P %s c=%p, name=%s, formats=%p, n_formats=%u, p=%p\n",
+                 __func__, c, name, formats, n_formats, p);
 
     // TODO: multiple formats?
 
@@ -794,9 +841,7 @@ pa_stream_new_extended(pa_context *c, const char *name, pa_format_info *const *f
     }
 
     pa_sample_spec ss = {
-        .format =   PA_SAMPLE_S16LE,
-        .rate =     48000,
-        .channels = 2,
+        .format = PA_SAMPLE_S16LE, .rate = 48000, .channels = 2,
     };
 
     const char *val;
@@ -818,12 +863,14 @@ pa_stream_new_extended(pa_context *c, const char *name, pa_format_info *const *f
 
 APULSE_EXPORT
 pa_stream *
-pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spec *ss,
-                            const pa_channel_map *map, pa_proplist *p)
+pa_stream_new_with_proplist(pa_context *c, const char *name,
+                            const pa_sample_spec *ss, const pa_channel_map *map,
+                            pa_proplist *p)
 {
     gchar *s_map = trace_pa_channel_map_as_string(map);
     gchar *s_ss = trace_pa_sample_spec_as_string(ss);
-    trace_info_f("F %s c=%p, name=%s, ss=%s, map=%s, p=%p\n", __func__, c, name, s_ss, s_map, p);
+    trace_info_f("F %s c=%p, name=%s, ss=%s, map=%s, p=%p\n", __func__, c, name,
+                 s_ss, s_map, p);
     g_free(s_ss);
     g_free(s_map);
 
@@ -833,7 +880,7 @@ pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spe
     s->state = PA_STREAM_UNCONNECTED;
     s->ss = *ss;
 
-    s->idx = c->next_stream_idx ++;
+    s->idx = c->next_stream_idx++;
     g_hash_table_insert(c->streams_ht, GINT_TO_POINTER(s->idx), s);
 
     // fill initial values of s->timing_info
@@ -851,7 +898,7 @@ pa_stream_new_with_proplist(pa_context *c, const char *name, const pa_sample_spe
     s->timing_info.configured_source_usec = 0;
     s->timing_info.since_underrun = 0;
 
-    s->rb = ringbuffer_new(72 * 1024);    // TODO: figure out size
+    s->rb = ringbuffer_new(72 * 1024);  // TODO: figure out size
     s->peek_buffer = malloc(s->rb->end - s->rb->start);
 
     for (uint32_t k = 0; k < PA_CHANNELS_MAX; k++)
@@ -866,13 +913,14 @@ pa_stream_ref(pa_stream *s)
 {
     trace_info_f("F %s s=%p\n", __func__, s);
 
-    s->ref_cnt ++;
+    s->ref_cnt++;
     return s;
 }
 
 APULSE_EXPORT
 void
-pa_stream_set_latency_update_callback(pa_stream *s, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_latency_update_callback(pa_stream *s, pa_stream_notify_cb_t cb,
+                                      void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
@@ -894,11 +942,14 @@ pa_stream_set_name_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_stream_set_name(pa_stream *s, const char *name, pa_stream_success_cb_t cb, void *userdata)
+pa_stream_set_name(pa_stream *s, const char *name, pa_stream_success_cb_t cb,
+                   void *userdata)
 {
-    trace_info_f("P %s s=%p, name=%s, cb=%p, userdata=%p\n", __func__, s, name, cb, userdata);
+    trace_info_f("P %s s=%p, name=%s, cb=%p, userdata=%p\n", __func__, s, name,
+                 cb, userdata);
 
-    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_set_name_impl);
+    pa_operation *op =
+        pa_operation_new(s->c->mainloop_api, pa_stream_set_name_impl);
     op->s = s;
     op->stream_success_cb = cb;
     op->cb_userdata = userdata;
@@ -910,7 +961,8 @@ pa_stream_set_name(pa_stream *s, const char *name, pa_stream_success_cb_t cb, vo
 
 APULSE_EXPORT
 void
-pa_stream_set_state_callback(pa_stream *s, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_state_callback(pa_stream *s, pa_stream_notify_cb_t cb,
+                             void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
@@ -920,7 +972,8 @@ pa_stream_set_state_callback(pa_stream *s, pa_stream_notify_cb_t cb, void *userd
 
 APULSE_EXPORT
 void
-pa_stream_set_write_callback(pa_stream *s, pa_stream_request_cb_t cb, void *userdata)
+pa_stream_set_write_callback(pa_stream *s, pa_stream_request_cb_t cb,
+                             void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
@@ -945,7 +998,8 @@ pa_stream_trigger(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_trigger_impl);
+    pa_operation *op =
+        pa_operation_new(s->c->mainloop_api, pa_stream_trigger_impl);
     op->s = s;
     op->stream_success_cb = cb;
     op->cb_userdata = userdata;
@@ -960,7 +1014,7 @@ pa_stream_unref(pa_stream *s)
 {
     trace_info_f("F %s s=%p\n", __func__, s);
 
-    s->ref_cnt --;
+    s->ref_cnt--;
     if (s->ref_cnt == 0) {
         g_hash_table_remove(s->c->streams_ht, GINT_TO_POINTER(s->idx));
         ringbuffer_free(s->rb);
@@ -987,11 +1041,13 @@ pa_stream_update_timing_info_impl(pa_operation *op)
 
 APULSE_EXPORT
 pa_operation *
-pa_stream_update_timing_info(pa_stream *s, pa_stream_success_cb_t cb, void *userdata)
+pa_stream_update_timing_info(pa_stream *s, pa_stream_success_cb_t cb,
+                             void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
-    pa_operation *op = pa_operation_new(s->c->mainloop_api, pa_stream_update_timing_info_impl);
+    pa_operation *op =
+        pa_operation_new(s->c->mainloop_api, pa_stream_update_timing_info_impl);
     op->s = s;
     op->stream_success_cb = cb;
     op->cb_userdata = userdata;
@@ -1015,7 +1071,7 @@ pa_stream_writable_size(pa_stream *s)
     //
     // Workaround issue by reserving certain amount for that case.
 
-    const size_t limit = 16 * 1024; // TODO: adaptive values?
+    const size_t limit = 16 * 1024;  // TODO: adaptive values?
 
     if (writable_size < limit)
         writable_size = 0;
@@ -1035,11 +1091,12 @@ pa_stream_readable_size(pa_stream *s)
 
 APULSE_EXPORT
 int
-pa_stream_write(pa_stream *s, const void *data, size_t nbytes, pa_free_cb_t free_cb, int64_t offset,
-                pa_seek_mode_t seek)
+pa_stream_write(pa_stream *s, const void *data, size_t nbytes,
+                pa_free_cb_t free_cb, int64_t offset, pa_seek_mode_t seek)
 {
-    trace_info_f("F %s s=%p, data=%p, nbytes=%zu, free_cb=%p, offset=%"PRId64", seek=%u\n", __func__,
-               s, data, nbytes, free_cb, offset, seek);
+    trace_info_f("F %s s=%p, data=%p, nbytes=%zu, free_cb=%p, offset=%" PRId64
+                 ", seek=%u\n",
+                 __func__, s, data, nbytes, free_cb, offset, seek);
 
     if (offset != 0)
         trace_error("%s, offset != 0\n", __func__);
@@ -1063,11 +1120,12 @@ pa_stream_write(pa_stream *s, const void *data, size_t nbytes, pa_free_cb_t free
 
 APULSE_EXPORT
 int
-pa_stream_connect_record(pa_stream *s, const char *dev, const pa_buffer_attr *attr,
-                         pa_stream_flags_t flags)
+pa_stream_connect_record(pa_stream *s, const char *dev,
+                         const pa_buffer_attr *attr, pa_stream_flags_t flags)
 {
     gchar *s_attr = trace_pa_buffer_attr_as_string(attr);
-    trace_info_f("P %s s=%p, dev=%s, attr=%s, flags=0x%x\n", __func__, s, dev, s_attr, flags);
+    trace_info_f("P %s s=%p, dev=%s, attr=%s, flags=0x%x\n", __func__, s, dev,
+                 s_attr, flags);
     g_free(s_attr);
 
     s->direction = PA_STREAM_RECORD;
@@ -1141,7 +1199,8 @@ pa_stream_peek(pa_stream *s, const void **data, size_t *nbytes)
 
 APULSE_EXPORT
 void
-pa_stream_set_read_callback(pa_stream *s, pa_stream_request_cb_t cb, void *userdata)
+pa_stream_set_read_callback(pa_stream *s, pa_stream_request_cb_t cb,
+                            void *userdata)
 {
     trace_info_f("F %s s=%p, cb=%p, userdata=%p\n", __func__, s, cb, userdata);
 
@@ -1153,7 +1212,8 @@ pa_stream_set_read_callback(pa_stream *s, pa_stream_request_cb_t cb, void *userd
 
 APULSE_EXPORT
 void
-pa_stream_set_underflow_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_underflow_callback(pa_stream *p, pa_stream_notify_cb_t cb,
+                                 void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
@@ -1168,7 +1228,8 @@ pa_stream_get_context(pa_stream *p)
 
 APULSE_EXPORT
 void
-pa_stream_set_overflow_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_overflow_callback(pa_stream *p, pa_stream_notify_cb_t cb,
+                                void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
@@ -1183,35 +1244,40 @@ pa_stream_get_underflow_index(pa_stream *p)
 
 APULSE_EXPORT
 void
-pa_stream_set_started_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_started_callback(pa_stream *p, pa_stream_notify_cb_t cb,
+                               void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 void
-pa_stream_set_moved_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_moved_callback(pa_stream *p, pa_stream_notify_cb_t cb,
+                             void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 void
-pa_stream_set_suspended_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_suspended_callback(pa_stream *p, pa_stream_notify_cb_t cb,
+                                 void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 void
-pa_stream_set_event_callback(pa_stream *p, pa_stream_event_cb_t cb, void *userdata)
+pa_stream_set_event_callback(pa_stream *p, pa_stream_event_cb_t cb,
+                             void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
 
 APULSE_EXPORT
 void
-pa_stream_set_buffer_attr_callback(pa_stream *p, pa_stream_notify_cb_t cb, void *userdata)
+pa_stream_set_buffer_attr_callback(pa_stream *p, pa_stream_notify_cb_t cb,
+                                   void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
 }
@@ -1242,8 +1308,8 @@ pa_stream_get_format_info(pa_stream *s)
 
 APULSE_EXPORT
 pa_operation *
-pa_stream_set_buffer_attr(pa_stream *s, const pa_buffer_attr *attr, pa_stream_success_cb_t cb,
-                          void *userdata)
+pa_stream_set_buffer_attr(pa_stream *s, const pa_buffer_attr *attr,
+                          pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1251,7 +1317,8 @@ pa_stream_set_buffer_attr(pa_stream *s, const pa_buffer_attr *attr, pa_stream_su
 
 APULSE_EXPORT
 pa_operation *
-pa_stream_update_sample_rate(pa_stream *s, uint32_t rate, pa_stream_success_cb_t cb, void *userdata)
+pa_stream_update_sample_rate(pa_stream *s, uint32_t rate,
+                             pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;
@@ -1268,8 +1335,8 @@ pa_stream_proplist_update(pa_stream *s, pa_update_mode_t mode, pa_proplist *p,
 
 APULSE_EXPORT
 pa_operation *
-pa_stream_proplist_remove(pa_stream *s, const char *const keys[], pa_stream_success_cb_t cb,
-                          void *userdata)
+pa_stream_proplist_remove(pa_stream *s, const char *const keys[],
+                          pa_stream_success_cb_t cb, void *userdata)
 {
     trace_info_z("Z %s\n", __func__);
     return NULL;

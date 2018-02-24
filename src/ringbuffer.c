@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,18 +26,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-static
-inline
-void
+static inline void
 _rb_lock(ringbuffer_t *rb)
 {
     pthread_mutex_lock(&rb->lock);
 }
 
-static
-inline
-void
+static inline void
 _rb_unlock(ringbuffer_t *rb)
 {
     pthread_mutex_unlock(&rb->lock);
@@ -66,8 +61,7 @@ ringbuffer_free(ringbuffer_t *rb)
     free(rb);
 }
 
-static
-size_t
+static size_t
 _ringbuffer_readable_size(ringbuffer_t *rb)
 {
     if (rb->wpos > rb->rpos) {
@@ -95,8 +89,7 @@ ringbuffer_readable_size(ringbuffer_t *rb)
     return rsz;
 }
 
-static
-size_t
+static size_t
 _ringbuffer_writable_size(ringbuffer_t *rb)
 {
     if (rb->wpos > rb->rpos) {

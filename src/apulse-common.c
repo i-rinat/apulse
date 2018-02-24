@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,18 +26,18 @@
 #include "trace.h"
 
 typedef enum pa_log_level {
-    PA_LOG_ERROR  = 0,
-    PA_LOG_WARN   = 1,
+    PA_LOG_ERROR = 0,
+    PA_LOG_WARN = 1,
     PA_LOG_NOTICE = 2,
-    PA_LOG_INFO   = 3,
-    PA_LOG_DEBUG  = 4,
+    PA_LOG_INFO = 3,
+    PA_LOG_DEBUG = 4,
     PA_LOG_LEVEL_MAX
 } pa_log_level_t;
 
 APULSE_EXPORT
 void
-pa_log_level_meta(pa_log_level_t level, const char *file, int line, const char *func,
-                  const char *format, ...)
+pa_log_level_meta(pa_log_level_t level, const char *file, int line,
+                  const char *func, const char *format, ...)
 {
 #ifdef WITH_TRACE
     trace_lock();
