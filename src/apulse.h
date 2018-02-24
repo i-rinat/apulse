@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-#ifndef APULSE__APULSE_H
-#define APULSE__APULSE_H
+#pragma once
 
 #define _GNU_SOURCE
 #include "ringbuffer.h"
@@ -179,5 +178,3 @@ pa_operation_launch(pa_operation *op);
 
 void
 pa_operation_done(pa_operation *op);
-
-#endif  // APULSE__APULSE_H

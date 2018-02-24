@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-#ifndef APULSE__TRACE_H
-#define APULSE__TRACE_H
+#pragma once
 
 #include <glib.h>
 #include <pulse/channelmap.h>
@@ -78,5 +77,3 @@ trace_lock(void);
 
 void
 trace_unlock(void);
-
-#endif  // APULSE__TRACE_H

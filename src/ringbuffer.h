@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-#ifndef APULSE__RINGBUFFER_H
-#define APULSE__RINGBUFFER_H
+#pragma once
 
 #include <pthread.h>
 
@@ -60,5 +59,3 @@ ringbuffer_peek(ringbuffer_t *rb, void *data, size_t len);
 
 size_t
 ringbuffer_drop(ringbuffer_t *rb, size_t len);
-
-#endif  // APULSE__RINGBUFFER_H
