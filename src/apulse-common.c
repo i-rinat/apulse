@@ -39,16 +39,18 @@ void
 pa_log_level_meta(pa_log_level_t level, const char *file, int line,
                   const char *func, const char *format, ...)
 {
-#ifdef WITH_TRACE
-    trace_lock();
+    char buf[2048];
+
+    int written = 0;
+    snprintf(buf, sizeof(buf), "pa_log: <%d> %s:%d %s %n", level, file, line,
+             func, &written);
+
     va_list args;
-    fprintf(stdout, "pa_log: <%d> %s:%d %s ", level, file, line, func);
     va_start(args, format);
-    vfprintf(stdout, format, args);
+    vsnprintf(buf + written, sizeof(buf) - written, format, args);
     va_end(args);
-    fprintf(stdout, "\n");
-    trace_unlock();
-#endif
+
+    trace_info("%s\n", buf);
 }
 
 APULSE_EXPORT

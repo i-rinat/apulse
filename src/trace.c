@@ -463,15 +463,3 @@ trace_pa_sample_spec_as_string(const pa_sample_spec *ss)
 
     return str;
 }
-
-void
-trace_lock(void)
-{
-    pthread_mutex_lock(&lock);
-}
-
-void
-trace_unlock(void)
-{
-    pthread_mutex_unlock(&lock);
-}

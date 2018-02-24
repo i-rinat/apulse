@@ -71,9 +71,3 @@ trace_pa_sample_format_t_as_string(pa_sample_format_t sf);
 
 gchar *
 trace_pa_sample_spec_as_string(const pa_sample_spec *ss);
-
-void
-trace_lock(void);
-
-void
-trace_unlock(void);
