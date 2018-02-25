@@ -28,17 +28,17 @@
 #include <pulse/channelmap.h>
 #include <pulse/pulseaudio.h>
 
-#if WITH_TRACE >= 2
+#if CONFIG_TRACE_LEVEL >= 2
 
 #define trace_info_f(...) trace_info(__VA_ARGS__)
 #define trace_info_z(...) trace_info(__VA_ARGS__)
 
-#elif WITH_TRACE == 1
+#elif CONFIG_TRACE_LEVEL == 1
 
 #define trace_info_f(...)
 #define trace_info_z(...) trace_info(__VA_ARGS__)
 
-#else  // WITH_TRACE == 0
+#else  // CONFIG_TRACE_LEVEL == 0
 
 #define trace_info_f(...)
 #define trace_info_z(...)
