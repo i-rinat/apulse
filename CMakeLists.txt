@@ -1,7 +1,9 @@
 project(apulse)
 cmake_minimum_required (VERSION 2.8)
-add_definitions(-std=gnu99 -Wall -fPIC -fvisibility=hidden)
-add_definitions(-Werror=implicit-function-declaration)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -fPIC -fvisibility=hidden")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=implicit-function-declaration")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 
 find_package(PkgConfig REQUIRED)
 
@@ -15,9 +17,6 @@ set(LOG_TO_STDERR 0 CACHE STRING "send all log output to stderr")
 # Options.
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCONFIG_TRACE_LEVEL=${WITH_TRACE}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCONFIG_LOG_TO_STDERR=${LOG_TO_STDERR}")
-
-# link with pthread
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 
 include_directories(${REQ_INCLUDE_DIRS})
 
