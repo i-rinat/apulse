@@ -30,7 +30,12 @@
 #include <unistd.h>
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+#if CONFIG_LOG_TO_STDERR
+static int log_to_stderr = 1;
+#else
 static int log_to_stderr = 0;
+#endif  // CONFIG_LOG_TO_STDERR
 
 void
 trace_info(const char *fmt, ...)

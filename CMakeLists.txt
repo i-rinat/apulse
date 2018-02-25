@@ -10,9 +10,11 @@ pkg_check_modules(REQ glib-2.0 alsa REQUIRED)
 list(APPEND REQ_LIBRARIES m)
 
 set(WITH_TRACE 0 CACHE STRING "trace level: no tracing (0) / unimplemented only (1) / all (2)")
+set(LOG_TO_STDERR 0 CACHE STRING "send all log output to stderr")
 
 # trace level
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWITH_TRACE=${WITH_TRACE}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCONFIG_LOG_TO_STDERR=${LOG_TO_STDERR}")
 
 # link with pthread
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
