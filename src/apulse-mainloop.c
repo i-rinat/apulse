@@ -78,7 +78,6 @@ ml_api_defer_new(pa_mainloop_api *a, pa_defer_event_cb_t cb, void *userdata)
     de->mainloop = ml;
     g_queue_push_tail(ml->deferred_events_queue, de);
 
-    pa_mainloop_wakeup(ml);
     return de;
 }
 
