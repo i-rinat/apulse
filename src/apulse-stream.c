@@ -31,8 +31,8 @@
 #define HAVE_SND_PCM_AVAIL SND_LIB_VERSION >= MAKE_SND_LIB_VERSION(1, 0, 18)
 
 static void
-deh_stream_state_changed(pa_mainloop_api *api, pa_time_event *e,
-                         const struct timeval *tv, void *userdata)
+deh_stream_state_changed(pa_mainloop_api *api, pa_defer_event *de,
+                         void *userdata)
 {
     pa_stream *s = userdata;
     if (s->state_cb)
@@ -41,8 +41,8 @@ deh_stream_state_changed(pa_mainloop_api *api, pa_time_event *e,
 }
 
 static void
-deh_stream_first_readwrite_callback(pa_mainloop_api *api, pa_time_event *e,
-                                    const struct timeval *tv, void *userdata)
+deh_stream_first_readwrite_callback(pa_mainloop_api *api, pa_defer_event *de,
+                                    void *userdata)
 {
     pa_stream *s = userdata;
 
@@ -448,11 +448,11 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     s->state = PA_STREAM_READY;
     pa_stream_ref(s);
-    s->c->mainloop_api->time_new(s->c->mainloop_api, &(struct timeval){},
-                                 deh_stream_state_changed, s);
+    s->c->mainloop_api->defer_new(s->c->mainloop_api, deh_stream_state_changed,
+                                  s);
     pa_stream_ref(s);
-    s->c->mainloop_api->time_new(s->c->mainloop_api, &(struct timeval){},
-                                 deh_stream_first_readwrite_callback, s);
+    s->c->mainloop_api->defer_new(s->c->mainloop_api,
+                                  deh_stream_first_readwrite_callback, s);
 
     g_free(device_description);
     return 0;

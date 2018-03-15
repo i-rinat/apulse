@@ -26,8 +26,7 @@
 #include "trace.h"
 
 static void
-deh_perform_operation(pa_mainloop_api *api, pa_time_event *e,
-                      const struct timeval *tv, void *userdata)
+deh_perform_operation(pa_mainloop_api *api, pa_defer_event *de, void *userdata)
 {
     pa_operation *op = userdata;
     op->handler(op);
@@ -49,8 +48,7 @@ void
 pa_operation_launch(pa_operation *op)
 {
     pa_mainloop_api *api = op->api;
-    api->time_new(api, &(struct timeval){}, deh_perform_operation,
-                  pa_operation_ref(op));
+    api->defer_new(api, deh_perform_operation, pa_operation_ref(op));
 }
 
 void

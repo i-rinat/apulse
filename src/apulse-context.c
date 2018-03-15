@@ -45,8 +45,8 @@ pai_context_set_state(pa_context *c, pa_context_state_t new_state)
 }
 
 static void
-pai_context_state_changed(pa_mainloop_api *api, pa_time_event *e,
-                          const struct timeval *tv, void *userdata)
+pai_context_state_changed(pa_mainloop_api *api, pa_defer_event *de,
+                          void *userdata)
 {
     pa_context *c = userdata;
     pai_context_set_state(c, c->new_state);
@@ -64,8 +64,7 @@ pa_context_connect(pa_context *c, const char *server, pa_context_flags_t flags,
     pa_context_ref(c);
     pai_context_set_state(c, PA_CONTEXT_CONNECTING);
     c->new_state = PA_CONTEXT_READY;
-    c->mainloop_api->time_new(c->mainloop_api, &(struct timeval){},
-                              pai_context_state_changed, c);
+    c->mainloop_api->defer_new(c->mainloop_api, pai_context_state_changed, c);
 
     return 0;
 }
