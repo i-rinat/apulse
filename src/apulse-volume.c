@@ -282,7 +282,7 @@ pa_cvolume_scale(pa_cvolume *v, pa_volume_t max)
 
 APULSE_EXPORT
 pa_cvolume *
-#if PA_CHECK_VERSION(12, 0, 0)
+#if PA_CHECK_VERSION(11, 99, 0)
 pa_cvolume_scale_mask(pa_cvolume *v, pa_volume_t max, const pa_channel_map *cm,
                       pa_channel_position_mask_t mask)
 #else
