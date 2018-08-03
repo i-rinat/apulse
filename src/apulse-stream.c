@@ -147,6 +147,9 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd,
                     "SND_PCM_STATE_DISCONNECTED state. Giving up.",
                     s->name ? s->name : "", s->c->name ? s->c->name : "");
                 break;
+            default:
+                // avoid compiler warnings of unhandled (library-private) enum values
+                break;
             }
 
 #if HAVE_SND_PCM_AVAIL
