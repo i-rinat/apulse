@@ -28,6 +28,8 @@ else()
     include_directories(${PA_INCLUDE_DIRECTORIES})
 endif()
 
+set(INSTALL_SDK 0 CACHE BOOLEAN "Install SDK files to build applications with apulse (Pulse Audio headers and pkg-config files) instead of system ones")
+
 link_directories(${REQ_LIBRARY_DIRS})
 
 add_library(trace-helper STATIC
@@ -81,3 +83,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/apulse" DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 install(TARGETS pulse-simple pulse pulse-mainloop-glib DESTINATION "${APULSEPATH}")
 install(FILES "${CMAKE_SOURCE_DIR}/man/apulse.1" DESTINATION share/man/man1)
+
+if (${INSTALL_SDK})
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/pulseaudio-headers/pulse" DESTINATION include)
+endif()
