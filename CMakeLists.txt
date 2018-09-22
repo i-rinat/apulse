@@ -1,5 +1,6 @@
 project(apulse)
 cmake_minimum_required (VERSION 2.8)
+include(GNUInstallDirs)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -fPIC -fvisibility=hidden")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=implicit-function-declaration")
@@ -74,10 +75,19 @@ target_link_libraries(pulse-simple ${SYMBOLMAP} trace-helper ${REQ_LIBRARIES})
 
 add_subdirectory(tests)
 
-set(APULSEPATH "${CMAKE_INSTALL_PREFIX}/lib/apulse" CACHE PATH "library installation directory")
+set(APULSEPATH "${CMAKE_INSTALL_LIBDIR}/apulse" CACHE PATH "library installation directory")
+
 set(APULSE_SEARCH_PATHS "${APULSEPATH}" CACHE PATH "directory list for LD_LIBRARY_PATH")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/apulse.template"
                "${CMAKE_CURRENT_BINARY_DIR}/apulse" @ONLY)
+if (${INSTALL_SDK})
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/libpulse.pc.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/libpulse.pc" @ONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/libpulse-simple.pc.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/libpulse-simple.pc" @ONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig/libpulse-mainloop-glib.pc.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/libpulse-mainloop-glib.pc" @ONLY)
+endif()
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/apulse" DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
@@ -86,4 +96,5 @@ install(FILES "${CMAKE_SOURCE_DIR}/man/apulse.1" DESTINATION share/man/man1)
 
 if (${INSTALL_SDK})
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/pulseaudio-headers/pulse" DESTINATION include)
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig" DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
