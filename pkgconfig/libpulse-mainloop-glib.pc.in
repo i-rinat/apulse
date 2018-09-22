@@ -4,6 +4,6 @@ includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
 Name: libpulse-mainloop-glib
 Description: PulseAudio GLib 2.0 Main Loop Wrapper (apulse)
 Version: 5.0
-Libs: -L${libdir}/apulse -lpulse-mainloop-glib -pthread
+Libs: -L${libdir} -lpulse-mainloop-glib -pthread
 Cflags: -I${includedir}
 Requires: glib-2.0

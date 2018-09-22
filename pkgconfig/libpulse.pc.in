@@ -4,6 +4,6 @@ includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
 Name: libpulse
 Description: PulseAudio Client Interface (apulse)
 Version: 5.0
-Libs: -L${libdir}/apulse -lpulse -pthread
+Libs: -L${libdir} -lpulse -pthread
 Cflags: -I${includedir}
 Requires: glib-2.0 alsa

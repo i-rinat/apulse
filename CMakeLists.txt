@@ -75,7 +75,11 @@ target_link_libraries(pulse-simple ${SYMBOLMAP} trace-helper ${REQ_LIBRARIES})
 
 add_subdirectory(tests)
 
-set(APULSEPATH "${CMAKE_INSTALL_LIBDIR}/apulse" CACHE PATH "library installation directory")
+if (${INSTALL_SDK})
+    set(APULSEPATH "${CMAKE_INSTALL_LIBDIR}" CACHE PATH "library installation directory")
+else()
+    set(APULSEPATH "${CMAKE_INSTALL_LIBDIR}/apulse" CACHE PATH "library installation directory")
+endif()
 
 set(APULSE_SEARCH_PATHS "${APULSEPATH}" CACHE PATH "directory list for LD_LIBRARY_PATH")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/apulse.template"
