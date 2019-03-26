@@ -26,7 +26,7 @@
 
 #define _GNU_SOURCE
 #include "ringbuffer.h"
-#include <asoundlib.h>
+#include <alsa/asoundlib.h>
 #include <glib.h>
 #include <poll.h>
 #include <pthread.h>

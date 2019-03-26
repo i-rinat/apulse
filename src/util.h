@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <asoundlib.h>
+#include <alsa/asoundlib.h>
 #include <pulse/pulseaudio.h>
 
 int
