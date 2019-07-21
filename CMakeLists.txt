@@ -68,7 +68,7 @@ set(CMAKE_SHARED_LINKER_FLAGS
     "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-version-script=\"${CMAKE_SOURCE_DIR}/src/symbolmap\"")
 
 target_link_libraries(pulse trace-helper ${REQ_LIBRARIES})
-target_link_libraries(pulse-mainloop-glib trace-helper ${REQ_LIBRARIES})
+target_link_libraries(pulse-mainloop-glib trace-helper pulse ${REQ_LIBRARIES})
 target_link_libraries(pulse-simple trace-helper pulse ${REQ_LIBRARIES})
 
 add_subdirectory(tests)
