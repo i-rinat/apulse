@@ -20,7 +20,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCONFIG_LOG_TO_STDERR=${LOG_TO_STDERR}")
 
 include_directories(${REQ_INCLUDE_DIRS})
 
-set(USE_BUNDLED_PULSEAUDIO_HEADERS 1 CACHE BOOLEAN "Use bundled PulseAudio headers instead of system ones")
+set(USE_BUNDLED_PULSEAUDIO_HEADERS 1 CACHE BOOL "Use bundled PulseAudio headers instead of system ones")
 if (${USE_BUNDLED_PULSEAUDIO_HEADERS})
     include_directories(3rdparty/pulseaudio-headers)
 else()
