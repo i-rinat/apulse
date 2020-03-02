@@ -263,14 +263,14 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     }
 
     errcode = snd_pcm_open(&s->ph, device_name, stream_direction, 0);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't open %s. Error code %d (%s)\n", __func__,
                     device_description, errcode, snd_strerror(errcode));
         goto fatal_error;
     }
 
     errcode = snd_pcm_hw_params_malloc(&hw_params);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error(
             "%s: can't allocate memory for hw parameters for %s. Error code %d "
             "(%s)\n",
@@ -279,7 +279,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     }
 
     errcode = snd_pcm_hw_params_any(s->ph, hw_params);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error(
             "%s: can't get initial hw parameters for %s. Error code %d (%s)\n",
             __func__, device_description, errcode, snd_strerror(errcode));
@@ -288,7 +288,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     errcode = snd_pcm_hw_params_set_access(s->ph, hw_params,
                                            SND_PCM_ACCESS_RW_INTERLEAVED);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error(
             "%s: can't select interleaved mode for %s. Error code %d (%s)\n",
             __func__, device_description, errcode, snd_strerror(errcode));
@@ -298,7 +298,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
 
     errcode = snd_pcm_hw_params_set_format(s->ph, hw_params,
                                            pa_format_to_alsa(s->ss.format));
-    if (errcode != 0) {
+    if (errcode < 0) {
         snd_pcm_format_t alsa_format = pa_format_to_alsa(s->ss.format);
         trace_error(
             "%s: can't set sample format %d (\"%s\") for %s. Error code %d "
@@ -309,7 +309,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     }
 
     errcode = snd_pcm_hw_params_set_rate_resample(s->ph, hw_params, 1);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error(
             "%s: can't enable rate resample for %s. Error code %d (%s)\n",
             __func__, device_description, errcode, snd_strerror(errcode));
@@ -321,7 +321,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     int dir = 0;
 
     errcode = snd_pcm_hw_params_set_rate_near(s->ph, hw_params, &rate, &dir);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't set sample rate for %s. Error code %d (%s)\n",
                     __func__, device_description, errcode,
                     snd_strerror(errcode));
@@ -337,7 +337,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
             __func__, (int)rate, (int)s->ss.rate);
 
     errcode = snd_pcm_hw_params_set_channels(s->ph, hw_params, s->ss.channels);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error(
             "%s: can't set channel count to %d for %s. Error code %d (%s)\n",
             __func__, (int)s->ss.channels, device_description, errcode,
@@ -353,7 +353,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     dir = 1;  // Prefer larger period sizes, if exact is not possible.
     errcode = snd_pcm_hw_params_set_period_size_near(s->ph, hw_params,
                                                      &period_size, &dir);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error(
             "%s: can't set period size to %d frames for %s. Error code %d "
             "(%s)\n",
@@ -374,7 +374,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     snd_pcm_uframes_t buffer_size = MAX(requested_buffer_size, 4 * period_size);
     errcode =
         snd_pcm_hw_params_set_buffer_size_near(s->ph, hw_params, &buffer_size);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error(
             "%s: can't set buffer size to %d frames for %s. Error code %d "
             "(%s)\n",
@@ -389,7 +389,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
         device_description);
 
     errcode = snd_pcm_hw_params(s->ph, hw_params);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't apply configured hw parameter block for %s\n",
                     __func__, device_description);
         goto fatal_error;
@@ -398,21 +398,21 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     snd_pcm_hw_params_free(hw_params);
 
     errcode = snd_pcm_sw_params_malloc(&sw_params);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't allocate memory for sw parameters for %s\n",
                     __func__, device_description);
         goto fatal_error;
     }
 
     errcode = snd_pcm_sw_params_current(s->ph, sw_params);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't acquire current sw parameters for %s\n",
                     __func__, device_description);
         goto fatal_error;
     }
 
     errcode = snd_pcm_sw_params_set_avail_min(s->ph, sw_params, period_size);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't set avail min for %s\n", __func__,
                     device_description);
         goto fatal_error;
@@ -421,7 +421,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     // no period event requested
 
     errcode = snd_pcm_sw_params(s->ph, sw_params);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't apply sw parameters for %s\n", __func__,
                     device_description);
         goto fatal_error;
@@ -430,7 +430,7 @@ do_connect_pcm(pa_stream *s, snd_pcm_stream_t stream_direction)
     snd_pcm_sw_params_free(sw_params);
 
     errcode = snd_pcm_prepare(s->ph);
-    if (errcode != 0) {
+    if (errcode < 0) {
         trace_error("%s: can't prepare PCM device to use for %s\n", __func__,
                     device_description);
         goto fatal_error;
@@ -601,7 +601,7 @@ pa_stream_connect_playback(pa_stream *s, const char *dev,
     s->direction = PA_STREAM_PLAYBACK;
     stream_adjust_buffer_attrs(s, attr);
 
-    if (do_connect_pcm(s, SND_PCM_STREAM_PLAYBACK) != 0)
+    if (do_connect_pcm(s, SND_PCM_STREAM_PLAYBACK) < 0)
         goto err;
 
     g_atomic_int_set(&s->paused, !!(flags & PA_STREAM_START_CORKED));
@@ -732,7 +732,7 @@ pa_stream_get_latency(pa_stream *s, pa_usec_t *r_usec, int *negative)
 
     snd_pcm_sframes_t delay;
 
-    if (snd_pcm_delay(s->ph, &delay) != 0)
+    if (snd_pcm_delay(s->ph, &delay) < 0)
         delay = 0;
 
     if (r_usec)
@@ -783,7 +783,7 @@ pa_stream_get_timing_info(pa_stream *s)
 
     snd_pcm_sframes_t delay;
 
-    if (snd_pcm_delay(s->ph, &delay) != 0)
+    if (snd_pcm_delay(s->ph, &delay) < 0)
         delay = 0;
     s->timing_info.read_index =
         s->timing_info.write_index - delay * pa_frame_size(&s->ss);
@@ -1134,7 +1134,7 @@ pa_stream_connect_record(pa_stream *s, const char *dev,
     s->direction = PA_STREAM_RECORD;
     stream_adjust_buffer_attrs(s, attr);
 
-    if (do_connect_pcm(s, SND_PCM_STREAM_CAPTURE) != 0)
+    if (do_connect_pcm(s, SND_PCM_STREAM_CAPTURE) < 0)
         goto err;
 
     snd_pcm_start(s->ph);
