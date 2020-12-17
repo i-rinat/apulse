@@ -223,7 +223,7 @@ char *pa_sw_volume_snprint_dB(char *s, size_t l, pa_volume_t v);
 
 /** Maximum length of the strings returned by pa_volume_snprint_verbose().
  * Please note that this value can change with any release without warning and
- * withou being considered API or ABI breakage. You should not use this
+ * without being considered API or ABI breakage. You should not use this
  * definition anywhere where it might become part of an ABI. \since 5.0 */
 #define PA_VOLUME_SNPRINT_VERBOSE_MAX 35
 
