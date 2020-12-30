@@ -36,6 +36,16 @@ compatibility layer between OSS programs and \fBALSA\fR, \fBapulse\fR was
 designed to be compatibility layer between PulseAudio applications and
 \fBALSA\fR.
 
+.SH ENVIRONMENT
+
+The following environment variables can be used to configure the devices used
+by \fBapulse\fR. Try \fIhw:0,0\fR, \fIplughw:0,0\fR and the like.
+Refer to the ALSA user guide for a full list of device names.
+
+\fIAPULSE_CAPTURE_DEVICE\fR: Can be used to configure the capture device.
+
+\fIAPULSE_PLAYBACK_DEVICE\fR: Can be used to configure the playback device.
+
 .SH RETURN VALUE
 
 \fBapulse\fR is a simple shell wrapper script that calls \fBexec\fR on the
