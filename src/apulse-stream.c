@@ -1019,7 +1019,11 @@ pa_stream_unref(pa_stream *s)
 
     s->ref_cnt--;
     if (s->ref_cnt == 0) {
-        g_hash_table_remove(s->c->streams_ht, GINT_TO_POINTER(s->idx));
+        GHashTable * __restrict const streams_ht =
+            s->c->streams_ht;
+        void const * key = GINT_TO_POINTER(s->idx);
+        if (key && g_hash_table_lookup(streams_ht, key))
+            g_hash_table_remove(streams_ht, key);
         ringbuffer_free(s->rb);
         free(s->peek_buffer);
         free(s->write_buffer);
