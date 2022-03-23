@@ -55,7 +55,7 @@ struct pa_io_event {
     pa_io_event_destroy_cb_t destroy_cb;
     pa_mainloop *mainloop;
     struct pollfd *pollfd;
-    snd_pcm_t *pcm;
+    pa_stream *s;
 };
 
 struct pa_mainloop {
@@ -95,6 +95,7 @@ struct pa_stream {
     pa_context *c;
     pa_stream_state_t state;
     pa_stream_direction_t direction;
+    char *requested_device_name;
     snd_pcm_t *ph;
     pa_sample_spec ss;
     pa_buffer_attr buffer_attr;
@@ -178,3 +179,6 @@ pa_operation_launch(pa_operation *op);
 
 void
 pa_operation_done(pa_operation *op);
+
+int
+apulse_stream_restart(pa_stream *s);
