@@ -771,19 +771,26 @@ pa_stream_get_index(pa_stream *s)
     return s->idx;
 }
 
+static uint64_t
+latency_bytes(pa_stream *s)
+{
+    snd_pcm_sframes_t delay;
+
+    if (snd_pcm_delay(s->ph, &delay) < 0)
+        delay = 0;
+
+    return ringbuffer_readable_size(s->rb) + delay * pa_frame_size(&s->ss);
+}
+
 APULSE_EXPORT
 int
 pa_stream_get_latency(pa_stream *s, pa_usec_t *r_usec, int *negative)
 {
     trace_info_f("F %s s=%p\n", __func__, s);
 
-    snd_pcm_sframes_t delay;
-
-    if (snd_pcm_delay(s->ph, &delay) < 0)
-        delay = 0;
-
     if (r_usec)
-        *r_usec = 1000 * 1000 * delay / s->ss.rate;
+        *r_usec = pa_bytes_to_usec(latency_bytes(s), &s->ss);
+
     if (negative)
         *negative = 0;
     return 0;
@@ -813,12 +820,11 @@ pa_stream_get_time(pa_stream *s, pa_usec_t *r_usec)
 {
     trace_info_f("F %s\n", __func__);
 
-    // TODO: handle playback/capture delays?
     int64_t data_index = s->timing_info.write_index;
     if (data_index < 0)
         data_index = 0;
 
-    *r_usec = pa_bytes_to_usec(data_index, &s->ss);
+    *r_usec = pa_bytes_to_usec(data_index - latency_bytes(s), &s->ss);
     return 0;
 }
 
