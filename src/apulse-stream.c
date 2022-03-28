@@ -932,6 +932,7 @@ pa_stream_new_with_proplist(pa_context *c, const char *name,
 
     pa_stream *s = calloc(1, sizeof(pa_stream));
     s->c = c;
+    pa_context_ref(c);
     s->ref_cnt = 1;
     s->state = PA_STREAM_UNCONNECTED;
     s->ss = *ss;
@@ -1073,6 +1074,7 @@ pa_stream_unref(pa_stream *s)
     s->ref_cnt--;
     if (s->ref_cnt == 0) {
         g_hash_table_remove(s->c->streams_ht, GINT_TO_POINTER(s->idx));
+        pa_context_unref(s->c);
         ringbuffer_free(s->rb);
         free(s->peek_buffer);
         free(s->write_buffer);
