@@ -119,6 +119,8 @@ struct pa_stream {
     void *write_buffer;
     volatile int paused;
     pa_volume_t volume[PA_CHANNELS_MAX];
+	pa_time_event *cork_timer;
+	uint64_t cork_latency_bytes;
 };
 
 struct pa_operation {

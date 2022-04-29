@@ -175,10 +175,12 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd,
 
     if (events & PA_IO_EVENT_OUTPUT) {
         if (paused) {
-            // client stream is corked. Pass silence to ALSA
-            size_t bytecnt = MIN(buf_size, frame_count * frame_size);
-            memset(buf, 0, bytecnt);
-            snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
+            if (s->ph) {
+                // client stream is corked. Pass silence to ALSA
+                size_t bytecnt = MIN(buf_size, frame_count * frame_size);
+                memset(buf, 0, bytecnt);
+                snd_pcm_writei(s->ph, buf, bytecnt / frame_size);
+            }
         } else {
             size_t writable_size = pa_stream_writable_size(s);
 
@@ -203,9 +205,11 @@ data_available_for_stream(pa_mainloop_api *a, pa_io_event *ioe, int fd,
 
     if (events & PA_IO_EVENT_INPUT) {
         if (paused) {
-            // client stream is corked. Read data from ALSA and discard them
-            size_t bytecnt = MIN(buf_size, frame_count * frame_size);
-            snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
+            if (s->ph) {
+                // client stream is corked. Read data from ALSA and discard them
+                size_t bytecnt = MIN(buf_size, frame_count * frame_size);
+                snd_pcm_readi(s->ph, buf, bytecnt / frame_size);
+            }
         } else {
             size_t bytecnt = ringbuffer_writable_size(s->rb);
 
@@ -513,20 +517,26 @@ fatal_error:
     return -1;
 }
 
-APULSE_EXPORT
-int
-apulse_stream_restart(pa_stream *s) {
-    snd_pcm_stream_t stream_direction = snd_pcm_stream(s->ph);
-
+static void
+do_close_pcm(pa_stream *s) {
     for (int k = 0; k < s->nioe; k++) {
         pa_mainloop_api *api = s->c->mainloop_api;
         api->io_free(s->ioe[k]);
     }
     free(s->ioe);
-	s->ioe = NULL;
-	s->nioe = 0;
+    s->ioe = NULL;
+    s->nioe = 0;
+
     snd_pcm_close(s->ph);
 	s->ph = NULL;
+}
+
+APULSE_EXPORT
+int
+apulse_stream_restart(pa_stream *s) {
+    snd_pcm_stream_t stream_direction = snd_pcm_stream(s->ph);
+
+	do_close_pcm(s);
 
 	return configure_stream_pcm(s, stream_direction, 1);
 }
@@ -658,10 +668,57 @@ err:
     return -1;
 }
 
+static uint64_t
+latency_bytes(pa_stream *s)
+{
+    snd_pcm_sframes_t delay;
+    if (s->ph == NULL)
+        return s->cork_latency_bytes;
+
+    if (snd_pcm_delay(s->ph, &delay) < 0)
+        delay = 0;
+
+    return ringbuffer_readable_size(s->rb) + delay * pa_frame_size(&s->ss);
+}
+
+static void
+cork_timeout_cb(pa_mainloop_api *a, pa_time_event* e, const struct timeval *tv, void *userdata) {
+	pa_stream *s = userdata;
+    if (s->ph == NULL)
+        return;
+    s->cork_latency_bytes = latency_bytes(s);
+    do_close_pcm(s);
+}
+
 static void
 pa_stream_cork_impl(pa_operation *op)
 {
-    g_atomic_int_set(&op->s->paused, !!(op->int_arg_1));
+    pa_stream *s = op->s;
+    pa_mainloop_api *api = op->api;
+    const int cork = !!(op->int_arg_1);
+    pa_usec_t now = pa_rtclock_now();
+
+    struct timeval tv = {
+        .tv_sec = 10 + now / (1000 * 1000),
+        .tv_usec = now % (1000 * 1000),
+    };
+
+    if (cork) {
+        if (s->cork_timer)
+            api->time_restart(s->cork_timer, &tv);
+       else
+          s->cork_timer = api->time_new(api, &tv, cork_timeout_cb, s);
+    }
+    else {
+        if (s->cork_timer)
+            s->cork_timer->enabled = 0;
+        if (s->ph == NULL) {
+            snd_pcm_stream_t stream_direction = s->direction == PA_STREAM_PLAYBACK ? SND_PCM_STREAM_PLAYBACK: SND_PCM_STREAM_CAPTURE;
+            configure_stream_pcm(s, stream_direction, 1);
+        }
+    }
+
+    g_atomic_int_set(&op->s->paused, cork);
 
     if (op->stream_success_cb)
         op->stream_success_cb(op->s, 1, op->cb_userdata);
@@ -696,13 +753,9 @@ pa_stream_disconnect(pa_stream *s)
     if (s->state != PA_STREAM_READY)
         return PA_ERR_BADSTATE;
 
-    for (int k = 0; k < s->nioe; k++) {
-        pa_mainloop_api *api = s->c->mainloop_api;
-        api->io_free(s->ioe[k]);
-    }
-    free(s->ioe);
+    if (s->ph)
+        do_close_pcm(s);
 
-    snd_pcm_close(s->ph);
     s->state = PA_STREAM_TERMINATED;
 
     return PA_OK;
@@ -771,17 +824,6 @@ pa_stream_get_index(pa_stream *s)
     return s->idx;
 }
 
-static uint64_t
-latency_bytes(pa_stream *s)
-{
-    snd_pcm_sframes_t delay;
-
-    if (snd_pcm_delay(s->ph, &delay) < 0)
-        delay = 0;
-
-    return ringbuffer_readable_size(s->rb) + delay * pa_frame_size(&s->ss);
-}
-
 APULSE_EXPORT
 int
 pa_stream_get_latency(pa_stream *s, pa_usec_t *r_usec, int *negative)
@@ -834,9 +876,9 @@ pa_stream_get_timing_info(pa_stream *s)
 {
     trace_info_f("F %s s=%p\n", __func__, s);
 
-    snd_pcm_sframes_t delay;
+    snd_pcm_sframes_t delay = 0;
 
-    if (snd_pcm_delay(s->ph, &delay) < 0)
+    if (s->ph && snd_pcm_delay(s->ph, &delay) < 0)
         delay = 0;
     s->timing_info.read_index =
         s->timing_info.write_index - delay * pa_frame_size(&s->ss);
@@ -1080,6 +1122,8 @@ pa_stream_unref(pa_stream *s)
         free(s->write_buffer);
         free(s->name);
         free(s->requested_device_name);
+		if (s->cork_timer)
+			s->cork_timer->mainloop->api.time_free(s->cork_timer);
         free(s);
     }
 }
