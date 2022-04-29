@@ -130,7 +130,7 @@ ml_api_io_new(pa_mainloop_api *a, int fd, pa_io_event_flags_t events,
     ioe->cb_userdata = userdata;
     ioe->mainloop = ml;
     ioe->pollfd = NULL;
-    ioe->pcm = NULL;
+    ioe->s = NULL;
 
     g_hash_table_replace(ml->events_ht, ioe, ioe);
     ml->recreate_fds = 1;
@@ -270,21 +270,26 @@ pa_mainloop_api_once(pa_mainloop_api *m,
     pa_operation_launch(op);
 }
 
-static void
+static int
 recover_pcm(snd_pcm_t *pcm)
 {
+	int ret = 0;
     switch (snd_pcm_state(pcm)) {
     case SND_PCM_STATE_XRUN:
-        snd_pcm_recover(pcm, -EPIPE, 1);
+        ret = snd_pcm_recover(pcm, -EPIPE, 1);
         break;
     case SND_PCM_STATE_SUSPENDED:
-        snd_pcm_recover(pcm, -ESTRPIPE, 1);
+        ret = snd_pcm_recover(pcm, -ESTRPIPE, 1);
         break;
+    case SND_PCM_STATE_DISCONNECTED:
+		ret = -1;
+		break;
     default:
         snd_pcm_drop(pcm);
-        snd_pcm_prepare(pcm);
+        ret = snd_pcm_prepare(pcm);
         break;
     }
+	return ret;
 }
 
 static long
@@ -292,6 +297,17 @@ microseconds_till_event(pa_usec_t now, const struct timeval *event_when)
 {
     return (uint64_t)event_when->tv_sec * 1000 * 1000 + event_when->tv_usec -
            now;
+}
+
+static void
+deferred_stream_restart(pa_mainloop_api *a, pa_defer_event* e, void *userdata)
+{
+	(void) a;
+	(void) e;
+    struct pa_io_event *ioe = userdata;
+
+    if (apulse_stream_restart(ioe->s) < 0)
+        trace_error("Unrecoverable ALSA PCM error\n");
 }
 
 APULSE_EXPORT
@@ -312,14 +328,15 @@ pa_mainloop_dispatch(pa_mainloop *m)
             unsigned short revents = 0;
 
             if (0 < idx && idx <= m->alsa_special_cnt) {
-                snd_pcm_poll_descriptors_revents(ioe->pcm, ioe->pollfd, 1,
+                snd_pcm_poll_descriptors_revents(ioe->s->ph, ioe->pollfd, 1,
                                                  &revents);
             } else {
                 revents = ioe->pollfd->revents;
             }
 
             if (revents & (~(POLLOUT | POLLIN))) {
-                recover_pcm(ioe->pcm);
+                if (recover_pcm(ioe->s->ph) < 0)
+                    ml_api_defer_new(&m->api, deferred_stream_restart, ioe);
             } else {
                 pa_io_event_flags_t eflags = to_pa_io_event_flags(revents);
                 if (ioe->cb)
@@ -429,6 +446,8 @@ pa_mainloop_new(void)
     trace_info_f("F %s (void)\n", __func__);
 
     pa_mainloop *m = calloc(1, sizeof(pa_mainloop));
+	if (m == NULL)
+		return NULL;
 
     m->api.userdata = m;
     m->api.io_new = ml_api_io_new;
@@ -450,7 +469,10 @@ pa_mainloop_new(void)
     m->events_ht = g_hash_table_new(g_direct_hash, g_direct_equal);
     m->recreate_fds = 1;
 
-    pipe(m->wakeup_pipe);
+    if (pipe(m->wakeup_pipe) == -1) {
+		free(m);
+		return NULL;
+	}
     make_nonblock(m->wakeup_pipe[0]);
     make_nonblock(m->wakeup_pipe[1]);
 
@@ -607,5 +629,6 @@ pa_mainloop_wakeup(pa_mainloop *m)
     trace_info_f("F %s m=%p\n", __func__, m);
 
     char c = '!';
-    write(m->wakeup_pipe[1], &c, 1);
+    if (write(m->wakeup_pipe[1], &c, 1) != 1)
+		trace_error("Unable to write to wakeup pipe: %s\n", strerror(errno));
 }
