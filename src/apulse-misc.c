@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+#include <libgen.h>
+
 #include "apulse.h"
 #include "trace.h"
 #include "util.h"
