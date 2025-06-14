@@ -121,11 +121,10 @@ as usual, without helper script.
 For example, for Firefox it would be:
 
 ```
-# patchelf --set-rpath /usr/lib/apulse /usr/lib/firefox/libxul.so
+find /usr/lib/firefox -type f -exec bash -c 'file {} |grep ELF >/dev/null' \; -exec patchelf --set-rpath /usr/'$LIB'/apulse {} \;
 ```
 
-For some reason, it doesn't work if RPATH is set for `/usr/lib/firefox/firefox`
-itself, so some experiments are required to make it work.
+Firefox seems to check for pulse audio in more than one .so file; the above command will patch all ELF files in /usr/lib/firefox to use apulse instead of pulse audio.
 
 Known issues
 ============
